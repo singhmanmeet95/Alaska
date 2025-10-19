@@ -1,0 +1,29 @@
+{
+  "stations": {
+    "Dwarka [Conn: Blue]": {
+      "lat": 28.5771915,
+      "lng": 77.0442935,
+      "line": "gray line",
+      "neighbors": {
+        "Nangli": 1.5
+      }
+    },
+    "Nangli": {
+      "lat": 28.6173003,
+      "lng": 77.0104375,
+      "line": "gray line",
+      "neighbors": {
+        "Dwarka [Conn: Blue]": 1.5,
+        "Najafgarh": 2.4
+      }
+    },
+    "Najafgarh": {
+      "lat": 28.612304,
+      "lng": 76.9823908,
+      "line": "gray line",
+      "neighbors": {
+        "Nangli": 2.4
+      }
+    }
+  }
+}

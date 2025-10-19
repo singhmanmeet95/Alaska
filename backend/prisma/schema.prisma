@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id @default(uuid())
+  name       String
+  username   String   @unique
+  email      String   @unique
+  emailVerified DateTime?
+  password   String?
+  image      String?
+  about      String?
+  bio        String?
+
+  // MFA fields
+  mfaEnabled     Boolean   @default(false)
+  mfaTotpSecret  String?
+  mfaBackupCodes String[]  @default([])
+
+  trips      Trip[]       @relation("UserTrips")
+  sentChats  Chat[]       @relation("SentChats")
+  receivedChats Chat[]    @relation("ReceivedChats")
+
+  // OAuth accounts (e.g., Google)
+  accounts   Account[]
+}
+
+model Trip {
+  id           String   @id @default(uuid())
+  user         User     @relation("UserTrips", fields: [userId], references: [id])
+  userId       String
+  startTime    DateTime
+  stationList  String[] 
+  length       Int
+  startStation String
+  endStation   String
+}
+
+model Chat {
+  id          String   @id @default(uuid())
+  sender      User     @relation("SentChats", fields: [senderId], references: [id])
+  senderId    String
+  receiver    User     @relation("ReceivedChats", fields: [receiverId], references: [id])
+  receiverId  String
+  message     String
+  createdAt   DateTime @default(now())
+  @@index([senderId, receiverId])
+}
+
+model Account {
+  id                 String  @id @default(uuid())
+  user               User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId             String
+
+  type               String
+  provider           String
+  providerAccountId  String
+
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}

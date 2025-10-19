@@ -1,0 +1,74 @@
+{
+  "stations": {
+    "Yamuna Bank": {
+      "lat": 28.62331,
+      "lng": 77.26792,
+      "line": "blue line branch",
+      "neighbors": {
+        "Laxmi Nagar": 1.3
+      }
+    },
+    "Laxmi Nagar": {
+      "lat": 28.63064,
+      "lng": 77.27749,
+      "line": "blue line branch",
+      "neighbors": {
+        "Yamuna Bank": 1.3,
+        "Nirman Vihar": 1.1
+      }
+    },
+    "Nirman Vihar": {
+      "lat": 28.63663,
+      "lng": 77.28683,
+      "line": "blue line branch",
+      "neighbors": {
+        "Laxmi Nagar": 1.1,
+        "Preet Vihar": 1.0
+      }
+    },
+    "Preet Vihar": {
+      "lat": 28.64171,
+      "lng": 77.29543,
+      "line": "blue line branch",
+      "neighbors": {
+        "Nirman Vihar": 1.0,
+        "Karkar Duma [Conn: Pink]": 1.2
+      }
+    },
+    "Karkar Duma [Conn: Pink]": {
+      "lat": 28.64849,
+      "lng": 77.30558,
+      "line": "blue line branch",
+      "neighbors": {
+        "Preet Vihar": 1.2,
+        "Anand Vihar [Conn: Pink]": 1.1
+      }
+    },
+    "Anand Vihar [Conn: Pink]": {
+      "lat": 28.64695,
+      "lng": 77.31603,
+      "line": "blue line branch",
+      "neighbors": {
+        "Karkar Duma [Conn: Pink]": 1.1,
+        "Kaushambi": 0.8
+      }
+    },
+    "Kaushambi": {
+      "lat": 28.64544,
+      "lng": 77.32432,
+      "line": "blue line branch",
+      "neighbors": {
+        "Anand Vihar [Conn: Pink]": 0.8,
+        "Vaishali": 1.6
+      }
+    },
+    "Vaishali": {
+      "lat": 28.64997,
+      "lng": 77.33974,
+      "line": "blue line branch",
+      "neighbors": {
+        "Kaushambi": 1.6
+      }
+    }
+  }
+}

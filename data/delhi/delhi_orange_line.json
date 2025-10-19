@@ -1,0 +1,56 @@
+{
+  "stations": {
+    "New Delhi-Airport Express [Conn: Yellow]": {
+      "lat": 28.64307,
+      "lng": 77.22144,
+      "line": "orange line",
+      "neighbors": {
+        "Shivaji Stadium": 1.9
+      }
+    },
+    "Shivaji Stadium": {
+      "lat": 28.62901,
+      "lng": 77.2119,
+      "line": "orange line",
+      "neighbors": {
+        "New Delhi-Airport Express [Conn: Yellow]": 1.9,
+        "Dhaula Kuan [Conn: Pink]": 6.4
+      }
+    },
+    "Dhaula Kuan [Conn: Pink]": {
+      "lat": 28.59178,
+      "lng": 77.16155,
+      "line": "orange line",
+      "neighbors": {
+        "Shivaji Stadium": 6.4,
+        "Delhi Aerocity": 6.2
+      }
+    },
+    "Delhi Aerocity": {
+      "lat": 28.54881,
+      "lng": 77.12092,
+      "line": "orange line",
+      "neighbors": {
+        "Dhaula Kuan [Conn: Pink]": 6.2,
+        "IGI Airport": 3.4
+      }
+    },
+    "IGI Airport": {
+      "lat": 28.55693,
+      "lng": 77.08669,
+      "line": "orange line",
+      "neighbors": {
+        "Delhi Aerocity": 3.4,
+        "Dwarka Sector 21 [Conn: Blue]": 2.9
+      }
+    },
+    "Dwarka Sector 21 [Conn: Blue]": {
+      "lat": 28.55226,
+      "lng": 77.05828,
+      "line": "orange line",
+      "neighbors": {
+        "IGI Airport": 2.9
+      }
+    }
+  }
+}

@@ -1,0 +1,443 @@
+{
+  "stations": {
+    "Dwarka Sector 21(First station) [Conn: Orange]": {
+      "lat": 28.55226,
+      "lng": 77.05828,
+      "line": "blue line",
+      "neighbors": {
+        "Dwarka Sector 8": 1.7
+      }
+    },
+    "Dwarka Sector 8": {
+      "lat": 28.56583,
+      "lng": 77.06706,
+      "line": "blue line",
+      "neighbors": {
+        "Dwarka Sector 21(First station) [Conn: Orange]": 1.7,
+        "Dwarka Sector 9": 1.0
+      }
+    },
+    "Dwarka Sector 9": {
+      "lat": 28.57487,
+      "lng": 77.06454,
+      "line": "blue line",
+      "neighbors": {
+        "Dwarka Sector 8": 1.0,
+        "Dwarka Sector 10": 1.1
+      }
+    },
+    "Dwarka Sector 10": {
+      "lat": 28.58068,
+      "lng": 77.05682,
+      "line": "blue line",
+      "neighbors": {
+        "Dwarka Sector 9": 1.1,
+        "Dwarka Sector 11": 1.0
+      }
+    },
+    "Dwarka Sector 11": {
+      "lat": 28.58657,
+      "lng": 77.04929,
+      "line": "blue line",
+      "neighbors": {
+        "Dwarka Sector 10": 1.0,
+        "Dwarka Sector 12": 1.0
+      }
+    },
+    "Dwarka Sector 12": {
+      "lat": 28.59232,
+      "lng": 77.04051,
+      "line": "blue line",
+      "neighbors": {
+        "Dwarka Sector 11": 1.0,
+        "Dwarka Sector 13": 0.9
+      }
+    },
+    "Dwarka Sector 13": {
+      "lat": 28.59722,
+      "lng": 77.03326,
+      "line": "blue line",
+      "neighbors": {
+        "Dwarka Sector 12": 0.9,
+        "Dwarka Sector 14": 0.9
+      }
+    },
+    "Dwarka Sector 14": {
+      "lat": 28.60223,
+      "lng": 77.02588,
+      "line": "blue line",
+      "neighbors": {
+        "Dwarka Sector 13": 0.9,
+        "Dwarka [Conn: Gray]": 1.5
+      }
+    },
+    "Dwarka [Conn: Gray]": {
+      "lat": 28.61564,
+      "lng": 77.02197,
+      "line": "blue line",
+      "neighbors": {
+        "Dwarka Sector 14": 1.5,
+        "Dwarka Mor": 1.1
+      }
+    },
+    "Dwarka Mor": {
+      "lat": 28.61932,
+      "lng": 77.03326,
+      "line": "blue line",
+      "neighbors": {
+        "Dwarka [Conn: Gray]": 1.1,
+        "Nawada": 1.2
+      }
+    },
+    "Nawada": {
+      "lat": 28.62025,
+      "lng": 77.04514,
+      "line": "blue line",
+      "neighbors": {
+        "Dwarka Mor": 1.2,
+        "Uttam Nagar West": 1.0
+      }
+    },
+    "Uttam Nagar West": {
+      "lat": 28.62481,
+      "lng": 77.0653,
+      "line": "blue line",
+      "neighbors": {
+        "Nawada": 1.0,
+        "Uttam Nagar East": 1.0
+      }
+    },
+    "Uttam Nagar East": {
+      "lat": 28.62177,
+      "lng": 77.05585,
+      "line": "blue line",
+      "neighbors": {
+        "Uttam Nagar West": 1.0,
+        "Janak Puri West [Conn: Magenta]": 1.3
+      }
+    },
+    "Janak Puri West [Conn: Magenta]": {
+      "lat": 28.62943,
+      "lng": 77.07767,
+      "line": "blue line",
+      "neighbors": {
+        "Uttam Nagar East": 1.3,
+        "Janak Puri East": 1.0
+      }
+    },
+    "Janak Puri East": {
+      "lat": 28.63305,
+      "lng": 77.08669,
+      "line": "blue line",
+      "neighbors": {
+        "Janak Puri West [Conn: Magenta]": 1.0,
+        "Tilak Nagar": 1.0
+      }
+    },
+    "Tilak Nagar": {
+      "lat": 28.63657,
+      "lng": 77.09648,
+      "line": "blue line",
+      "neighbors": {
+        "Janak Puri East": 1.0,
+        "Subhash Nagar": 0.9
+      }
+    },
+    "Subhash Nagar": {
+      "lat": 28.64039,
+      "lng": 77.10495,
+      "line": "blue line",
+      "neighbors": {
+        "Tilak Nagar": 0.9,
+        "Tagore Garden": 0.9
+      }
+    },
+    "Tagore Garden": {
+      "lat": 28.64379,
+      "lng": 77.11284,
+      "line": "blue line",
+      "neighbors": {
+        "Subhash Nagar": 0.9,
+        "Rajouri Garden [Conn: Pink]": 1.1
+      }
+    },
+    "Rajouri Garden [Conn: Pink]": {
+      "lat": 28.64902,
+      "lng": 77.1227,
+      "line": "blue line",
+      "neighbors": {
+        "Tagore Garden": 1.1,
+        "Ramesh Nagar": 1.0
+      }
+    },
+    "Ramesh Nagar": {
+      "lat": 28.65274,
+      "lng": 77.13164,
+      "line": "blue line",
+      "neighbors": {
+        "Rajouri Garden [Conn: Pink]": 1.0,
+        "Moti Nagar": 1.2
+      }
+    },
+    "Moti Nagar": {
+      "lat": 28.65784,
+      "lng": 77.14248,
+      "line": "blue line",
+      "neighbors": {
+        "Ramesh Nagar": 1.2,
+        "Kirti Nagar [Conn: Green]": 1.0
+      }
+    },
+    "Kirti Nagar [Conn: Green]": {
+      "lat": 28.65575,
+      "lng": 77.15057,
+      "line": "blue line",
+      "neighbors": {
+        "Moti Nagar": 1.0,
+        "Shadipur": 0.7
+      }
+    },
+    "Shadipur": {
+      "lat": 28.6516,
+      "lng": 77.15824,
+      "line": "blue line",
+      "neighbors": {
+        "Kirti Nagar [Conn: Green]": 0.7,
+        "Patel Nagar": 1.3
+      }
+    },
+    "Patel Nagar": {
+      "lat": 28.64498,
+      "lng": 77.16929,
+      "line": "blue line",
+      "neighbors": {
+        "Shadipur": 1.3,
+        "Rajendra Place": 0.9
+      }
+    },
+    "Rajendra Place": {
+      "lat": 28.6425,
+      "lng": 77.17815,
+      "line": "blue line",
+      "neighbors": {
+        "Patel Nagar": 0.9,
+        "Karol Bagh": 1.0
+      }
+    },
+    "Karol Bagh": {
+      "lat": 28.644,
+      "lng": 77.18855,
+      "line": "blue line",
+      "neighbors": {
+        "Rajendra Place": 1.0,
+        "Jhandewalan": 1.2
+      }
+    },
+    "Jhandewalan": {
+      "lat": 28.64427,
+      "lng": 77.19988,
+      "line": "blue line",
+      "neighbors": {
+        "Karol Bagh": 1.2,
+        "R K Ashram Marg": 1.0
+      }
+    },
+    "R K Ashram Marg": {
+      "lat": 28.63923,
+      "lng": 77.2084,
+      "line": "blue line",
+      "neighbors": {
+        "Jhandewalan": 1.0,
+        "Rajiv Chowk [Conn: Yellow]": 1.2
+      }
+    },
+    "Rajiv Chowk [Conn: Yellow]": {
+      "lat": 28.63282,
+      "lng": 77.21826,
+      "line": "blue line",
+      "neighbors": {
+        "R K Ashram Marg": 1.2,
+        "Barakhamba": 0.7
+      }
+    },
+    "Barakhamba": {
+      "lat": 28.63003,
+      "lng": 77.22436,
+      "line": "blue line",
+      "neighbors": {
+        "Rajiv Chowk [Conn: Yellow]": 0.7,
+        "Mandi House [Conn: Violet]": 1.0
+      }
+    },
+    "Mandi House [Conn: Violet]": {
+      "lat": 28.62588,
+      "lng": 77.2341,
+      "line": "blue line",
+      "neighbors": {
+        "Barakhamba": 1.0,
+        "Supreme Court (Pragati Maidan)": 0.8
+      }
+    },
+    "Supreme Court (Pragati Maidan)": {
+      "lat": 28.62342,
+      "lng": 77.2425,
+      "line": "blue line",
+      "neighbors": {
+        "Mandi House [Conn: Violet]": 0.8,
+        "Indraprastha": 0.8
+      }
+    },
+    "Indraprastha": {
+      "lat": 28.62051,
+      "lng": 77.24993,
+      "line": "blue line",
+      "neighbors": {
+        "Supreme Court (Pragati Maidan)": 0.8,
+        "Yamuna Bank": 1.8
+      }
+    },
+    "Yamuna Bank": {
+      "lat": 28.62331,
+      "lng": 77.26792,
+      "line": "blue line",
+      "neighbors": {
+        "Indraprastha": 1.8,
+        "Akshardham": 1.3
+      }
+    },
+    "Akshardham": {
+      "lat": 28.61806,
+      "lng": 77.27869,
+      "line": "blue line",
+      "neighbors": {
+        "Yamuna Bank": 1.3,
+        "Mayur Vihar Phase-1 [Conn: Pink]": 1.8
+      }
+    },
+    "Mayur Vihar Phase-1 [Conn: Pink]": {
+      "lat": 28.60442,
+      "lng": 77.29455,
+      "line": "blue line",
+      "neighbors": {
+        "Akshardham": 1.8,
+        "Mayur Vihar Extention": 1.2
+      }
+    },
+    "Mayur Vihar Extention": {
+      "lat": 28.59415815,
+      "lng": 77.29458935,
+      "line": "blue line",
+      "neighbors": {
+        "Mayur Vihar Phase-1 [Conn: Pink]": 1.2,
+        "New Ashok Nagar": 0.9
+      }
+    },
+    "New Ashok Nagar": {
+      "lat": 28.58916,
+      "lng": 77.30204,
+      "line": "blue line",
+      "neighbors": {
+        "Mayur Vihar Extention": 0.9,
+        "Noida Sector 15": 1.0
+      }
+    },
+    "Noida Sector 15": {
+      "lat": 28.58512,
+      "lng": 77.31139,
+      "line": "blue line",
+      "neighbors": {
+        "New Ashok Nagar": 1.0,
+        "Noida Sector 16": 1.1
+      }
+    },
+    "Noida Sector 16": {
+      "lat": 28.57819,
+      "lng": 77.31757,
+      "line": "blue line",
+      "neighbors": {
+        "Noida Sector 15": 1.1,
+        "Noida Sector 18": 1.1
+      }
+    },
+    "Noida Sector 18": {
+      "lat": 28.57081,
+      "lng": 77.32612,
+      "line": "blue line",
+      "neighbors": {
+        "Noida Sector 16": 1.1,
+        "Botanical Garden [Conn: Magenta]": 1.1
+      }
+    },
+    "Botanical Garden [Conn: Magenta]": {
+      "lat": 28.56409,
+      "lng": 77.3342,
+      "line": "blue line",
+      "neighbors": {
+        "Noida Sector 18": 1.1,
+        "Golf Course": 1.2
+      }
+    },
+    "Golf Course": {
+      "lat": 28.56714,
+      "lng": 77.34598,
+      "line": "blue line",
+      "neighbors": {
+        "Botanical Garden [Conn: Magenta]": 1.2,
+        "Noida City Center": 1.3
+      }
+    },
+    "Noida City Center": {
+      "lat": 28.57466,
+      "lng": 77.35608,
+      "line": "blue line",
+      "neighbors": {
+        "Golf Course": 1.3,
+        "Noida Sector 34": 0.9
+      }
+    },
+    "Noida Sector 34": {
+      "lat": 28.4808629,
+      "lng": 77.0848883,
+      "line": "blue line",
+      "neighbors": {
+        "Noida City Center": 0.9,
+        "Noida Sector 52 [Conn: Aqua]": 1.2
+      }
+    },
+    "Noida Sector 52 [Conn: Aqua]": {
+      "lat": 28.4808629,
+      "lng": 77.0848883,
+      "line": "blue line",
+      "neighbors": {
+        "Noida Sector 34": 1.2,
+        "Noida Sector 61": 1.2
+      }
+    },
+    "Noida Sector 61": {
+      "lat": 28.4808629,
+      "lng": 77.0848883,
+      "line": "blue line",
+      "neighbors": {
+        "Noida Sector 52 [Conn: Aqua]": 1.2,
+        "Noida Sector 59": 1.0
+      }
+    },
+    "Noida Sector 59": {
+      "lat": 28.4808629,
+      "lng": 77.0848883,
+      "line": "blue line",
+      "neighbors": {
+        "Noida Sector 61": 1.0,
+        "Noida Sector 62": 1.2
+      }
+    },
+    "Noida Sector 62": {
+      "lat": 28.4808629,
+      "lng": 77.0848883,
+      "line": "blue line",
+      "neighbors": {
+        "Noida Sector 59": 1.2
+      }
+    }
+  }
+}

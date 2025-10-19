@@ -1,0 +1,308 @@
+{
+  "stations": {
+    "Kashmere Gate [Conn: Yellow]": {
+      "lat": 28.6675,
+      "lng": 77.22817,
+      "line": "violet line",
+      "neighbors": {
+        "Lal Quila": 1.5
+      }
+    },
+    "Lal Quila": {
+      "lat": 27.92086195,
+      "lng": 77.52850191,
+      "line": "violet line",
+      "neighbors": {
+        "Kashmere Gate [Conn: Yellow]": 1.5,
+        "Jama Masjid": 0.8
+      }
+    },
+    "Jama Masjid": {
+      "lat": 28.65001015,
+      "lng": 77.23767617,
+      "line": "violet line",
+      "neighbors": {
+        "Lal Quila": 0.8,
+        "Delhi Gate": 1.4
+      }
+    },
+    "Delhi Gate": {
+      "lat": 28.6392036,
+      "lng": 77.2407823,
+      "line": "violet line",
+      "neighbors": {
+        "Jama Masjid": 1.4,
+        "ITO": 1.3
+      }
+    },
+    "ITO": {
+      "lat": 28.6305091,
+      "lng": 77.2414363,
+      "line": "violet line",
+      "neighbors": {
+        "Delhi Gate": 1.3,
+        "Mandi House [Conn: Blue]": 0.8
+      }
+    },
+    "Mandi House [Conn: Blue]": {
+      "lat": 28.6255556,
+      "lng": 77.234195,
+      "line": "violet line",
+      "neighbors": {
+        "ITO": 0.8,
+        "Janpath": 1.4
+      }
+    },
+    "Janpath": {
+      "lat": 28.6088598,
+      "lng": 77.2181649,
+      "line": "violet line",
+      "neighbors": {
+        "Mandi House [Conn: Blue]": 1.4,
+        "Central Secretariat [Conn: Yellow]": 1.3
+      }
+    },
+    "Central Secretariat [Conn: Yellow]": {
+      "lat": 28.61474,
+      "lng": 77.21191,
+      "line": "violet line",
+      "neighbors": {
+        "Janpath": 1.3,
+        "Khan Market": 2.1
+      }
+    },
+    "Khan Market": {
+      "lat": 28.60276,
+      "lng": 77.22829,
+      "line": "violet line",
+      "neighbors": {
+        "Central Secretariat [Conn: Yellow]": 2.1,
+        "Jawaharlal Nehru Stadium": 1.4
+      }
+    },
+    "Jawaharlal Nehru Stadium": {
+      "lat": 28.5904,
+      "lng": 77.23326,
+      "line": "violet line",
+      "neighbors": {
+        "Khan Market": 1.4,
+        "Jangpura": 0.9
+      }
+    },
+    "Jangpura": {
+      "lat": 28.5843,
+      "lng": 77.23766,
+      "line": "violet line",
+      "neighbors": {
+        "Jawaharlal Nehru Stadium": 0.9,
+        "Lajpat Nagar [Conn: Pink]": 1.5
+      }
+    },
+    "Lajpat Nagar [Conn: Pink]": {
+      "lat": 28.57079,
+      "lng": 77.23653,
+      "line": "violet line",
+      "neighbors": {
+        "Jangpura": 1.5,
+        "Moolchand": 0.7
+      }
+    },
+    "Moolchand": {
+      "lat": 28.56417,
+      "lng": 77.23423,
+      "line": "violet line",
+      "neighbors": {
+        "Lajpat Nagar [Conn: Pink]": 0.7,
+        "Kailash Colony": 1.3
+      }
+    },
+    "Kailash Colony": {
+      "lat": 28.55527,
+      "lng": 77.24205,
+      "line": "violet line",
+      "neighbors": {
+        "Moolchand": 1.3,
+        "Nehru Place": 1.0
+      }
+    },
+    "Nehru Place": {
+      "lat": 28.55148,
+      "lng": 77.25154,
+      "line": "violet line",
+      "neighbors": {
+        "Kailash Colony": 1.0,
+        "Kalkaji Mandir [Conn: Magenta]": 0.8
+      }
+    },
+    "Kalkaji Mandir [Conn: Magenta]": {
+      "lat": 28.55007,
+      "lng": 77.25835,
+      "line": "violet line",
+      "neighbors": {
+        "Nehru Place": 0.8,
+        "Govind Puri": 0.7
+      }
+    },
+    "Govind Puri": {
+      "lat": 28.54451,
+      "lng": 77.26401,
+      "line": "violet line",
+      "neighbors": {
+        "Kalkaji Mandir [Conn: Magenta]": 0.7,
+        "Okhla": 1.1
+      }
+    },
+    "Okhla": {
+      "lat": 28.54292,
+      "lng": 77.27504,
+      "line": "violet line",
+      "neighbors": {
+        "Govind Puri": 1.1,
+        "Jasola": 0.9
+      }
+    },
+    "Jasola": {
+      "lat": 28.53824,
+      "lng": 77.28319,
+      "line": "violet line",
+      "neighbors": {
+        "Okhla": 0.9,
+        "Sarita Vihar": 1.2
+      }
+    },
+    "Sarita Vihar": {
+      "lat": 28.52878,
+      "lng": 77.28826,
+      "line": "violet line",
+      "neighbors": {
+        "Jasola": 1.2,
+        "Mohan Estate": 1.2
+      }
+    },
+    "Mohan Estate": {
+      "lat": 28.51938,
+      "lng": 77.29388,
+      "line": "violet line",
+      "neighbors": {
+        "Sarita Vihar": 1.2,
+        "Tughlakabad": 1.9
+      }
+    },
+    "Tughlakabad": {
+      "lat": 28.50254,
+      "lng": 77.2993,
+      "line": "violet line",
+      "neighbors": {
+        "Mohan Estate": 1.9,
+        "Badarpur Border": 1.1
+      }
+    },
+    "Badarpur Border": {
+      "lat": 28.49334,
+      "lng": 77.30307,
+      "line": "violet line",
+      "neighbors": {
+        "Tughlakabad": 1.1,
+        "Sarai": 2.5
+      }
+    },
+    "Sarai": {
+      "lat": 28.6517178,
+      "lng": 77.2219388,
+      "line": "violet line",
+      "neighbors": {
+        "Badarpur Border": 2.5,
+        "N.H.P.C. Chowk": 1.6
+      }
+    },
+    "N.H.P.C. Chowk": {
+      "lat": 28.45769,
+      "lng": 77.2219388,
+      "line": "violet line",
+      "neighbors": {
+        "Sarai": 1.6,
+        "Mewala Maharajpur": 0.9
+      }
+    },
+    "Mewala Maharajpur": {
+      "lat": 28.4418747,
+      "lng": 77.3023001,
+      "line": "violet line",
+      "neighbors": {
+        "N.H.P.C. Chowk": 0.9,
+        "Sector 28 Faridabad": 1.2
+      }
+    },
+    "Sector 28 Faridabad": {
+      "lat": 28.54525655,
+      "lng": 77.03257609,
+      "line": "violet line",
+      "neighbors": {
+        "Mewala Maharajpur": 1.2,
+        "Badkal Mor": 1.7
+      }
+    },
+    "Badkal Mor": {
+      "lat": 28.422814,
+      "lng": 77.310278,
+      "line": "violet line",
+      "neighbors": {
+        "Sector 28 Faridabad": 1.7,
+        "Old Faridabad": 1.2
+      }
+    },
+    "Old Faridabad": {
+      "lat": 28.4808629,
+      "lng": 77.0848883,
+      "line": "violet line",
+      "neighbors": {
+        "Badkal Mor": 1.2,
+        "Neelam Chowk Ajronda": 1.6
+      }
+    },
+    "Neelam Chowk Ajronda": {
+      "lat": 28.3974824,
+      "lng": 77.3123599,
+      "line": "violet line",
+      "neighbors": {
+        "Old Faridabad": 1.6,
+        "Bata Chowk": 1.3
+      }
+    },
+    "Bata Chowk": {
+      "lat": 28.3858361,
+      "lng": 77.313462,
+      "line": "violet line",
+      "neighbors": {
+        "Neelam Chowk Ajronda": 1.3,
+        "Escorts Mujesar": 1.8
+      }
+    },
+    "Escorts Mujesar": {
+      "lat": 28.3702344,
+      "lng": 77.3149203,
+      "line": "violet line",
+      "neighbors": {
+        "Bata Chowk": 1.8,
+        "Sant Surdas - Sihi": 1.7
+      }
+    },
+    "Sant Surdas - Sihi": {
+      "lat": 28.3546513,
+      "lng": 77.3162264,
+      "line": "violet line",
+      "neighbors": {
+        "Escorts Mujesar": 1.7,
+        "Raja Nahar Singh": 1.7
+      }
+    },
+    "Raja Nahar Singh": {
+      "lat": 28.3400192,
+      "lng": 77.3164281,
+      "line": "violet line",
+      "neighbors": {
+        "Sant Surdas - Sihi": 1.7
+      }
+    }
+  }
+}

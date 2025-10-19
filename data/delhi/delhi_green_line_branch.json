@@ -1,0 +1,29 @@
+{
+  "stations": {
+    "Ashok Park Main": {
+      "lat": 28.67292,
+      "lng": 77.1442,
+      "line": "green line branch",
+      "neighbors": {
+        "Satguru Ram Singh Marg": 1.1
+      }
+    },
+    "Satguru Ram Singh Marg": {
+      "lat": 28.66199,
+      "lng": 77.15748,
+      "line": "green line branch",
+      "neighbors": {
+        "Ashok Park Main": 1.1,
+        "Kirti Nagar [Conn: Blue]": 1.0
+      }
+    },
+    "Kirti Nagar [Conn: Blue]": {
+      "lat": 28.65575,
+      "lng": 77.15057,
+      "line": "green line branch",
+      "neighbors": {
+        "Satguru Ram Singh Marg": 1.0
+      }
+    }
+  }
+}

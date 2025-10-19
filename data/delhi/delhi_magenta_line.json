@@ -1,0 +1,227 @@
+{
+  "stations": {
+    "Janak Puri West [Conn: Blue]": {
+      "lat": 28.6289502,
+      "lng": 77.0779235,
+      "line": "magenta line",
+      "neighbors": {
+        "Dabri Mor - Janakpuri South": 2.0
+      }
+    },
+    "Dabri Mor - Janakpuri South": {
+      "lat": 28.6157555,
+      "lng": 77.085178,
+      "line": "magenta line",
+      "neighbors": {
+        "Janak Puri West [Conn: Blue]": 2.0,
+        "Dashrath Puri": 1.1
+      }
+    },
+    "Dashrath Puri": {
+      "lat": 28.6018751,
+      "lng": 77.0823561,
+      "line": "magenta line",
+      "neighbors": {
+        "Dabri Mor - Janakpuri South": 1.1,
+        "Palam": 1.5
+      }
+    },
+    "Palam": {
+      "lat": 28.5918933,
+      "lng": 77.0828242,
+      "line": "magenta line",
+      "neighbors": {
+        "Dashrath Puri": 1.5,
+        "Sadar Bazaar Cantonment": 2.6
+      }
+    },
+    "Sadar Bazaar Cantonment": {
+      "lat": 28.5771509,
+      "lng": 77.1111533,
+      "line": "magenta line",
+      "neighbors": {
+        "Palam": 2.6,
+        "Terminal 1 IGI Airport": 1.7
+      }
+    },
+    "Terminal 1 IGI Airport": {
+      "lat": 28.5771509,
+      "lng": 77.1111533,
+      "line": "magenta line",
+      "neighbors": {
+        "Sadar Bazaar Cantonment": 1.7,
+        "Shankar Vihar": 1.8
+      }
+    },
+    "Shankar Vihar": {
+      "lat": 28.55743865,
+      "lng": 77.13966549,
+      "line": "magenta line",
+      "neighbors": {
+        "Terminal 1 IGI Airport": 1.8,
+        "Vasant Vihar": 2.1
+      }
+    },
+    "Vasant Vihar": {
+      "lat": 28.56069055,
+      "lng": 77.16079073,
+      "line": "magenta line",
+      "neighbors": {
+        "Shankar Vihar": 2.1,
+        "Munirka": 1.2
+      }
+    },
+    "Munirka": {
+      "lat": 28.554886,
+      "lng": 77.1710841,
+      "line": "magenta line",
+      "neighbors": {
+        "Vasant Vihar": 1.2,
+        "RK Puram": 1.4
+      }
+    },
+    "RK Puram": {
+      "lat": 28.5514261,
+      "lng": 77.1847012,
+      "line": "magenta line",
+      "neighbors": {
+        "Munirka": 1.4,
+        "IIT Delhi": 0.9
+      }
+    },
+    "IIT Delhi": {
+      "lat": 28.544788,
+      "lng": 77.18987,
+      "line": "magenta line",
+      "neighbors": {
+        "RK Puram": 0.9,
+        "Hauz Khas [Conn: Yellow]": 1.2
+      }
+    },
+    "Hauz Khas [Conn: Yellow]": {
+      "lat": 28.5442564,
+      "lng": 77.2067072,
+      "line": "magenta line",
+      "neighbors": {
+        "IIT Delhi": 1.2,
+        "Panchsheel Park": 1.5
+      }
+    },
+    "Panchsheel Park": {
+      "lat": 28.5433525,
+      "lng": 77.2140757,
+      "line": "magenta line",
+      "neighbors": {
+        "Hauz Khas [Conn: Yellow]": 1.5,
+        "Chirag Delhi": 0.9
+      }
+    },
+    "Chirag Delhi": {
+      "lat": 28.5381411,
+      "lng": 77.2280694,
+      "line": "magenta line",
+      "neighbors": {
+        "Panchsheel Park": 0.9,
+        "Greater Kailash": 0.9
+      }
+    },
+    "Greater Kailash": {
+      "lat": 28.5418777,
+      "lng": 77.2384553,
+      "line": "magenta line",
+      "neighbors": {
+        "Chirag Delhi": 0.9,
+        "Nehru Enclave": 1.3
+      }
+    },
+    "Nehru Enclave": {
+      "lat": 28.5460584,
+      "lng": 77.2515057,
+      "line": "magenta line",
+      "neighbors": {
+        "Greater Kailash": 1.3,
+        "Kalkaji Mandir [Conn: Violet]": 0.9
+      }
+    },
+    "Kalkaji Mandir [Conn: Violet]": {
+      "lat": 28.5497752,
+      "lng": 77.2606671,
+      "line": "magenta line",
+      "neighbors": {
+        "Nehru Enclave": 0.9,
+        "Okhla NSIC": 0.8
+      }
+    },
+    "Okhla NSIC": {
+      "lat": 28.5544828,
+      "lng": 77.2648487,
+      "line": "magenta line",
+      "neighbors": {
+        "Kalkaji Mandir [Conn: Violet]": 0.8,
+        "Sukhdev Vihar": 1.1
+      }
+    },
+    "Sukhdev Vihar": {
+      "lat": 28.5597477,
+      "lng": 77.2749004,
+      "line": "magenta line",
+      "neighbors": {
+        "Okhla NSIC": 1.1,
+        "JAMIA MILLIA ISLAMIA": 1.2
+      }
+    },
+    "JAMIA MILLIA ISLAMIA": {
+      "lat": 28.55849025,
+      "lng": 77.28116474,
+      "line": "magenta line",
+      "neighbors": {
+        "Sukhdev Vihar": 1.2,
+        "Okhla Vihar": 0.5
+      }
+    },
+    "Okhla Vihar": {
+      "lat": 28.5613002,
+      "lng": 77.2919304,
+      "line": "magenta line",
+      "neighbors": {
+        "JAMIA MILLIA ISLAMIA": 0.5,
+        "Jasola Vihar Shaheen Bagh": 1.8
+      }
+    },
+    "Jasola Vihar Shaheen Bagh": {
+      "lat": 28.5458279,
+      "lng": 77.2966578,
+      "line": "magenta line",
+      "neighbors": {
+        "Okhla Vihar": 1.8,
+        "Kalindi Kunj": 1.4
+      }
+    },
+    "Kalindi Kunj": {
+      "lat": 28.5452187,
+      "lng": 77.3059891,
+      "line": "magenta line",
+      "neighbors": {
+        "Jasola Vihar Shaheen Bagh": 1.4,
+        "Okhla Bird Sanctuary": 1.6
+      }
+    },
+    "Okhla Bird Sanctuary": {
+      "lat": 28.5529418,
+      "lng": 77.321595,
+      "line": "magenta line",
+      "neighbors": {
+        "Kalindi Kunj": 1.6,
+        "Botanical Garden [Conn: Blue]": 1.7
+      }
+    },
+    "Botanical Garden [Conn: Blue]": {
+      "lat": 28.5638964,
+      "lng": 77.334332,
+      "line": "magenta line",
+      "neighbors": {
+        "Okhla Bird Sanctuary": 1.7
+      }
+    }
+  }
+}

@@ -1,0 +1,191 @@
+{
+  "stations": {
+    "Noida Sector 51 [Conn: Blue]": {
+      "lat": 28.5857,
+      "lng": 77.3753,
+      "line": "aqua line",
+      "neighbors": {
+        "Noida Sector 50": 1.3
+      }
+    },
+    "Noida Sector 50": {
+      "lat": 28.535517,
+      "lng": 77.391029,
+      "line": "aqua line",
+      "neighbors": {
+        "Noida Sector 51 [Conn: Blue]": 1.3,
+        "Noida Sector 76": 1.0
+      }
+    },
+    "Noida Sector 76": {
+      "lat": 28.568746,
+      "lng": 77.382685,
+      "line": "aqua line",
+      "neighbors": {
+        "Noida Sector 50": 1.0,
+        "Noida Sector 101": 1.1
+      }
+    },
+    "Noida Sector 101": {
+      "lat": 28.556402,
+      "lng": 77.384798,
+      "line": "aqua line",
+      "neighbors": {
+        "Noida Sector 76": 1.1,
+        "Noida Sector 81": 0.9
+      }
+    },
+    "Noida Sector 81": {
+      "lat": 28.6225753,
+      "lng": 77.3743146,
+      "line": "aqua line",
+      "neighbors": {
+        "Noida Sector 101": 0.9,
+        "NSEZ Noida": 2.0
+      }
+    },
+    "NSEZ Noida": {
+      "lat": 28.535517,
+      "lng": 77.391029,
+      "line": "aqua line",
+      "neighbors": {
+        "Noida Sector 81": 2.0,
+        "Noida Sector 83": 1.1
+      }
+    },
+    "Noida Sector 83": {
+      "lat": 28.524115,
+      "lng": 77.397244,
+      "line": "aqua line",
+      "neighbors": {
+        "NSEZ Noida": 1.1,
+        "Noida Sector 137": 1.5
+      }
+    },
+    "Noida Sector 137": {
+      "lat": 28.5090789,
+      "lng": 77.409015,
+      "line": "aqua line",
+      "neighbors": {
+        "Noida Sector 83": 1.5,
+        "Noida Sector 142": 1.6
+      }
+    },
+    "Noida Sector 142": {
+      "lat": 28.4758348,
+      "lng": 77.55447875,
+      "line": "aqua line",
+      "neighbors": {
+        "Noida Sector 137": 1.6,
+        "Noida Sector 143": 1.0
+      }
+    },
+    "Noida Sector 143": {
+      "lat": 28.50266325,
+      "lng": 77.42625566,
+      "line": "aqua line",
+      "neighbors": {
+        "Noida Sector 142": 1.0,
+        "Noida Sector 144": 1.4
+      }
+    },
+    "Noida Sector 144": {
+      "lat": 28.4089049,
+      "lng": 76.9155232,
+      "line": "aqua line",
+      "neighbors": {
+        "Noida Sector 143": 1.4,
+        "Noida Sector 145": 1.2
+      }
+    },
+    "Noida Sector 145": {
+      "lat": 28.4089049,
+      "lng": 76.9155232,
+      "line": "aqua line",
+      "neighbors": {
+        "Noida Sector 144": 1.2,
+        "Noida Sector 146": 1.7
+      }
+    },
+    "Noida Sector 146": {
+      "lat": 28.4082289,
+      "lng": 76.963024,
+      "line": "aqua line",
+      "neighbors": {
+        "Noida Sector 145": 1.7,
+        "Noida Sector 147": 1.5
+      }
+    },
+    "Noida Sector 147": {
+      "lat": 28.4089049,
+      "lng": 76.9155232,
+      "line": "aqua line",
+      "neighbors": {
+        "Noida Sector 146": 1.5,
+        "Noida Sector 148": 1.6
+      }
+    },
+    "Noida Sector 148": {
+      "lat": 28.4758348,
+      "lng": 77.55447875,
+      "line": "aqua line",
+      "neighbors": {
+        "Noida Sector 147": 1.6,
+        "Knowledge Park II": 2.5
+      }
+    },
+    "Knowledge Park II": {
+      "lat": 28.4568669,
+      "lng": 77.50005403,
+      "line": "aqua line",
+      "neighbors": {
+        "Noida Sector 148": 2.5,
+        "Pari Chowk Greater Noida": 1.1
+      }
+    },
+    "Pari Chowk Greater Noida": {
+      "lat": 28.4631285,
+      "lng": 77.50809851,
+      "line": "aqua line",
+      "neighbors": {
+        "Knowledge Park II": 1.1,
+        "Alpha 1 Greater Noida": 0.9
+      }
+    },
+    "Alpha 1 Greater Noida": {
+      "lat": 28.4709,
+      "lng": 77.5127,
+      "line": "aqua line",
+      "neighbors": {
+        "Pari Chowk Greater Noida": 0.9,
+        "Delta 1 Greater Noida": 1.5
+      }
+    },
+    "Delta 1 Greater Noida": {
+      "lat": 28.474388,
+      "lng": 77.50399,
+      "line": "aqua line",
+      "neighbors": {
+        "Alpha 1 Greater Noida": 1.5,
+        "GNIDA Office": 1.3
+      }
+    },
+    "GNIDA Office": {
+      "lat": 28.474388,
+      "lng": 77.50399,
+      "line": "aqua line",
+      "neighbors": {
+        "Delta 1 Greater Noida": 1.3,
+        "Depot Greater Noida": 0.9
+      }
+    },
+    "Depot Greater Noida": {
+      "lat": 28.474388,
+      "lng": 77.50399,
+      "line": "aqua line",
+      "neighbors": {
+        "GNIDA Office": 0.9
+      }
+    }
+  }
+}

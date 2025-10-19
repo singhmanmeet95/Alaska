@@ -1,0 +1,101 @@
+{
+  "stations": {
+    "Sector 55-66": {
+      "lat": 28.4936,
+      "lng": 77.0935,
+      "line": "rapid metro",
+      "neighbors": {
+        "Sector 54 Chowk": 1.1
+      }
+    },
+    "Sector 54 Chowk": {
+      "lat": 28.4936,
+      "lng": 77.0935,
+      "line": "rapid metro",
+      "neighbors": {
+        "Sector 55-66": 1.1,
+        "Sector 53-54": 1.5
+      }
+    },
+    "Sector 53-54": {
+      "lat": 28.4936,
+      "lng": 77.0935,
+      "line": "rapid metro",
+      "neighbors": {
+        "Sector 54 Chowk": 1.5,
+        "Sector 42-43": 1.3
+      }
+    },
+    "Sector 42-43": {
+      "lat": 28.4936,
+      "lng": 77.0935,
+      "line": "rapid metro",
+      "neighbors": {
+        "Sector 53-54": 1.3,
+        "DLF Phase 1": 1.6
+      }
+    },
+    "DLF Phase 1": {
+      "lat": 28.4936,
+      "lng": 77.0935,
+      "line": "rapid metro",
+      "neighbors": {
+        "Sector 42-43": 1.6,
+        "Sikandarpur [Conn: Yellow]": 1.1
+      }
+    },
+    "Sikandarpur [Conn: Yellow]": {
+      "lat": 28.4936,
+      "lng": 77.0935,
+      "line": "rapid metro",
+      "neighbors": {
+        "DLF Phase 1": 1.1,
+        "DLF Phase 2": 0.7
+      }
+    },
+    "DLF Phase 2": {
+      "lat": 28.4936,
+      "lng": 77.0935,
+      "line": "rapid metro",
+      "neighbors": {
+        "Sikandarpur [Conn: Yellow]": 0.7,
+        "Belvedere Towers": 0.7
+      }
+    },
+    "Belvedere Towers": {
+      "lat": 28.4936,
+      "lng": 77.0935,
+      "line": "rapid metro",
+      "neighbors": {
+        "DLF Phase 2": 0.7,
+        "Cyber City": 0.6
+      }
+    },
+    "Cyber City": {
+      "lat": 28.4936,
+      "lng": 77.0935,
+      "line": "rapid metro",
+      "neighbors": {
+        "Belvedere Towers": 0.6,
+        "Moulsari Avenue": 0.6
+      }
+    },
+    "Moulsari Avenue": {
+      "lat": 28.4936,
+      "lng": 77.0935,
+      "line": "rapid metro",
+      "neighbors": {
+        "Cyber City": 0.6,
+        "DLF Phase 3": 0.8
+      }
+    },
+    "DLF Phase 3": {
+      "lat": 28.4936,
+      "lng": 77.0935,
+      "line": "rapid metro",
+      "neighbors": {
+        "Moulsari Avenue": 0.8
+      }
+    }
+  }
+}

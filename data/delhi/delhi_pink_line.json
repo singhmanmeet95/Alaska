@@ -1,0 +1,344 @@
+{
+  "stations": {
+    "Majlis Park": {
+      "lat": 28.7244312,
+      "lng": 77.181964,
+      "line": "pink line",
+      "neighbors": {
+        "Azadpur [Conn: Yellow]": 2.1
+      }
+    },
+    "Azadpur [Conn: Yellow]": {
+      "lat": 28.7076568,
+      "lng": 77.1755473,
+      "line": "pink line",
+      "neighbors": {
+        "Majlis Park": 2.1,
+        "Shalimar Bagh": 1.6
+      }
+    },
+    "Shalimar Bagh": {
+      "lat": 28.71745265,
+      "lng": 77.15086655,
+      "line": "pink line",
+      "neighbors": {
+        "Azadpur [Conn: Yellow]": 1.6,
+        "Netaji Subash Place [Conn: Red]": 1.4
+      }
+    },
+    "Netaji Subash Place [Conn: Red]": {
+      "lat": 28.69605175,
+      "lng": 77.15264042,
+      "line": "pink line",
+      "neighbors": {
+        "Shalimar Bagh": 1.4,
+        "Shakurpur": 1.2
+      }
+    },
+    "Shakurpur": {
+      "lat": 28.6857668,
+      "lng": 77.1496094,
+      "line": "pink line",
+      "neighbors": {
+        "Netaji Subash Place [Conn: Red]": 1.2,
+        "Punjabi Bagh West": 1.4
+      }
+    },
+    "Punjabi Bagh West": {
+      "lat": 28.6703201,
+      "lng": 77.1420875,
+      "line": "pink line",
+      "neighbors": {
+        "Shakurpur": 1.4,
+        "ESI BASAI DARAPUR": 2.5
+      }
+    },
+    "ESI BASAI DARAPUR": {
+      "lat": 28.6580737,
+      "lng": 77.1272678,
+      "line": "pink line",
+      "neighbors": {
+        "Punjabi Bagh West": 2.5,
+        "Rajouri Garden [Conn: Blue]": 1.1
+      }
+    },
+    "Rajouri Garden [Conn: Blue]": {
+      "lat": 28.6421518,
+      "lng": 77.11606038,
+      "line": "pink line",
+      "neighbors": {
+        "ESI BASAI DARAPUR": 1.1,
+        "Maya Puri": 1.5
+      }
+    },
+    "Maya Puri": {
+      "lat": 28.6371795,
+      "lng": 77.1297333,
+      "line": "pink line",
+      "neighbors": {
+        "Rajouri Garden [Conn: Blue]": 1.5,
+        "Naraina Vihar": 1.5
+      }
+    },
+    "Naraina Vihar": {
+      "lat": 28.6273375,
+      "lng": 77.1403175,
+      "line": "pink line",
+      "neighbors": {
+        "Maya Puri": 1.5,
+        "Delhi Cantt": 1.8
+      }
+    },
+    "Delhi Cantt": {
+      "lat": 28.5938331,
+      "lng": 77.13497891,
+      "line": "pink line",
+      "neighbors": {
+        "Naraina Vihar": 1.8,
+        "Durgabai Deshmukh South Campus [Conn: Orange]": 3.6
+      }
+    },
+    "Durgabai Deshmukh South Campus [Conn: Orange]": {
+      "lat": 28.5894384,
+      "lng": 77.1690817,
+      "line": "pink line",
+      "neighbors": {
+        "Delhi Cantt": 3.6,
+        "Sir Vishweshwaraiah Moti Bagh": 1.3
+      }
+    },
+    "Sir Vishweshwaraiah Moti Bagh": {
+      "lat": 28.5785326,
+      "lng": 77.175741,
+      "line": "pink line",
+      "neighbors": {
+        "Durgabai Deshmukh South Campus [Conn: Orange]": 1.3,
+        "Bhikaji Cama Place": 1.6
+      }
+    },
+    "Bhikaji Cama Place": {
+      "lat": 28.56790025,
+      "lng": 77.18701648,
+      "line": "pink line",
+      "neighbors": {
+        "Sir Vishweshwaraiah Moti Bagh": 1.6,
+        "Sarojini Nagar": 1.2
+      }
+    },
+    "Sarojini Nagar": {
+      "lat": 28.5741575,
+      "lng": 77.1953703,
+      "line": "pink line",
+      "neighbors": {
+        "Bhikaji Cama Place": 1.2,
+        "Dilli Haat INA [Conn: Yellow]": 1.1
+      }
+    },
+    "Dilli Haat INA [Conn: Yellow]": {
+      "lat": 28.57440755,
+      "lng": 77.21024148,
+      "line": "pink line",
+      "neighbors": {
+        "Sarojini Nagar": 1.1,
+        "South Extension": 1.2
+      }
+    },
+    "South Extension": {
+      "lat": 28.6517178,
+      "lng": 77.2219388,
+      "line": "pink line",
+      "neighbors": {
+        "Dilli Haat INA [Conn: Yellow]": 1.2,
+        "Lajpat Nagar [Conn: Violet]": 1.6
+      }
+    },
+    "Lajpat Nagar [Conn: Violet]": {
+      "lat": 28.57079,
+      "lng": 77.23653,
+      "line": "pink line",
+      "neighbors": {
+        "South Extension": 1.6,
+        "Vinobapuri": 1.4
+      }
+    },
+    "Vinobapuri": {
+      "lat": 28.5669763,
+      "lng": 77.2491906,
+      "line": "pink line",
+      "neighbors": {
+        "Lajpat Nagar [Conn: Violet]": 1.4,
+        "Ashram": 1.2
+      }
+    },
+    "Ashram": {
+      "lat": 28.5724231,
+      "lng": 77.2585979,
+      "line": "pink line",
+      "neighbors": {
+        "Vinobapuri": 1.2,
+        "Sarai Kale Khan Hazrat Nizamuddin": 1.9
+      }
+    },
+    "Sarai Kale Khan Hazrat Nizamuddin": {
+      "lat": 28.5887494,
+      "lng": 77.2572494,
+      "line": "pink line",
+      "neighbors": {
+        "Ashram": 1.9,
+        "Mayur Vihar Phase-1 [Conn: Blue]": 3.6
+      }
+    },
+    "Mayur Vihar Phase-1 [Conn: Blue]": {
+      "lat": 28.603133,
+      "lng": 77.2925892,
+      "line": "pink line",
+      "neighbors": {
+        "Sarai Kale Khan Hazrat Nizamuddin": 3.6,
+        "Mayur Vihar Pocket I": 0.8
+      }
+    },
+    "Mayur Vihar Pocket I": {
+      "lat": 28.6058619,
+      "lng": 77.2987023,
+      "line": "pink line",
+      "neighbors": {
+        "Mayur Vihar Phase-1 [Conn: Blue]": 0.8,
+        "Trilokpuri Sanjay Lake": 1.3
+      }
+    },
+    "Trilokpuri Sanjay Lake": {
+      "lat": 28.613453,
+      "lng": 77.3088549,
+      "line": "pink line",
+      "neighbors": {
+        "Mayur Vihar Pocket I": 1.3,
+        "Vinod Nagar East": 0.8
+      }
+    },
+    "Vinod Nagar East": {
+      "lat": 28.6200437,
+      "lng": 77.3054069,
+      "line": "pink line",
+      "neighbors": {
+        "Trilokpuri Sanjay Lake": 0.8,
+        "Mandawali - West Vinod Nagar": 0.6
+      }
+    },
+    "Mandawali - West Vinod Nagar": {
+      "lat": 28.6249712,
+      "lng": 77.3044906,
+      "line": "pink line",
+      "neighbors": {
+        "Vinod Nagar East": 0.6,
+        "IP Extension": 1.0
+      }
+    },
+    "IP Extension": {
+      "lat": 28.6288991,
+      "lng": 77.31019788,
+      "line": "pink line",
+      "neighbors": {
+        "Mandawali - West Vinod Nagar": 1.0,
+        "Anand Vihar [Conn: Blue]": 1.6
+      }
+    },
+    "Anand Vihar [Conn: Blue]": {
+      "lat": 28.6467533,
+      "lng": 77.3180037,
+      "line": "pink line",
+      "neighbors": {
+        "IP Extension": 1.6,
+        "Karkar Duma [Conn: Blue]": 1.0
+      }
+    },
+    "Karkar Duma [Conn: Blue]": {
+      "lat": 28.6491622,
+      "lng": 77.30620811,
+      "line": "pink line",
+      "neighbors": {
+        "Anand Vihar [Conn: Blue]": 1.0,
+        "Karkarduma Court": 1.1
+      }
+    },
+    "Karkarduma Court": {
+      "lat": 28.6536001,
+      "lng": 77.2957877,
+      "line": "pink line",
+      "neighbors": {
+        "Karkar Duma [Conn: Blue]": 1.1,
+        "Krishna Nagar": 0.7
+      }
+    },
+    "Krishna Nagar": {
+      "lat": 28.6578461,
+      "lng": 77.2901853,
+      "line": "pink line",
+      "neighbors": {
+        "Karkarduma Court": 0.7,
+        "East Azad Nagar": 1.0
+      }
+    },
+    "East Azad Nagar": {
+      "lat": 28.6646964,
+      "lng": 77.284881,
+      "line": "pink line",
+      "neighbors": {
+        "Krishna Nagar": 1.0,
+        "Welcome [Conn: Red]": 1.1
+      }
+    },
+    "Welcome [Conn: Red]": {
+      "lat": 28.6718,
+      "lng": 77.27756,
+      "line": "pink line",
+      "neighbors": {
+        "East Azad Nagar": 1.1,
+        "Jaffrabad": 1.2
+      }
+    },
+    "Jaffrabad": {
+      "lat": 28.6826822,
+      "lng": 77.2748055,
+      "line": "pink line",
+      "neighbors": {
+        "Welcome [Conn: Red]": 1.2,
+        "Maujpur": 1.1
+      }
+    },
+    "Maujpur": {
+      "lat": 28.69197845,
+      "lng": 77.27962397,
+      "line": "pink line",
+      "neighbors": {
+        "Jaffrabad": 1.1,
+        "Gokulpuri": 1.3
+      }
+    },
+    "Gokulpuri": {
+      "lat": 28.7024752,
+      "lng": 77.2861253,
+      "line": "pink line",
+      "neighbors": {
+        "Maujpur": 1.3,
+        "Johri Enclave": 1.3
+      }
+    },
+    "Johri Enclave": {
+      "lat": 28.71288,
+      "lng": 77.2861253,
+      "line": "pink line",
+      "neighbors": {
+        "Gokulpuri": 1.3,
+        "Shiv Vihar": 0.9
+      }
+    },
+    "Shiv Vihar": {
+      "lat": 28.61753755,
+      "lng": 77.03543017,
+      "line": "pink line",
+      "neighbors": {
+        "Johri Enclave": 0.9
+      }
+    }
+  }
+}
