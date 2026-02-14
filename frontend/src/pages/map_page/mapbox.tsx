@@ -28,8 +28,11 @@ export default function MapMetro() {
 
   return (
     <div className="relative">
+      <div className="z-100 bg-black">
+
       <MapOverlay />
-      <div ref={containerRef} style={{ height: "100vh", width: "100%" }}></div>
+      </div>
+      <div ref={containerRef} style={{ height: "100vh", width: "100%" }} className="z-80"></div>
     </div>
   );
 }

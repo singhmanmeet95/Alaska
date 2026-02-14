@@ -33,8 +33,10 @@ export function useMapInitialization() {
       opacity: MAP_CONFIG.TILE_LAYER_OPACITY,
     }).addTo(newMap);
 
-    // Create route layer
-    const newRouteGroup = L.layerGroup().addTo(newMap);
+    // Create custom pane for the route path (below markers but above edges)
+    newMap.createPane("pathPane");
+    newMap.getPane("pathPane")!.style.zIndex = STYLE_CONFIG.PATH_PANE_Z_INDEX;
+    const newRouteGroup = L.layerGroup([], { pane: "pathPane" }).addTo(newMap);
     setRouteGroup(newRouteGroup);
 
     // Create custom pane for edges with lower z-index
