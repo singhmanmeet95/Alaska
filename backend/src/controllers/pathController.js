@@ -91,12 +91,18 @@ class SuffixAutomaton {
   }
 }
 
+// ---------- Normalize station name ----------
+// DB has "Rajiv_Chowk", user types "Rajiv Chowk" — normalize both to same format
+function normalizeStation(name) {
+  return name.replace(/_/g, " ").toLowerCase().trim();
+}
+
 // ---------- Sorting Function ----------
 export function sortTripsByTripId(trips, queryTripId) {
   const queryTrip = trips.find((t) => t.id === queryTripId);
   if (!queryTrip) return trips; // agar trip id invalid hai to same data return karo
 
-  const queryTokens = queryTrip.stationList;
+  const queryTokens = queryTrip.stationList.map(normalizeStation);
   const idmap = new Map();
   let nextId = 1;
 
@@ -110,7 +116,8 @@ export function sortTripsByTripId(trips, queryTripId) {
   }
 
   const scoredTrips = trips.map((trip) => {
-    const lcsLen = sa.longestCommonWithRow(trip.stationList, idmap);
+    const normalizedStations = trip.stationList.map(normalizeStation);
+    const lcsLen = sa.longestCommonWithRow(normalizedStations, idmap);
     return { ...trip, lcsLen };
   });
 
@@ -151,6 +158,86 @@ router.get("/sorted_trips", async (req, res) => {
     });
   } catch (error) {
     console.error("Error in sorted_trips:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ---------- POST: User sends custom stationList, get matching trips ----------
+router.post("/match_trips", async (req, res) => {
+  try {
+    const { stationList } = req.body;
+
+    // Validation
+    if (
+      !stationList ||
+      !Array.isArray(stationList) ||
+      stationList.length === 0
+    ) {
+      return res.status(400).json({
+        success: false,
+        error:
+          "stationList is required and must be a non-empty array of station names",
+      });
+    }
+
+    // Fetch all existing trips from database
+    const trips = await prisma.trip.findMany({
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    if (trips.length === 0) {
+      return res.json({
+        success: true,
+        data: [],
+        message: "No existing trips found in the database to compare against",
+      });
+    }
+
+    // Normalize user's input stationList
+    const normalizedInput = stationList.map(normalizeStation);
+
+    // Build SAM on normalized user input
+    const idmap = new Map();
+    let nextId = 1;
+    for (const tok of normalizedInput) {
+      if (!idmap.has(tok)) idmap.set(tok, nextId++);
+    }
+
+    const sa = new SuffixAutomaton();
+    for (const tok of normalizedInput) {
+      sa.extend(idmap.get(tok));
+    }
+
+    // Score each existing trip by LCS with user's stationList (normalize DB stations too)
+    const scoredTrips = trips.map((trip) => {
+      const normalizedStations = trip.stationList.map(normalizeStation);
+      const lcsLen = sa.longestCommonWithRow(normalizedStations, idmap);
+      return { ...trip, lcsLen };
+    });
+
+    // Sort by LCS length descending
+    scoredTrips.sort((a, b) => b.lcsLen - a.lcsLen);
+
+    res.json({
+      success: true,
+      data: scoredTrips,
+      query: {
+        stationList,
+        totalStations: stationList.length,
+      },
+      message: `Found ${scoredTrips.length} trips, sorted by route similarity`,
+    });
+  } catch (error) {
+    console.error("Error in match_trips:", error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
