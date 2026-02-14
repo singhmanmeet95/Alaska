@@ -6,6 +6,31 @@ import type { Message } from "./types";
 export default function ChatPage() {
   const [activeChat, setActiveChat] = useState<string | null>(null);
   const [showSidebar, setShowSidebar] = useState(true);
+  const [sidebarWidth, setSidebarWidth] = useState(384);
+
+  // Using ref for resizing flag to avoid closure staleness if used in global handlers,
+  // though we only attach handlers on mousedown.
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const startX = e.clientX;
+    const startWidth = sidebarWidth;
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      const newWidth = startWidth + (moveEvent.clientX - startX);
+      setSidebarWidth(Math.max(280, Math.min(newWidth, 600)));
+    };
+
+    const handleMouseUp = () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+      document.body.style.cursor = "default";
+    };
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+    document.body.style.cursor = "col-resize";
+  };
 
   // Mock messages for demonstration
   const [messages, setMessages] = useState<Record<string, Message[]>>({
@@ -37,7 +62,7 @@ export default function ChatPage() {
       {
         id: "4",
         senderId: mockCurrentUser.id,
-        content: "Congratulations! That's amazing news! 🎉",
+        content: "Congratulations! That's amazing news!",
         timestamp: new Date(Date.now() - 3 * 60000),
         status: "delivered",
         type: "text",
@@ -118,7 +143,7 @@ export default function ChatPage() {
         [activeChat]: prev[activeChat].map((msg) =>
           msg.id === newMessage.id
             ? { ...msg, status: "delivered" as const }
-            : msg
+            : msg,
         ),
       }));
     }, 1000);
@@ -127,7 +152,7 @@ export default function ChatPage() {
       setMessages((prev) => ({
         ...prev,
         [activeChat]: prev[activeChat].map((msg) =>
-          msg.id === newMessage.id ? { ...msg, status: "read" as const } : msg
+          msg.id === newMessage.id ? { ...msg, status: "read" as const } : msg,
         ),
       }));
     }, 2000);
@@ -143,17 +168,27 @@ export default function ChatPage() {
   const currentMessages = activeChat ? messages[activeChat] || [] : [];
 
   return (
-    <div className="h-screen flex overflow-hidden bg-gray-100">
+    <div
+      className="h-screen flex overflow-hidden bg-zinc-950"
+      style={{ "--sidebar-width": `${sidebarWidth}px` } as React.CSSProperties}
+    >
       {/* Sidebar */}
       <div
         className={`${
-          showSidebar ? "w-full md:w-96" : "hidden md:block md:w-96"
-        } transition-all duration-300 border-r border-gray-200`}
+          showSidebar
+            ? "w-full md:w-[var(--sidebar-width)]"
+            : "hidden md:block md:w-[var(--sidebar-width)]"
+        } relative flex-shrink-0 border-r border-zinc-800 transition-none`}
       >
         <ChatSidebar
           chats={mockChats}
           activeChat={activeChat}
           onChatSelect={handleChatSelect}
+        />
+        {/* Resize Handle */}
+        <div
+          className="absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-zinc-600 active:bg-zinc-500 z-50 hidden md:block transition-colors"
+          onMouseDown={handleMouseDown}
         />
       </div>
 

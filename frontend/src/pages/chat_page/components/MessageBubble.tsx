@@ -27,14 +27,17 @@ export default function MessageBubble({
         isOwn ? "justify-end" : "justify-start"
       }`}
     >
-      {!isOwn && showAvatar && (
-        <img
-          src={avatar}
-          alt="Avatar"
-          className="w-8 h-8 rounded-full mr-2 mb-1"
-        />
+      {!isOwn && (
+        <div className="w-8 mr-2 flex-shrink-0">
+          {showAvatar && (
+            <img
+              src={avatar}
+              alt="Avatar"
+              className="w-8 h-8 rounded-full bg-zinc-800 object-cover"
+            />
+          )}
+        </div>
       )}
-      {!isOwn && !showAvatar && <div className="w-8 mr-2"></div>}
 
       <div
         className={`max-w-xs lg:max-w-md xl:max-w-lg ${
@@ -42,27 +45,29 @@ export default function MessageBubble({
         }`}
       >
         <div
-          className={`px-4 py-2 rounded-2xl shadow-md ${
+          className={`px-4 py-2.5 rounded-2xl shadow-sm ${
             isOwn
-              ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-br-none"
-              : "bg-white text-gray-800 rounded-bl-none border border-gray-200"
+              ? "bg-zinc-100 text-zinc-950 rounded-br-none border border-zinc-100"
+              : "bg-zinc-900 text-zinc-200 rounded-bl-none border border-zinc-800"
           }`}
         >
-          <p className="text-sm break-words">{message.content}</p>
+          <p className="text-sm break-words leading-relaxed">
+            {message.content}
+          </p>
         </div>
         <div
           className={`flex items-center mt-1 space-x-1 ${
             isOwn ? "justify-end" : "justify-start"
           }`}
         >
-          <span className="text-xs text-gray-400">
+          <span className="text-[10px] text-zinc-500 font-medium">
             {formatTime(message.timestamp)}
           </span>
           {isOwn && (
-            <span className="text-xs">
+            <span className="flex items-center">
               {message.status === "read" && (
                 <svg
-                  className="w-4 h-4 text-blue-500"
+                  className="w-3.5 h-3.5 text-emerald-500"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
@@ -72,7 +77,7 @@ export default function MessageBubble({
               )}
               {message.status === "delivered" && (
                 <svg
-                  className="w-4 h-4 text-gray-400"
+                  className="w-3.5 h-3.5 text-zinc-500"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
@@ -82,7 +87,7 @@ export default function MessageBubble({
               )}
               {message.status === "sent" && (
                 <svg
-                  className="w-4 h-4 text-gray-400"
+                  className="w-3.5 h-3.5 text-zinc-500"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >

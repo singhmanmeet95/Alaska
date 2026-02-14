@@ -13,7 +13,7 @@ export default function AuthBackground({ imageUrl }: AuthBackgroundProps) {
         }}
       ></div>
       {/* Dark overlay to soften the background */}
-      <div className="absolute inset-0 bg-black opacity-30"></div>
+      <div className="absolute inset-0 bg-zinc-950/90"></div>
     </>
   );
 }

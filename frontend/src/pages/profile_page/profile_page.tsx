@@ -13,11 +13,11 @@ export default function ProfilePage() {
   const [stats] = useState(mockStats);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 p-8">
       {/* Main Container */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto space-y-8">
         {/* Profile Header */}
-        <div className="bg-white rounded-2xl shadow-xl mb-6 overflow-hidden animate-fade-in">
+        <div className="bg-zinc-900/50 backdrop-blur border border-zinc-800 rounded-2xl overflow-hidden animate-fade-in">
           <ProfileHeader
             name={user.name}
             username={user.username}

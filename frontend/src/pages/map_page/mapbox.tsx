@@ -26,13 +26,25 @@ export default function MapMetro() {
   // Render the custom path
   usePathRenderer(routeGroup, customPath, stations);
 
+  // Handle path submission
+  const handleSubmit = () => {
+    console.log("Submitting path to backend:", customPath);
+    // Placeholder for API call
+    alert(
+      `Route confirmed! ${customPath.length} stations selected.\nCheck console for data array.`,
+    );
+  };
+
   return (
     <div className="relative">
-      <div className="z-100 bg-black">
-
-      <MapOverlay />
+      <div className="z-100">
+        <MapOverlay customPath={customPath} onSubmit={handleSubmit} />
       </div>
-      <div ref={containerRef} style={{ height: "100vh", width: "100%" }} className="z-80"></div>
+      <div
+        ref={containerRef}
+        style={{ height: "100vh", width: "100%" }}
+        className="z-80 bg-zinc-50"
+      ></div>
     </div>
   );
 }

@@ -10,11 +10,11 @@ const ProfilePage = lazy(() => import("./pages/profile_page/profile_page"));
 // Loading component for Suspense fallback
 function LoadingSpinner() {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-500 to-purple-600">
+    <div className="flex items-center justify-center min-h-screen bg-zinc-950">
       <div className="text-center">
         <div className="relative">
-          <div className="w-20 h-20 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <div className="mt-4 text-white text-xl font-semibold">
+          <div className="w-16 h-16 border-2 border-zinc-800 border-t-zinc-100 rounded-full animate-spin mx-auto"></div>
+          <div className="mt-6 text-zinc-400 text-sm font-medium tracking-wide uppercase">
             Loading Alaska...
           </div>
         </div>
@@ -52,32 +52,41 @@ function App() {
 // 404 Not Found Component
 function NotFound() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-100 to-gray-200">
-      <div className="text-center space-y-4">
-        <h1 className="text-9xl font-bold text-gray-800">404</h1>
-        <h2 className="text-3xl font-semibold text-gray-700">Page Not Found</h2>
-        <p className="text-gray-600">
-          The page you're looking for doesn't exist.
-        </p>
-        <div className="flex space-x-4 justify-center mt-6">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-zinc-950 text-zinc-100">
+      <div className="text-center space-y-6 max-w-md px-6">
+        <h1 className="text-8xl font-bold text-zinc-800 tracking-tighter">
+          404
+        </h1>
+        <div className="space-y-2">
+          <h2 className="text-2xl font-semibold text-zinc-100">
+            Page Not Found
+          </h2>
+          <p className="text-zinc-500">
+            The page you are looking for doesn't exist or has been moved.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-3 w-full pt-4">
           <a
-            href="/auth"
-            className="px-6 py-3 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors"
+            href="/profile"
+            className="w-full px-6 py-3 bg-white text-black font-medium rounded hover:bg-zinc-200 transition-colors text-center"
           >
-            Go to Login
+            Return Home
           </a>
-          <a
-            href="/map"
-            className="px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
-          >
-            Go to Map
-          </a>
-          <a
-            href="/chat"
-            className="px-6 py-3 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors"
-          >
-            Go to Chat
-          </a>
+          <div className="grid grid-cols-2 gap-3">
+            <a
+              href="/map"
+              className="px-4 py-2.5 bg-zinc-900 text-zinc-300 font-medium rounded border border-zinc-800 hover:bg-zinc-800 transition-colors text-center text-sm"
+            >
+              Map
+            </a>
+            <a
+              href="/chat"
+              className="px-4 py-2.5 bg-zinc-900 text-zinc-300 font-medium rounded border border-zinc-800 hover:bg-zinc-800 transition-colors text-center text-sm"
+            >
+              Chat
+            </a>
+          </div>
         </div>
       </div>
     </div>

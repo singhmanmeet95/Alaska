@@ -8,7 +8,7 @@ export const mockUser: User = {
   email: "rajku@alaska.com",
   emailVerified: new Date("2024-01-15"),
   image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rajkumar",
-  about: "Passionate traveler exploring Delhi Metro 🚇",
+  about: "Passionate traveler exploring Delhi Metro",
   bio: "Tech enthusiast | Metro explorer | Building Alaska - The future of metro travel",
   mfaEnabled: true,
   mfaTotpSecret: null,

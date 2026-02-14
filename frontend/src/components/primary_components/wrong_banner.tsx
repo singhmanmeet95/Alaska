@@ -5,7 +5,10 @@ interface ErrorMessageProps {
   duration?: number; // in milliseconds
 }
 
-export default function ErrorMessage({ text = "Wrong inputs entered", duration = 5000 }: ErrorMessageProps) {
+export default function ErrorMessage({
+  text = "Wrong inputs entered",
+  duration = 5000,
+}: ErrorMessageProps) {
   const [visible, setVisible] = useState(true);
   const [fade, setFade] = useState(false);
 
@@ -23,7 +26,7 @@ export default function ErrorMessage({ text = "Wrong inputs entered", duration =
 
   return (
     <div
-      className={`font-medium absolute bottom-1/20 left-1/2 transform -translate-x-1/2 bg-red-100 text-black text-center text-xs py-3 sm:px-10 rounded-full transition-opacity duration-1000 ${
+      className={`font-medium absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-red-950/90 text-red-200 border border-red-900 text-center text-xs py-3 px-10 rounded-full transition-opacity duration-1000 shadow-xl backdrop-blur-sm z-50 ${
         fade ? "opacity-0" : "opacity-100"
       }`}
     >

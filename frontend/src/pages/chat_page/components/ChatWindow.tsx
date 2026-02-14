@@ -21,7 +21,7 @@ export default function ChatWindow({
   showBack = false,
 }: ChatWindowProps) {
   return (
-    <div className="flex flex-col h-full bg-white">
+    <div className="flex flex-col h-full bg-zinc-950">
       <ChatHeader user={user} onBackClick={onBackClick} showBack={showBack} />
       <MessageList
         messages={messages}

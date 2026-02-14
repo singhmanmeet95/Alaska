@@ -11,33 +11,33 @@ export default function StatsCard({ stats }: StatsCardProps) {
       icon: Zap,
       label: "Total Trips",
       value: stats.totalTrips.toLocaleString(),
-      color: "from-yellow-400 to-orange-500",
-      bgColor: "bg-yellow-50",
-      textColor: "text-yellow-600",
+      color: "text-amber-400",
+      bgColor: "bg-amber-400/10",
+      borderColor: "border-amber-400/20",
     },
     {
       icon: TrendingUp,
       label: "Distance Traveled",
       value: `${stats.totalDistance.toLocaleString()} km`,
-      color: "from-green-400 to-emerald-500",
-      bgColor: "bg-green-50",
-      textColor: "text-green-600",
+      color: "text-emerald-400",
+      bgColor: "bg-emerald-400/10",
+      borderColor: "border-emerald-400/20",
     },
     {
       icon: MapPin,
       label: "Favorite Station",
       value: stats.favoriteStation,
-      color: "from-blue-400 to-indigo-500",
-      bgColor: "bg-blue-50",
-      textColor: "text-blue-600",
+      color: "text-blue-400",
+      bgColor: "bg-blue-400/10",
+      borderColor: "border-blue-400/20",
     },
     {
       icon: Calendar,
       label: "Member Since",
       value: stats.memberSince,
-      color: "from-purple-400 to-pink-500",
-      bgColor: "bg-purple-50",
-      textColor: "text-purple-600",
+      color: "text-purple-400",
+      bgColor: "bg-purple-400/10",
+      borderColor: "border-purple-400/20",
     },
   ];
 
@@ -48,35 +48,25 @@ export default function StatsCard({ stats }: StatsCardProps) {
         return (
           <div
             key={item.label}
-            className={`group relative bg-white rounded-2xl p-6 shadow-md hover:shadow-2xl transform transition-all duration-300 hover:-translate-y-2 cursor-pointer overflow-hidden animate-fade-in-up`}
+            className="group relative bg-zinc-900 border border-zinc-800 rounded-xl p-5 hover:border-zinc-700 transition-all duration-300 animate-fade-in-up"
             style={{ animationDelay: `${index * 100}ms` }}
           >
-            {/* Gradient background on hover */}
-            <div
-              className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}
-            ></div>
-
-            {/* Icon */}
-            <div
-              className={`relative w-14 h-14 ${item.bgColor} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}
-            >
-              <Icon className={`w-7 h-7 ${item.textColor}`} />
+            <div className="flex items-start justify-between mb-4">
+              <div
+                className={`w-12 h-12 ${item.bgColor} rounded-lg flex items-center justify-center border ${item.borderColor}`}
+              >
+                <Icon className={`w-6 h-6 ${item.color}`} />
+              </div>
             </div>
 
-            {/* Content */}
-            <div className="relative">
-              <p className="text-gray-500 text-sm font-medium mb-1">
+            <div>
+              <p className="text-zinc-500 text-xs uppercase tracking-wider font-medium mb-1">
                 {item.label}
               </p>
-              <p className="text-2xl font-bold text-gray-800 group-hover:scale-105 transition-transform duration-300">
+              <p className="text-2xl font-bold text-zinc-100 truncate">
                 {item.value}
               </p>
             </div>
-
-            {/* Decorative element */}
-            <div
-              className={`absolute -bottom-2 -right-2 w-20 h-20 bg-gradient-to-br ${item.color} opacity-5 rounded-full group-hover:scale-150 transition-transform duration-500`}
-            ></div>
           </div>
         );
       })}

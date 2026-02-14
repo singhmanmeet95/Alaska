@@ -27,26 +27,36 @@ export default function ChatListItem({
   return (
     <div
       onClick={onClick}
-      className={`flex items-center p-3 cursor-pointer transition-all hover:bg-gray-100 border-b border-gray-100 ${
-        isActive ? "bg-indigo-50 border-l-4 border-l-indigo-500" : ""
+      className={`flex items-center p-3 cursor-pointer transition-all border-b border-zinc-900 group ${
+        isActive
+          ? "bg-zinc-900 border-l-2 border-l-zinc-100"
+          : "hover:bg-zinc-900/50 border-l-2 border-l-transparent"
       }`}
     >
       <div className="relative">
-        <img
-          src={chat.user.avatar}
-          alt={chat.user.name}
-          className="w-12 h-12 rounded-full"
-        />
+        <div className="w-12 h-12 rounded-full overflow-hidden bg-zinc-800 border border-zinc-700">
+          <img
+            src={chat.user.avatar}
+            alt={chat.user.name}
+            className="w-full h-full object-cover"
+          />
+        </div>
         {chat.user.status === "online" && (
-          <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+          <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-zinc-950 rounded-full"></span>
         )}
       </div>
       <div className="ml-3 flex-1 overflow-hidden">
         <div className="flex justify-between items-center">
-          <h3 className="font-semibold text-gray-900 truncate">
+          <h3
+            className={`font-medium truncate ${
+              isActive
+                ? "text-zinc-100"
+                : "text-zinc-300 group-hover:text-zinc-200"
+            }`}
+          >
             {chat.user.name}
           </h3>
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-zinc-500">
             {formatTime(chat.timestamp)}
           </span>
         </div>
@@ -54,18 +64,18 @@ export default function ChatListItem({
           <p
             className={`text-sm truncate ${
               chat.unreadCount > 0
-                ? "text-gray-900 font-medium"
-                : "text-gray-500"
+                ? "text-zinc-100 font-medium"
+                : "text-zinc-500 group-hover:text-zinc-400"
             }`}
           >
             {chat.isTyping ? (
-              <span className="text-indigo-500 italic">Typing...</span>
+              <span className="text-emerald-400 italic text-xs">Typing...</span>
             ) : (
               chat.lastMessage
             )}
           </p>
           {chat.unreadCount > 0 && (
-            <span className="ml-2 bg-indigo-500 text-white text-xs rounded-full px-2 py-0.5 min-w-[20px] text-center">
+            <span className="ml-2 bg-zinc-100 text-zinc-950 text-xs font-bold rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
               {chat.unreadCount}
             </span>
           )}

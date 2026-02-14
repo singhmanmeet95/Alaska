@@ -32,7 +32,7 @@ export default function Credentials() {
     image: "",
     about: "",
   });
-  
+
   const [loginData, setLoginData] = useState<SigninInput>({
     email: "",
     password: "",
@@ -46,7 +46,7 @@ export default function Credentials() {
       {
         method: "POST",
         body,
-      }
+      },
     );
     const data = await res.json();
     if (res.ok && data.url) {
@@ -66,7 +66,7 @@ export default function Credentials() {
   }, []);
 
   const handleSignupChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setSignupData((prev) => ({ ...prev, [name]: value }));
@@ -99,7 +99,7 @@ export default function Credentials() {
       {/* Main Content Container */}
       <div className="relative flex h-screen w-full items-center justify-center">
         {/* Desktop Layout */}
-        <div className="hidden md:flex relative flex-row lg:h-2/3 w-5/6 mx-auto rounded-xl overflow-hidden shadow-lg bg-white bg-opacity-90">
+        <div className="hidden md:flex relative flex-row lg:h-2/3 w-5/6 mx-auto rounded-xl overflow-hidden shadow-2xl bg-zinc-950/80 border border-zinc-800 backdrop-blur-sm">
           {/* LOGIN Section */}
           <LoginForm
             email={loginData.email}

@@ -41,25 +41,28 @@ export default function MessageList({
     }
   };
 
-  const groupedMessages = messages.reduce((groups, message, index) => {
-    const messageDate = new Date(message.timestamp);
-    const dateKey = messageDate.toDateString();
+  const groupedMessages = messages.reduce(
+    (groups, message, index) => {
+      const messageDate = new Date(message.timestamp);
+      const dateKey = messageDate.toDateString();
 
-    if (!groups[dateKey]) {
-      groups[dateKey] = [];
-    }
+      if (!groups[dateKey]) {
+        groups[dateKey] = [];
+      }
 
-    groups[dateKey].push({ message, index });
-    return groups;
-  }, {} as Record<string, Array<{ message: Message; index: number }>>);
+      groups[dateKey].push({ message, index });
+      return groups;
+    },
+    {} as Record<string, Array<{ message: Message; index: number }>>,
+  );
 
   return (
-    <div className="flex-1 overflow-y-auto bg-gradient-to-b from-gray-50 to-white px-4 py-6">
+    <div className="flex-1 overflow-y-auto bg-zinc-950 px-4 py-6 custom-scrollbar">
       {Object.entries(groupedMessages).map(([dateKey, messagesGroup]) => (
         <div key={dateKey}>
           {/* Date Divider */}
-          <div className="flex justify-center mb-4">
-            <span className="bg-white px-4 py-1 rounded-full text-xs text-gray-500 shadow-sm border border-gray-200">
+          <div className="flex justify-center mb-6">
+            <span className="bg-zinc-900 px-4 py-1.5 rounded-full text-xs font-medium text-zinc-500 border border-zinc-800 shadow-none">
               {formatDateDivider(new Date(dateKey))}
             </span>
           </div>
