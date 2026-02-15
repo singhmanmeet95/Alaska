@@ -13,6 +13,9 @@ export const getAllTrips = async (req, res) => {
             name: true,
             username: true,
             email: true,
+            profile_image: true,
+            ratings: true,
+            ratingCount: true,
           },
         },
       },
@@ -36,6 +39,9 @@ export const getTripById = async (req, res) => {
             name: true,
             username: true,
             email: true,
+            profile_image: true,
+            ratings: true,
+            ratingCount: true,
           },
         },
       },
@@ -75,6 +81,9 @@ export const createTrip = async (req, res) => {
             name: true,
             username: true,
             email: true,
+            profile_image: true,
+            ratings: true,
+            ratingCount: true,
           },
         },
       },
@@ -113,6 +122,9 @@ export const updateTrip = async (req, res) => {
             name: true,
             username: true,
             email: true,
+            profile_image: true,
+            ratings: true,
+            ratingCount: true,
           },
         },
       },
@@ -149,9 +161,7 @@ export const deleteTrip = async (req, res) => {
   }
 };
 //match trips by longest common substring
-export const longestCommonSubstring = (str1, str2) => {
-  
-};
+export const longestCommonSubstring = (str1, str2) => {};
 // Get trips by user ID
 export const getTripsByUserId = async (req, res) => {
   try {
@@ -165,6 +175,9 @@ export const getTripsByUserId = async (req, res) => {
             name: true,
             username: true,
             email: true,
+            profile_image: true,
+            ratings: true,
+            ratingCount: true,
           },
         },
       },
@@ -198,6 +211,9 @@ export const getTripsByStation = async (req, res) => {
             name: true,
             username: true,
             email: true,
+            profile_image: true,
+            ratings: true,
+            ratingCount: true,
           },
         },
       },

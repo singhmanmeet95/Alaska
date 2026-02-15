@@ -1,9 +1,9 @@
 import express from "express";
+import { PrismaClient } from "@prisma/client";
 import cors from "cors";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
-import session from "express-session";
-import passport from "./config/passport.js";
+
 import userRoutes from "./routes/userRoutes.js";
 import tripRoutes from "./routes/tripRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
@@ -20,27 +20,11 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
 
-// Session configuration for OAuth
-app.use(
-  session({
-    secret: env.SESSION_SECRET || "your-secret-key",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: env.NODE_ENV === "production",
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    },
-  })
-);
-
-// Passport middleware
-app.use(passport.initialize());
-app.use(passport.session());
-
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/trips", tripRoutes);
+app.use("/api/chats", chatRoutes);
 app.use("/api/chats", chatRoutes);
 app.use("/api/utils", utilRoutes);
 
@@ -77,6 +61,19 @@ app.use((error, req, res, next) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Metro Lines API server is running on port ${PORT}`);
-});
+const prisma = new PrismaClient();
+
+const startServer = async () => {
+  try {
+    await prisma.$connect();
+    console.log("Database connected successfully");
+    app.listen(PORT, () => {
+      console.log(`Metro Lines API server is running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Failed to connect to the database:", error);
+    process.exit(1);
+  }
+};
+
+startServer();

@@ -1,13 +1,13 @@
 import express from "express";
-import passport from "../config/passport.js";
 import { authenticateToken } from "../middleware/auth.js";
 import {
   register,
   login,
   getProfile,
   updateProfile,
+  addProfileImage,
+  deleteProfileImage,
   changePassword,
-  googleCallback,
   logout,
 } from "../controllers/authController.js";
 
@@ -18,21 +18,11 @@ router.post("/register", register);
 router.post("/login", login);
 router.post("/logout", logout);
 
-// Google OAuth routes
-router.get(
-  "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
-);
-
-router.get(
-  "/google/callback",
-  passport.authenticate("google", { failureRedirect: "/auth/error" }),
-  googleCallback
-);
-
 // Protected routes
 router.get("/profile", authenticateToken, getProfile);
 router.put("/profile", authenticateToken, updateProfile);
+router.post("/profile/images", authenticateToken, addProfileImage);
+router.delete("/profile/images", authenticateToken, deleteProfileImage);
 router.post("/change-password", authenticateToken, changePassword);
 
 // Token verification endpoint

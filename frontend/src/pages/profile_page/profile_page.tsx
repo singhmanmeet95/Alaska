@@ -32,12 +32,9 @@ export default function ProfilePage() {
         {/* Two Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - User Info */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 h-[40vh]">
             <UserInfoCard
-              email={user.email}
-              emailVerified={user.emailVerified}
               about={user.about ?? null}
-              mfaEnabled={user.mfaEnabled}
             />
           </div>
 

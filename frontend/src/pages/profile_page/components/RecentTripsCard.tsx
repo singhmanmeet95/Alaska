@@ -31,9 +31,7 @@ export default function RecentTripsCard({ trips }: RecentTripsCardProps) {
     <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 mb-6 animate-fade-in-up">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-bold text-zinc-100 flex items-center gap-3">
-          <div className="w-10 h-10 bg-emerald-500/10 border border-emerald-500/20 rounded-lg flex items-center justify-center">
-            <Train className="w-5 h-5 text-emerald-400" />
-          </div>
+         
           Recent Trips
         </h2>
         <button className="text-zinc-500 hover:text-zinc-300 font-medium text-xs uppercase tracking-wider flex items-center gap-1 hover:gap-2 transition-all duration-200">

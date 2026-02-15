@@ -56,9 +56,12 @@ export const register = async (req, res) => {
         name: true,
         username: true,
         email: true,
-        image: true,
+        profile_image: true,
         about: true,
         bio: true,
+        images: true,
+        ratings: true,
+        ratingCount: true,
       },
     });
 
@@ -165,7 +168,7 @@ export const getProfile = async (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { name, username, about, bio, image } = req.body;
+    const { name, username, about, bio, image, images } = req.body;
 
     // Check if username is taken by another user
     if (username) {
@@ -185,6 +188,7 @@ export const updateProfile = async (req, res) => {
     }
 
     // Update user
+    // Update user
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: {
@@ -192,16 +196,18 @@ export const updateProfile = async (req, res) => {
         ...(username && { username }),
         ...(about !== undefined && { about }),
         ...(bio !== undefined && { bio }),
-        ...(image !== undefined && { image }),
+        ...(image !== undefined && { profile_image: image }), // Map 'image' input to 'profile_image'
+        ...(images !== undefined && { images }), // Add images array support
       },
       select: {
         id: true,
         name: true,
         username: true,
         email: true,
-        image: true,
+        profile_image: true,
         about: true,
         bio: true,
+        images: true,
       },
     });
 
@@ -241,7 +247,7 @@ export const changePassword = async (req, res) => {
     // Verify current password
     const isCurrentPasswordValid = await bcrypt.compare(
       currentPassword,
-      user.password
+      user.password,
     );
 
     if (!isCurrentPasswordValid) {
@@ -275,18 +281,100 @@ export const changePassword = async (req, res) => {
 };
 
 // Google OAuth callback
-export const googleCallback = async (req, res) => {
-  try {
-    const user = req.user;
-    const token = generateToken(user.id);
 
-    // Redirect to frontend with token
-    const frontendURL = process.env.FRONTEND_URL || "http://localhost:5173";
-    res.redirect(`${frontendURL}/auth/success?token=${token}`);
+// Add image to profile gallery
+export const addProfileImage = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { imageUrl } = req.body;
+
+    if (!imageUrl) {
+      return res.status(400).json({
+        success: false,
+        message: "Image URL is required",
+      });
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        images: {
+          push: imageUrl,
+        },
+      },
+      select: {
+        id: true,
+        images: true,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Image added successfully",
+      data: updatedUser.images,
+    });
   } catch (error) {
-    console.error("Google callback error:", error);
-    const frontendURL = process.env.FRONTEND_URL || "http://localhost:5173";
-    res.redirect(`${frontendURL}/auth/error`);
+    console.error("Add image error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to add image",
+      error: error.message,
+    });
+  }
+};
+
+// Delete image from profile gallery
+export const deleteProfileImage = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { imageUrl } = req.body;
+
+    if (!imageUrl) {
+      return res.status(400).json({
+        success: false,
+        message: "Image URL is required",
+      });
+    }
+
+    // 1. Get current images
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { images: true },
+    });
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    // 2. Filter out the image to delete
+    const newImages = user.images.filter((img) => img !== imageUrl);
+
+    // 3. Update with new array
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        images: newImages,
+      },
+      select: {
+        id: true,
+        images: true,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Image deleted successfully",
+      data: updatedUser.images,
+    });
+  } catch (error) {
+    console.error("Delete image error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete image",
+      error: error.message,
+    });
   }
 };
 

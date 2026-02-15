@@ -157,24 +157,19 @@ int main() {
   SuffixAutomaton sa;
   for (auto &tok : a) sa.extend(idmap[tok]);
 
-  // Compute LCS length for each row and store pair (LCS length, row)
-  vector<pair<int, vector<string>>> rows_with_lcs;
-  for (auto &row : grid) {
-    int lcs_len = sa.longest_common_with_row(row, idmap);
-    rows_with_lcs.push_back({lcs_len, row});
+  // Compute LCS length for each row and store pair (LCS length, original_index)
+  vector<pair<int, int>> results;
+  for (int i = 0; i < m; ++i) {
+    int lcs_len = sa.longest_common_with_row(grid[i], idmap);
+    results.push_back({lcs_len, i});
   }
 
   // Sort rows in descending order of LCS length
-  sort(rows_with_lcs.rbegin(), rows_with_lcs.rend());
+  sort(results.rbegin(), results.rend());
 
-  // Output: first LCS length, then the row elements
-  for (auto &p : rows_with_lcs) {
-    cout << p.first << " ";
-    for (size_t i = 0; i < p.second.size(); ++i) {
-      if (i) cout << ' ';
-      cout << p.second[i];
-    }
-    cout << "\n";
+  // Output: original_index LCS_length
+  for (auto &p : results) {
+    cout << p.second << " " << p.first << "\n";
   }
 
   return 0;

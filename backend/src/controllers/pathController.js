@@ -4,30 +4,45 @@ import { PrismaClient } from "@prisma/client";
 const router = express.Router();
 const prisma = new PrismaClient();
 
-// ---------- Suffix Automaton Logic ----------
+const TIME_WINDOW_MINUTES = 120; // Increased to catch overlapping trips even if start times differ significantly
+const AVG_STATION_TIME_MINUTES = 3; // Est. time between stations
+const MATCH_THRESHOLD_MINUTES = 20; // Strict window for "meeting" at the overlap
+
+// ---------- Normalize station name ----------
+// DB has "Rajiv_Chowk", user types "Rajiv Chowk" — normalize both to same format
+function normalizeStation(name) {
+  return name.replace(/_/g, " ").toLowerCase().trim();
+}
+
+// ---------- Suffix Automaton with Index Tracking ----------
 class State {
   constructor() {
     this.len = 0;
     this.link = -1;
     this.next = new Map();
+    this.firstEndPos = -1; // 0-based index of end position in reference
   }
 }
 
 class SuffixAutomaton {
-  constructor() {
-    this.st = [];
-    this.init();
-  }
-
-  init() {
+  constructor(tokens, idmap) {
     this.st = [new State()];
     this.last = 0;
+    // Build immediately upon construction
+    for (let i = 0; i < tokens.length; i++) {
+      // Map token to ID using provided map.
+      // If token not in map (should not happen if map built from tokens), fallback?
+      // In our usage, map is built from tokens.
+      const id = idmap.get(tokens[i]);
+      this.extend(id, i);
+    }
   }
 
-  extend(c) {
+  extend(c, idx) {
     let cur = this.st.length;
     this.st.push(new State());
     this.st[cur].len = this.st[this.last].len + 1;
+    this.st[cur].firstEndPos = idx; // Track end index
     let p = this.last;
 
     while (p !== -1 && !this.st[p].next.has(c)) {
@@ -47,6 +62,7 @@ class SuffixAutomaton {
         this.st[clone].len = this.st[p].len + 1;
         this.st[clone].next = new Map(this.st[q].next);
         this.st[clone].link = this.st[q].link;
+        this.st[clone].firstEndPos = this.st[q].firstEndPos; // Clone keeps original's endpos
 
         while (p !== -1 && this.st[p].next.get(c) === q) {
           this.st[p].next.set(c, clone);
@@ -59,73 +75,56 @@ class SuffixAutomaton {
     this.last = cur;
   }
 
-  longestCommonWithRow(row, idmap) {
-    let v = 0,
-      l = 0,
-      best = 0;
-    for (const tok of row) {
+  // Returns { length: number, startRef: number, startCand: number }
+  getLongestCommonWithIndices(candidateTokens, idmap) {
+    let v = 0;
+    let l = 0;
+    let bestLen = 0;
+    let bestEndPosRef = -1;
+    let bestEndPosCand = -1;
+
+    for (let i = 0; i < candidateTokens.length; i++) {
+      const tok = candidateTokens[i];
       if (!idmap.has(tok)) {
         v = 0;
         l = 0;
         continue;
       }
       const c = idmap.get(tok);
-      if (this.st[v].next.has(c)) {
+
+      while (v !== -1 && !this.st[v].next.has(c)) {
+        v = this.st[v].link;
+        if (v !== -1) l = this.st[v].len;
+      }
+
+      if (v === -1) {
+        v = 0;
+        l = 0;
+      } else {
         v = this.st[v].next.get(c);
         l++;
-      } else {
-        while (v !== -1 && !this.st[v].next.has(c)) {
-          v = this.st[v].link;
-        }
-        if (v === -1) {
-          v = 0;
-          l = 0;
-        } else {
-          l = this.st[v].len + 1;
-          v = this.st[v].next.get(c);
-        }
       }
-      best = Math.max(best, l);
+
+      if (l > bestLen) {
+        bestLen = l;
+        // The state `v` contains longest strings, but we matched length `l`.
+        // The end position is `this.st[v].firstEndPos`.
+        bestEndPosRef = this.st[v].firstEndPos;
+        bestEndPosCand = i;
+      }
     }
-    return best;
+
+    // Convert end positions (inclusive) to start positions (inclusive)
+    // Start = End - Length + 1
+    const startRef = bestEndPosRef !== -1 ? bestEndPosRef - bestLen + 1 : -1;
+    const startCand = bestEndPosCand !== -1 ? bestEndPosCand - bestLen + 1 : -1;
+
+    return { length: bestLen, startRef, startCand };
   }
-}
-
-// ---------- Normalize station name ----------
-// DB has "Rajiv_Chowk", user types "Rajiv Chowk" — normalize both to same format
-function normalizeStation(name) {
-  return name.replace(/_/g, " ").toLowerCase().trim();
-}
-
-// ---------- Sorting Function ----------
-export function sortTripsByTripId(trips, queryTripId) {
-  const queryTrip = trips.find((t) => t.id === queryTripId);
-  if (!queryTrip) return trips; // agar trip id invalid hai to same data return karo
-
-  const queryTokens = queryTrip.stationList.map(normalizeStation);
-  const idmap = new Map();
-  let nextId = 1;
-
-  for (const tok of queryTokens) {
-    if (!idmap.has(tok)) idmap.set(tok, nextId++);
-  }
-
-  const sa = new SuffixAutomaton();
-  for (const tok of queryTokens) {
-    sa.extend(idmap.get(tok));
-  }
-
-  const scoredTrips = trips.map((trip) => {
-    const normalizedStations = trip.stationList.map(normalizeStation);
-    const lcsLen = sa.longestCommonWithRow(normalizedStations, idmap);
-    return { ...trip, lcsLen };
-  });
-
-  scoredTrips.sort((a, b) => b.lcsLen - a.lcsLen);
-  return scoredTrips;
 }
 
 // ---------- Express Route ----------
+
 router.get("/sorted_trips", async (req, res) => {
   try {
     const tripId = req.query.id;
@@ -135,26 +134,99 @@ router.get("/sorted_trips", async (req, res) => {
         .json({ success: false, error: "tripId is required" });
     }
 
-    // Fetch trips directly from database instead of making HTTP request
+    // 1. Fetch the Reference Trip
+    const queryTrip = await prisma.trip.findUnique({
+      where: { id: tripId },
+    });
+
+    if (!queryTrip) {
+      return res.status(404).json({ success: false, error: "Trip not found" });
+    }
+
+    // 2. Fetch candidate trips broadly
+    const refTime = new Date(queryTrip.startTime);
+    const minTime = new Date(refTime.getTime() - TIME_WINDOW_MINUTES * 60000);
+    const maxTime = new Date(refTime.getTime() + TIME_WINDOW_MINUTES * 60000);
+
     const trips = await prisma.trip.findMany({
+      where: {
+        AND: [
+          { id: { not: tripId } },
+          { startTime: { gte: minTime, lte: maxTime } },
+        ],
+      },
       include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            username: true,
-            email: true,
-          },
-        },
+        user: { select: { id: true, name: true, username: true, email: true } },
       },
     });
 
-    const sortedTrips = sortTripsByTripId(trips, tripId);
+    // 3. Match Logic
+    const queryPath = queryTrip.stationList.map(normalizeStation);
+
+    // Create ID Map for the Reference Path
+    const idmap = new Map();
+    let nextId = 1;
+    for (const tok of queryPath) {
+      if (!idmap.has(tok)) idmap.set(tok, nextId++);
+    }
+
+    // Build SAM on Reference Path
+    const sa = new SuffixAutomaton(queryPath, idmap);
+
+    const results = trips.map((trip) => {
+      const candidatePath = trip.stationList.map(normalizeStation);
+
+      // Use SAM to find LCS and indices
+      const { length, startRef, startCand } = sa.getLongestCommonWithIndices(
+        candidatePath,
+        idmap,
+      );
+
+      // Analyze Timing
+      let timeDiffAtOverlap = null;
+      let isViable = false;
+
+      if (length > 0) {
+        // Calculate estimated arrival at the 'start' of the shared segment
+        const timeToReachOverlapRef = startRef * AVG_STATION_TIME_MINUTES;
+        const timeToReachOverlapCan = startCand * AVG_STATION_TIME_MINUTES;
+
+        const overlapTimeRef = new Date(
+          refTime.getTime() + timeToReachOverlapRef * 60000,
+        );
+        const overlapTimeCan = new Date(
+          trip.startTime.getTime() + timeToReachOverlapCan * 60000,
+        );
+
+        // Difference in minutes at the meeting point
+        timeDiffAtOverlap = Math.round(
+          (overlapTimeCan - overlapTimeRef) / 60000,
+        );
+
+        // Match if at shared station within strict threshold
+        if (Math.abs(timeDiffAtOverlap) <= MATCH_THRESHOLD_MINUTES) {
+          isViable = true;
+        }
+      }
+
+      return {
+        ...trip,
+        lcsLen: length,
+        startInQuery: startRef,
+        startInCandidate: startCand,
+        timeDiffAtOverlap,
+        isViable,
+      };
+    });
+
+    const viableMatches = results.filter((r) => r.isViable);
+    viableMatches.sort((a, b) => b.lcsLen - a.lcsLen);
 
     res.json({
       success: true,
-      data: sortedTrips,
-      message: `Trips sorted by similarity to trip ${tripId}`,
+      data: viableMatches,
+      count: viableMatches.length,
+      message: `Found ${viableMatches.length} overlapping trips synchronized within ~${MATCH_THRESHOLD_MINUTES} mins`,
     });
   } catch (error) {
     console.error("Error in sorted_trips:", error);
@@ -162,79 +234,117 @@ router.get("/sorted_trips", async (req, res) => {
   }
 });
 
-// ---------- POST: User sends custom stationList, get matching trips ----------
+// ---------- POST: User sends custom stationList (and optional startTime), get matching trips ----------
 router.post("/match_trips", async (req, res) => {
   try {
-    const { stationList } = req.body;
+    const { stationList, startTime } = req.body;
 
-    // Validation
     if (
       !stationList ||
       !Array.isArray(stationList) ||
       stationList.length === 0
     ) {
-      return res.status(400).json({
-        success: false,
-        error:
-          "stationList is required and must be a non-empty array of station names",
-      });
+      return res
+        .status(400)
+        .json({ success: false, error: "Invalid stationList" });
     }
 
-    // Fetch all existing trips from database
+    let refTime = null;
+    let dateFilter = {};
+
+    if (startTime) {
+      refTime = new Date(startTime);
+      if (isNaN(refTime.getTime()))
+        return res
+          .status(400)
+          .json({ success: false, error: "Invalid startTime" });
+
+      const minTime = new Date(refTime.getTime() - TIME_WINDOW_MINUTES * 60000);
+      const maxTime = new Date(refTime.getTime() + TIME_WINDOW_MINUTES * 60000);
+      dateFilter = { startTime: { gte: minTime, lte: maxTime } };
+    }
+
     const trips = await prisma.trip.findMany({
+      where: dateFilter,
       include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            username: true,
-            email: true,
-          },
-        },
+        user: { select: { id: true, name: true, username: true, email: true } },
       },
     });
 
-    if (trips.length === 0) {
-      return res.json({
-        success: true,
-        data: [],
-        message: "No existing trips found in the database to compare against",
-      });
-    }
+    const queryPath = stationList.map(normalizeStation);
 
-    // Normalize user's input stationList
-    const normalizedInput = stationList.map(normalizeStation);
-
-    // Build SAM on normalized user input
+    // Create ID Map for the Reference Path
     const idmap = new Map();
     let nextId = 1;
-    for (const tok of normalizedInput) {
+    for (const tok of queryPath) {
       if (!idmap.has(tok)) idmap.set(tok, nextId++);
     }
 
-    const sa = new SuffixAutomaton();
-    for (const tok of normalizedInput) {
-      sa.extend(idmap.get(tok));
-    }
+    // Build SAM on Reference Path
+    const sa = new SuffixAutomaton(queryPath, idmap);
 
-    // Score each existing trip by LCS with user's stationList (normalize DB stations too)
-    const scoredTrips = trips.map((trip) => {
-      const normalizedStations = trip.stationList.map(normalizeStation);
-      const lcsLen = sa.longestCommonWithRow(normalizedStations, idmap);
-      return { ...trip, lcsLen };
+    const results = trips.map((trip) => {
+      const candidatePath = trip.stationList.map(normalizeStation);
+
+      // Use SAM to find LCS and indices
+      const { length, startRef, startCand } = sa.getLongestCommonWithIndices(
+        candidatePath,
+        idmap,
+      );
+
+      let timeDiffAtOverlap = null;
+      let isViable = false;
+
+      if (length > 0) {
+        if (refTime) {
+          const timeToReachOverlapRef = startRef * AVG_STATION_TIME_MINUTES;
+          const timeToReachOverlapCan = startCand * AVG_STATION_TIME_MINUTES;
+
+          const overlapTimeRef = new Date(
+            refTime.getTime() + timeToReachOverlapRef * 60000,
+          );
+          const overlapTimeCan = new Date(
+            trip.startTime.getTime() + timeToReachOverlapCan * 60000,
+          );
+
+          timeDiffAtOverlap = Math.round(
+            (overlapTimeCan - overlapTimeRef) / 60000,
+          );
+
+          if (Math.abs(timeDiffAtOverlap) <= MATCH_THRESHOLD_MINUTES) {
+            isViable = true;
+          }
+        } else {
+          isViable = true; // Without time constraint, any overlap is viable
+        }
+      }
+
+      return {
+        ...trip,
+        lcsLen: length,
+        startInQuery: startRef,
+        startInCandidate: startCand,
+        timeDiffAtOverlap,
+        isViable,
+      };
     });
 
-    // Sort by LCS length descending
-    scoredTrips.sort((a, b) => b.lcsLen - a.lcsLen);
+    let finalResults = results;
+    if (refTime) {
+      finalResults = results.filter((r) => r.isViable);
+    }
+
+    finalResults.sort((a, b) => b.lcsLen - a.lcsLen);
 
     res.json({
       success: true,
-      data: scoredTrips,
+      data: finalResults,
+      count: finalResults.length,
       query: {
         stationList,
         totalStations: stationList.length,
+        startTime: refTime,
       },
-      message: `Found ${scoredTrips.length} trips, sorted by route similarity`,
     });
   } catch (error) {
     console.error("Error in match_trips:", error);

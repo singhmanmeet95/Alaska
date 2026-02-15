@@ -8,27 +8,24 @@ datasource db {
 }
 
 model User {
-  id         String   @id @default(uuid())
-  name       String
-  username   String   @unique
-  email      String   @unique
-  emailVerified DateTime?
-  password   String?
-  image      String?
-  about      String?
-  bio        String?
+  id            String   @id @default(uuid())
+  name          String
+  username      String   @unique
+  email         String   @unique
+  password      String?
+  profile_image String?
+  about         String?
+  bio           String?
+  images        String[]
+  trips         Trip[]   @relation("UserTrips")
+  sentChats     Chat[]   @relation("SentChats")
+  receivedChats Chat[]   @relation("ReceivedChats")
+  ratings       Int      @default(0)
+  ratingCount   Int      @default(0)
 
-  // MFA fields
-  mfaEnabled     Boolean   @default(false)
-  mfaTotpSecret  String?
-  mfaBackupCodes String[]  @default([])
-
-  trips      Trip[]       @relation("UserTrips")
-  sentChats  Chat[]       @relation("SentChats")
-  receivedChats Chat[]    @relation("ReceivedChats")
-
-  // OAuth accounts (e.g., Google)
-  accounts   Account[]
+  // Relations to Review model
+  writtenReviews  Review[] @relation("WrittenReviews")
+  receivedReviews Review[] @relation("ReceivedReviews")
 }
 
 model Trip {
@@ -36,40 +33,36 @@ model Trip {
   user         User     @relation("UserTrips", fields: [userId], references: [id])
   userId       String
   startTime    DateTime
-  stationList  String[] 
+  stationList  String[]
   length       Int
   startStation String
   endStation   String
 }
 
 model Chat {
-  id          String   @id @default(uuid())
-  sender      User     @relation("SentChats", fields: [senderId], references: [id])
-  senderId    String
-  receiver    User     @relation("ReceivedChats", fields: [receiverId], references: [id])
-  receiverId  String
-  message     String
-  createdAt   DateTime @default(now())
+  id         String   @id @default(uuid())
+  sender     User     @relation("SentChats", fields: [senderId], references: [id])
+  senderId   String
+  receiver   User     @relation("ReceivedChats", fields: [receiverId], references: [id])
+  receiverId String
+  message    String
+  createdAt  DateTime @default(now())
+
   @@index([senderId, receiverId])
 }
 
-model Account {
-  id                 String  @id @default(uuid())
-  user               User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId             String
+model Review {
+  id        String   @id @default(uuid())
+  rating    Int 
+  comment   String? 
+  createdAt DateTime @default(now())
 
-  type               String
-  provider           String
-  providerAccountId  String
+  reviewer   User   @relation("WrittenReviews", fields: [reviewerId], references: [id])
+  reviewerId String
 
-  refresh_token      String?
-  access_token       String?
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?
-  session_state      String?
+  reviewee   User   @relation("ReceivedReviews", fields: [revieweeId], references: [id])
+  revieweeId String
 
-  @@unique([provider, providerAccountId])
-  @@index([userId])
+  @@index([revieweeId]) 
+  @@index([reviewerId])
 }
