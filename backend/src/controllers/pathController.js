@@ -237,7 +237,7 @@ router.get("/sorted_trips", async (req, res) => {
 // ---------- POST: User sends custom stationList (and optional startTime), get matching trips ----------
 router.post("/match_trips", async (req, res) => {
   try {
-    const { stationList, startTime } = req.body;
+    const { stationList, startTime, k } = req.body;
 
     if (
       !stationList ||
@@ -336,15 +336,21 @@ router.post("/match_trips", async (req, res) => {
 
     finalResults.sort((a, b) => b.lcsLen - a.lcsLen);
 
+    // Limit to top k
+    const limit = k ? parseInt(k) : 10;
+    const topKResults = finalResults.slice(0, limit);
+
     res.json({
       success: true,
-      data: finalResults,
-      count: finalResults.length,
+      data: topKResults,
+      count: topKResults.length,
       query: {
         stationList,
         totalStations: stationList.length,
         startTime: refTime,
+        k: limit,
       },
+      message: `Found ${topKResults.length} matching trips (top ${limit} requested)`,
     });
   } catch (error) {
     console.error("Error in match_trips:", error);
