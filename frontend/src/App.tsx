@@ -1,11 +1,12 @@
 import { lazy, Suspense } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 // Lazy load pages for better performance
 const MapMetro = lazy(() => import("./pages/map_page/mapbox"));
 const ChatPage = lazy(() => import("./pages/chat_page/chat_page"));
 const Credentials = lazy(() => import("./pages/auth_page/auth_index"));
 const ProfilePage = lazy(() => import("./pages/profile_page/profile_page"));
+const LandingPage = lazy(() => import("./pages/landing_page/LandingPage"));
 
 // Loading component for Suspense fallback
 function LoadingSpinner() {
@@ -27,6 +28,9 @@ function App() {
   return (
     <Suspense fallback={<LoadingSpinner />}>
       <Routes>
+        {/* Landing Page Route */}
+        <Route path="/" element={<LandingPage />} />
+
         {/* Auth Route - Login/Signup */}
         <Route path="/auth" element={<Credentials />} />
 
@@ -38,9 +42,6 @@ function App() {
 
         {/* Profile Route */}
         <Route path="/profile" element={<ProfilePage />} />
-
-        {/* Default route - redirect to auth */}
-        <Route path="/" element={<Navigate to="/profile" replace />} />
 
         {/* 404 - Not Found */}
         <Route path="*" element={<NotFound />} />

@@ -26,6 +26,33 @@ model User {
   // Relations to Review model
   writtenReviews  Review[] @relation("WrittenReviews")
   receivedReviews Review[] @relation("ReceivedReviews")
+
+  // Friendships
+  sentFriendRequests     Friendship[] @relation("SentFriendRequests")
+  receivedFriendRequests Friendship[] @relation("ReceivedFriendRequests")
+}
+
+model Friendship {
+  id        String   @id @default(uuid())
+  status    FriendshipStatus @default(PENDING)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  requester   User   @relation("SentFriendRequests", fields: [requesterId], references: [id])
+  requesterId String
+
+  receiver   User   @relation("ReceivedFriendRequests", fields: [receiverId], references: [id])
+  receiverId String
+
+  blockedBy  String? // ID of the user who blocked the other
+
+  @@unique([requesterId, receiverId])
+}
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+  BLOCKED
 }
 
 model Trip {

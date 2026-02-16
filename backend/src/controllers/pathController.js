@@ -336,21 +336,29 @@ router.post("/match_trips", async (req, res) => {
 
     finalResults.sort((a, b) => b.lcsLen - a.lcsLen);
 
-    // Limit to top k
-    const limit = k ? parseInt(k) : 10;
-    const topKResults = finalResults.slice(0, limit);
+    // Pagination
+    const page = parseInt(req.body.page) || 1;
+    const limit = parseInt(req.body.limit) || 10;
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+
+    const paginatedResults = finalResults.slice(startIndex, endIndex);
 
     res.json({
       success: true,
-      data: topKResults,
-      count: topKResults.length,
+      data: paginatedResults,
+      count: paginatedResults.length,
+      total: finalResults.length,
+      totalPages: Math.ceil(finalResults.length / limit),
+      currentPage: page,
       query: {
         stationList,
         totalStations: stationList.length,
         startTime: refTime,
-        k: limit,
+        page,
+        limit,
       },
-      message: `Found ${topKResults.length} matching trips (top ${limit} requested)`,
+      message: `Found ${paginatedResults.length} matching trips (page ${page} of ${Math.ceil(finalResults.length / limit)})`,
     });
   } catch (error) {
     console.error("Error in match_trips:", error);
