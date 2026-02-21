@@ -49,11 +49,20 @@ export default function MessageBubble({
             isOwn
               ? "bg-zinc-100 text-zinc-950 rounded-br-none border border-zinc-100"
               : "bg-zinc-900 text-zinc-200 rounded-bl-none border border-zinc-800"
-          }`}
+          } ${message.content.startsWith("[Image: ") ? "p-1.5" : ""}`}
         >
-          <p className="text-sm break-words leading-relaxed">
-            {message.content}
-          </p>
+          {message.content.startsWith("[Image: ") &&
+          message.content.endsWith("]") ? (
+            <img
+              src={message.content.replace("[Image: ", "").slice(0, -1)}
+              alt="Uploaded content"
+              className="max-w-full rounded-xl max-h-64 object-cover"
+            />
+          ) : (
+            <p className="text-sm break-words leading-relaxed whitespace-pre-wrap">
+              {message.content}
+            </p>
+          )}
         </div>
         <div
           className={`flex items-center mt-1 space-x-1 ${
