@@ -11,15 +11,20 @@ import {
   UserGallery,
   ReviewsSection,
 } from "./components";
-import { mockTrips, mockStats } from "./data/mockData";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
 export default function ProfilePage() {
   const { user, isLoading, isAuthenticated, checkAuth } = useAuthStore();
   const navigate = useNavigate();
-  const [trips] = useState(mockTrips);
-  const [stats, setStats] = useState(mockStats);
+  const [stats, setStats] = useState({
+    totalTrips: 0,
+    totalDistance: 0,
+    favoriteStation: "-",
+    memberSince: "Loading...",
+    ratings: 0,
+    ratingCount: 0,
+  });
   const [fullUser, setFullUser] = useState<any>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
 
@@ -41,13 +46,38 @@ export default function ProfilePage() {
           if (res.data && res.data.data) {
             setFullUser(res.data.data);
 
+            // calculate stats dynamically from trips if possible
+            const userTrips = res.data.data.trips || [];
+            let totalDistance = 0;
+            const stationCounts: Record<string, number> = {};
+
+            userTrips.forEach((trip: any) => {
+              totalDistance += trip.length || 0; // assuming length represents something we can aggregate
+              if (trip.stationList) {
+                trip.stationList.forEach((station: string) => {
+                  stationCounts[station] = (stationCounts[station] || 0) + 1;
+                });
+              }
+            });
+
+            let favorite = "-";
+            let maxCount = 0;
+            Object.entries(stationCounts).forEach(([station, count]) => {
+              if (count > maxCount) {
+                maxCount = count;
+                favorite = station;
+              }
+            });
+
             // update stats with actual ratings
-            setStats((prev) => ({
-              ...prev,
+            setStats({
+              totalTrips: userTrips.length,
+              totalDistance,
+              favoriteStation: favorite !== "-" ? favorite : "None",
+              memberSince: "2025", // Since User doesn't have a createdAt field in schema right now
               ratings: res.data.data.ratings || 0,
               ratingCount: res.data.data.ratingCount || 0,
-              totalTrips: res.data.data.trips?.length || 0,
-            }));
+            });
           }
         } catch (error) {
           console.error("Failed to fetch user full profile", error);
@@ -97,23 +127,18 @@ export default function ProfilePage() {
         <StatsCard stats={stats} />
 
         {/* Main Content Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - User Info & Socials */}
-          <div className="lg:col-span-1 space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+          {/* Left Column - User Info & Trips */}
+          <div className="space-y-6">
             <UserInfoCard about={fullUser?.about ?? user.about ?? null} />
+            <RecentTripsCard trips={fullUser?.trips || []} />
           </div>
 
-          {/* Right Column - Gallery & Trips */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Gallery Component */}
+          {/* Right Column - Gallery */}
+          <div className="space-y-6">
             {fullUser?.images && fullUser.images.length > 0 && (
               <UserGallery images={fullUser.images} />
             )}
-
-            {/* Trips Component */}
-            <RecentTripsCard
-              trips={fullUser?.trips?.length > 0 ? fullUser.trips : trips}
-            />
           </div>
         </div>
 
