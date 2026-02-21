@@ -84,10 +84,20 @@ io.on("connection", (socket) => {
         },
         include: {
           sender: {
-            select: { id: true, name: true, username: true, image: true },
+            select: {
+              id: true,
+              name: true,
+              username: true,
+              profile_image: true,
+            },
           },
           receiver: {
-            select: { id: true, name: true, username: true, image: true },
+            select: {
+              id: true,
+              name: true,
+              username: true,
+              profile_image: true,
+            },
           },
         },
       });

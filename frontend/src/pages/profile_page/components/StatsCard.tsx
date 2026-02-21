@@ -21,12 +21,14 @@ export default function StatsCard({ stats }: StatsCardProps) {
       borderColor: "border-emerald-400/20",
     },
     {
-      
-      label: "Favorite Station",
-      value: stats.favoriteStation,
-      color: "text-blue-400",
-      bgColor: "bg-blue-400/10",
-      borderColor: "border-blue-400/20",
+      label: "User Rating",
+      value:
+        stats.ratings !== undefined && stats.ratingCount
+          ? `${Number(stats.ratings).toFixed(1)} ★ (${stats.ratingCount})`
+          : "No ratings",
+      color: "text-amber-400",
+      bgColor: "bg-amber-400/10",
+      borderColor: "border-amber-400/20",
     },
     {
       label: "Member Since",
@@ -46,8 +48,6 @@ export default function StatsCard({ stats }: StatsCardProps) {
             className="group relative bg-zinc-900 border border-zinc-800 rounded-xl p-5 hover:border-zinc-700 transition-all duration-300 animate-fade-in-up"
             style={{ animationDelay: `${index * 100}ms` }}
           >
-           
-
             <div>
               <p className="text-zinc-500 text-xs uppercase tracking-wider font-medium mb-1">
                 {item.label}

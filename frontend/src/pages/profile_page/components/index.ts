@@ -1,4 +1,19 @@
-export { default as ProfileHeader } from "./ProfileHeader";
-export { default as StatsCard } from "./StatsCard";
-export { default as UserInfoCard } from "./UserInfoCard";
-export { default as RecentTripsCard } from "./RecentTripsCard";
+import ProfileHeader from "./ProfileHeader";
+import StatsCard from "./StatsCard";
+import UserInfoCard from "./UserInfoCard";
+import RecentTripsCard from "./RecentTripsCard";
+import EditProfileModal from "./EditProfileModal";
+import UserGallery from "./UserGallery";
+import SocialHandles from "./SocialHandles";
+import ReviewsSection from "./ReviewsSection";
+
+export {
+  ProfileHeader,
+  StatsCard,
+  UserInfoCard,
+  RecentTripsCard,
+  EditProfileModal,
+  UserGallery,
+  SocialHandles,
+  ReviewsSection,
+};

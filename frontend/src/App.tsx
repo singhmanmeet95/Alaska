@@ -1,28 +1,16 @@
 import { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
+import { LoadingSpinner } from "./components/LoadingSpinner";
 
 // Lazy load pages for better performance
 const MapMetro = lazy(() => import("./pages/map_page/mapbox"));
 const ChatPage = lazy(() => import("./pages/chat_page/chat_page"));
 const Credentials = lazy(() => import("./pages/auth_page/auth_index"));
 const ProfilePage = lazy(() => import("./pages/profile_page/profile_page"));
+const EditProfilePage = lazy(
+  () => import("./pages/profile_page/EditProfilePage"),
+);
 const LandingPage = lazy(() => import("./pages/landing_page/LandingPage"));
-
-// Loading component for Suspense fallback
-function LoadingSpinner() {
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-zinc-950">
-      <div className="text-center">
-        <div className="relative">
-          <div className="w-16 h-16 border-2 border-zinc-800 border-t-zinc-100 rounded-full animate-spin mx-auto"></div>
-          <div className="mt-6 text-zinc-400 text-sm font-medium tracking-wide uppercase">
-            Loading Alaska...
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function App() {
   return (
@@ -38,10 +26,11 @@ function App() {
         <Route path="/map" element={<MapMetro />} />
 
         {/* Chat Route */}
-        <Route path="/chat" element={<ChatPage />} />
+        <Route path="/chat/:chatId?" element={<ChatPage />} />
 
-        {/* Profile Route */}
+        {/* Profile Routes */}
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/profile/edit" element={<EditProfilePage />} />
 
         {/* 404 - Not Found */}
         <Route path="*" element={<NotFound />} />

@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../../store/useAuthStore";
 import ErrorMessage from "../../components/primary_components/wrong_banner";
 import AuthBackground from "./components/AuthBackground";
 import LoginForm from "./components/LoginForm";
@@ -12,7 +13,7 @@ type SignupInput = {
   email: string;
   password: string;
   image?: string;
-  about?: string;
+  bio?: string;
 };
 
 type SigninInput = {
@@ -23,14 +24,14 @@ type SigninInput = {
 export default function Credentials() {
   const navigate = useNavigate();
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
-  const [message] = useState<string>("");
-  const [isSubmitting] = useState<boolean>(false);
+  const { login, register, isLoading, error } = useAuthStore();
+  const [localMessage, setLocalMessage] = useState<string>("");
   const [signupData, setSignupData] = useState<SignupInput>({
     name: "",
     email: "",
     password: "",
     image: "",
-    about: "",
+    bio: "",
   });
 
   const [loginData, setLoginData] = useState<SigninInput>({
@@ -77,18 +78,34 @@ export default function Credentials() {
     setLoginData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSignupSubmit = () => {
-    // Implement signup logic
-    console.log("Signup data:", signupData);
-    // After successful signup, navigate to map or chat
-    // navigate("/map");
+  const handleSignupSubmit = async () => {
+    try {
+      await register({
+        name: signupData.name,
+        username:
+          signupData.email.split("@")[0] + Math.floor(Math.random() * 10000),
+        email: signupData.email,
+        password: signupData.password,
+        bio: signupData.bio,
+        profile_image: signupData.image, // Use correct backend field if needed
+      });
+      navigate("/profile");
+    } catch (err: any) {
+      setLocalMessage(
+        err.response?.data?.message || err.message || "Signup failed",
+      );
+    }
   };
 
-  const handleLoginSubmit = () => {
-    // Implement login logic
-    console.log("Login data:", loginData);
-    // After successful login, navigate to map or chat
-    navigate("/map");
+  const handleLoginSubmit = async () => {
+    try {
+      await login(loginData);
+      navigate("/profile");
+    } catch (err: any) {
+      setLocalMessage(
+        err.response?.data?.message || err.message || "Login failed",
+      );
+    }
   };
 
   return (
@@ -104,7 +121,7 @@ export default function Credentials() {
           <LoginForm
             email={loginData.email}
             password={loginData.password}
-            isSubmitting={isSubmitting}
+            isSubmitting={isLoading}
             onEmailChange={handleLoginChange}
             onPasswordChange={handleLoginChange}
             onSubmit={handleLoginSubmit}
@@ -116,13 +133,13 @@ export default function Credentials() {
             name={signupData.name}
             email={signupData.email}
             password={signupData.password}
-            about={signupData.about}
+            bio={signupData.bio}
             imageUrl={signupData.image}
-            isSubmitting={isSubmitting}
+            isSubmitting={isLoading}
             onNameChange={handleSignupChange}
             onEmailChange={handleSignupChange}
             onPasswordChange={handleSignupChange}
-            onAboutChange={handleSignupChange}
+            onBioChange={handleSignupChange}
             onImageUpload={handleImageUpload}
             onSubmit={handleSignupSubmit}
             onLoginClick={() => setIsSignUp(false)}
@@ -141,7 +158,7 @@ export default function Credentials() {
             isSignUp={isSignUp}
             signupData={signupData}
             loginData={loginData}
-            isSubmitting={isSubmitting}
+            isSubmitting={isLoading}
             onSignupChange={handleSignupChange}
             onLoginChange={handleLoginChange}
             onSignupSubmit={handleSignupSubmit}
@@ -152,7 +169,9 @@ export default function Credentials() {
         </div>
       </div>
       {/* Notification message */}
-      {message && <ErrorMessage text="wrong inputs entered" />}
+      {(localMessage || error) && (
+        <ErrorMessage text={localMessage || error || "Wrong inputs entered"} />
+      )}
     </div>
   );
 }

@@ -23,7 +23,7 @@ export default function MessageBubble({
 
   return (
     <div
-      className={`flex items-end mb-4 ${
+      className={`flex items-end mb-4 animate-fade-in ${
         isOwn ? "justify-end" : "justify-start"
       }`}
     >

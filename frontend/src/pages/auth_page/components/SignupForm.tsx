@@ -4,13 +4,13 @@ type SignupFormProps = {
   name: string;
   email: string;
   password: string;
-  about?: string;
+  bio?: string;
   imageUrl?: string;
   isSubmitting: boolean;
   onNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onEmailChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onPasswordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onAboutChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onBioChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onImageUpload: (file: File) => Promise<void>;
   onSubmit: () => void;
   onLoginClick: () => void;
@@ -20,13 +20,13 @@ export default function SignupForm({
   name,
   email,
   password,
-  about,
+  bio,
   imageUrl,
   isSubmitting,
   onNameChange,
   onEmailChange,
   onPasswordChange,
-  onAboutChange,
+  onBioChange,
   onImageUpload,
   onSubmit,
   onLoginClick,
@@ -66,13 +66,12 @@ export default function SignupForm({
           />
         </div>
 
-        {/* Profile Image Dropzone */}
         <div className="flex w-full flex-row h-24 items-center gap-2 justify-between">
           <textarea
-            name="about"
-            placeholder="Tell us about yourself..."
-            value={about}
-            onChange={onAboutChange}
+            name="bio"
+            placeholder="Tell us about yourself (bio)..."
+            value={bio}
+            onChange={onBioChange}
             className="w-1/2 h-full p-3 bg-zinc-900/50 border border-zinc-700 rounded-lg focus:outline-none focus:border-zinc-500 text-zinc-100 placeholder-zinc-500 transition-colors resize-none text-xs"
           />
           <div className="w-1/2 h-full">

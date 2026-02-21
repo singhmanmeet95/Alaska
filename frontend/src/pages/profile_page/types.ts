@@ -28,4 +28,6 @@ export interface UserStats {
   totalDistance: number;
   favoriteStation: string;
   memberSince: string;
+  ratings?: number;
+  ratingCount?: number;
 }

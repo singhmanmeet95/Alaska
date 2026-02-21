@@ -34,8 +34,18 @@ export const getUserById = async (req, res) => {
       where: { id },
       include: {
         trips: true,
-        sentChats: true,
-        receivedChats: true,
+        receivedReviews: {
+          include: {
+            reviewer: {
+              select: {
+                id: true,
+                name: true,
+                profile_image: true,
+                username: true,
+              },
+            },
+          },
+        },
       },
     });
 
@@ -45,7 +55,9 @@ export const getUserById = async (req, res) => {
         .json({ success: false, message: "User not found" });
     }
 
-    res.status(200).json({ success: true, data: user });
+    const { password, ...userWithoutPassword } = user;
+
+    res.status(200).json({ success: true, data: userWithoutPassword });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }

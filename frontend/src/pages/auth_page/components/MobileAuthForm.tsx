@@ -8,7 +8,7 @@ type MobileAuthFormProps = {
     name: string;
     email: string;
     password: string;
-    about?: string;
+    bio?: string;
     image?: string;
   };
   loginData: {
@@ -17,7 +17,7 @@ type MobileAuthFormProps = {
   };
   isSubmitting: boolean;
   onSignupChange: (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => void;
   onLoginChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSignupSubmit: () => void;
@@ -79,9 +79,9 @@ export default function MobileAuthForm({
         />
         <InputBox
           type="text"
-          name="about"
-          placeholder="About you"
-          value={signupData.about}
+          name="bio"
+          placeholder="About you (bio)"
+          value={signupData.bio}
           onChange={onSignupChange}
         />
 

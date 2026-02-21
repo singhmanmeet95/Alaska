@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Train, Clock, MapPin, ArrowRight } from "lucide-react";
 import type { Trip } from "../types";
 
@@ -6,6 +7,8 @@ interface RecentTripsCardProps {
 }
 
 export default function RecentTripsCard({ trips }: RecentTripsCardProps) {
+  const [showAll, setShowAll] = useState(false);
+
   const formatDate = (date: Date) => {
     const now = new Date();
     const diff = now.getTime() - new Date(date).getTime();
@@ -31,17 +34,21 @@ export default function RecentTripsCard({ trips }: RecentTripsCardProps) {
     <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 mb-6 animate-fade-in-up">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-bold text-zinc-100 flex items-center gap-3">
-         
           Recent Trips
         </h2>
-        <button className="text-zinc-500 hover:text-zinc-300 font-medium text-xs uppercase tracking-wider flex items-center gap-1 hover:gap-2 transition-all duration-200">
-          View All
-          <ArrowRight className="w-3 h-3" />
+        <button
+          onClick={() => setShowAll(!showAll)}
+          className="text-zinc-500 hover:text-zinc-300 font-medium text-xs uppercase tracking-wider flex items-center gap-1 hover:gap-2 transition-all duration-200"
+        >
+          {showAll ? "View Less" : "View All"}
+          <ArrowRight
+            className={`w-3 h-3 transition-transform ${showAll ? "rotate-90" : ""}`}
+          />
         </button>
       </div>
 
       <div className="space-y-3">
-        {trips.map((trip, index) => (
+        {(showAll ? trips : trips.slice(0, 3)).map((trip, index) => (
           <div
             key={trip.id}
             className="group relative p-4 bg-zinc-950/50 hover:bg-zinc-800 rounded-xl border border-zinc-800 hover:border-zinc-700 transition-all duration-300 cursor-pointer animate-slide-in-right"

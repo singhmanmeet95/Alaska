@@ -20,9 +20,9 @@ model User {
   trips         Trip[]   @relation("UserTrips")
   sentChats     Chat[]   @relation("SentChats")
   receivedChats Chat[]   @relation("ReceivedChats")
-  ratings       Int      @default(0)
+  ratings       Float      @default(0)
   ratingCount   Int      @default(0)
-
+  json          Json?    @default("{}")
   // Relations to Review model
   writtenReviews  Review[] @relation("WrittenReviews")
   receivedReviews Review[] @relation("ReceivedReviews")
@@ -80,8 +80,8 @@ model Chat {
 
 model Review {
   id        String   @id @default(uuid())
-  rating    Int 
-  comment   String? 
+  rating    Float 
+  comment   String?
   createdAt DateTime @default(now())
 
   reviewer   User   @relation("WrittenReviews", fields: [reviewerId], references: [id])

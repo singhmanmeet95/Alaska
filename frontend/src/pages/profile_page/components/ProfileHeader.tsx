@@ -1,11 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import { MessageCircle, Map, LogOut, Settings } from "lucide-react";
+import SocialHandles from "./SocialHandles";
 
 interface ProfileHeaderProps {
   name: string;
   username: string;
   image: string | null;
   bio: string | null;
+  socials?: Record<string, string>;
+  onEdit?: () => void;
 }
 
 export default function ProfileHeader({
@@ -13,6 +16,8 @@ export default function ProfileHeader({
   username,
   image,
   bio,
+  socials,
+  onEdit,
 }: ProfileHeaderProps) {
   const navigate = useNavigate();
 
@@ -42,38 +47,48 @@ export default function ProfileHeader({
                 </div>
               )}
             </div>
-            {/* Online indicator */}
-            <div className="absolute bottom-2 right-2 w-5 h-5 bg-emerald-500 border-4 border-zinc-950 rounded-full"></div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex gap-3 mb-2">
-            <button
-              onClick={() => navigate("/chat")}
-              className="flex items-center gap-2 px-5 py-2.5 bg-zinc-100 text-zinc-950 rounded hover:bg-white transition-colors font-medium text-sm"
-            >
-              <MessageCircle className="w-4 h-4" />
-              <span>Chat</span>
-            </button>
+          {/* Right Side container */}
+          <div className="flex flex-col items-end gap-3 -mb-10">
+            {/* Action Buttons */}
+            <div className="flex gap-3">
+              <button
+                onClick={() => navigate("/chat")}
+                className="flex items-center gap-2 px-5 py-2.5 bg-zinc-100 text-zinc-950 rounded hover:bg-white transition-colors font-medium text-sm"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span>Chat</span>
+              </button>
 
-            <button
-              onClick={() => navigate("/map")}
-              className="flex items-center gap-2 px-5 py-2.5 bg-zinc-800 text-zinc-100 rounded border border-zinc-700 hover:bg-zinc-700 transition-colors font-medium text-sm"
-            >
-              <Map className="w-4 h-4" />
-              <span>Map</span>
-            </button>
+              <button
+                onClick={() => navigate("/map")}
+                className="flex items-center gap-2 px-5 py-2.5 bg-zinc-800 text-zinc-100 rounded border border-zinc-700 hover:bg-zinc-700 transition-colors font-medium text-sm"
+              >
+                <Map className="w-4 h-4" />
+                <span>Map</span>
+              </button>
 
-            <button className="p-2.5 bg-zinc-900 text-zinc-400 rounded border border-zinc-800 hover:text-zinc-200 transition-colors">
-              <Settings className="w-5 h-5" />
-            </button>
+              <button
+                onClick={onEdit}
+                className="p-2.5 bg-zinc-900 text-zinc-400 rounded border border-zinc-800 hover:text-zinc-200 transition-colors"
+                title="Edit Profile"
+              >
+                <Settings className="w-5 h-5" />
+              </button>
 
-            <button
-              onClick={() => navigate("/auth")}
-              className="p-2.5 bg-red-950/30 text-red-400 rounded border border-red-900/50 hover:bg-red-950/50 transition-colors"
-            >
-              <LogOut className="w-5 h-5" />
-            </button>
+              <button
+                onClick={() => navigate("/auth")}
+                className="p-2.5 bg-red-950/30 text-red-400 rounded border border-red-900/50 hover:bg-red-950/50 transition-colors"
+              >
+                <LogOut className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Social Handles Inline */}
+            {socials && Object.keys(socials).length > 0 && (
+              <SocialHandles socials={socials} variant="inline" />
+            )}
           </div>
         </div>
 

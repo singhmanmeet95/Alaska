@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
+import { useAuthStore } from "../../store/useAuthStore";
 import {
   ArrowRight,
   Shield,
@@ -15,12 +16,11 @@ import {
 export default function LandingPage() {
   const [scrollY, setScrollY] = useState(0);
   const [hasMounted, setHasMounted] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isAuthenticated, checkAuth, logout } = useAuthStore();
 
   useEffect(() => {
     setHasMounted(true);
-    const token = localStorage.getItem("token");
-    setIsLoggedIn(!!token);
+    checkAuth(); // Update store with current token if any
 
     const handleScroll = () => setScrollY(window.scrollY);
     window.addEventListener("scroll", handleScroll);
@@ -28,9 +28,7 @@ export default function LandingPage() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setIsLoggedIn(false);
+    logout();
     window.location.reload();
   };
 
@@ -64,7 +62,7 @@ export default function LandingPage() {
           </div>
 
           <div className="flex items-center gap-8 hidden md:flex">
-            {isLoggedIn ? (
+            {isAuthenticated ? (
               <>
                 <Link
                   to="/map"
@@ -110,7 +108,7 @@ export default function LandingPage() {
           </div>
 
           <div className="flex items-center gap-4">
-            {isLoggedIn ? (
+            {isAuthenticated ? (
               <>
                 <button
                   onClick={handleLogout}
@@ -148,11 +146,6 @@ export default function LandingPage() {
       {/* Hero Section */}
       <section className="relative pt-48 pb-24 px-6 z-10 max-w-7xl mx-auto">
         <div className="flex flex-col items-center text-center max-w-5xl mx-auto space-y-8 animate-fade-in-up">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-zinc-900/80 border border-zinc-800 text-xs font-medium text-zinc-400 mb-6 animate-fade-in delay-200 hover:border-orange-500/50 transition-colors cursor-default">
-            <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span>
-            Version 2.0 Now Available
-          </div>
-
           <h1 className="text-6xl md:text-8xl font-bold tracking-tighter text-white leading-[1.1] animate-fade-in-up delay-100">
             Commute <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-orange-600 to-orange-800">
@@ -167,7 +160,7 @@ export default function LandingPage() {
 
           <div className="flex flex-col sm:flex-row items-center gap-4 pt-8 animate-fade-in-up delay-300">
             <Link
-              to={isLoggedIn ? "/map" : "/auth"}
+              to={isAuthenticated ? "/map" : "/auth"}
               className="px-8 py-4 bg-orange-600 text-white font-bold rounded-xl text-lg hover:bg-orange-700 transition-all duration-300 shadow-[0_4px_20px_rgba(234,88,12,0.4)] flex items-center gap-2 group hover:scale-105"
             >
               Start Matching
