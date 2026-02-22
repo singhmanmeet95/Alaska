@@ -1,6 +1,5 @@
 import express from "express";
 import { PrismaClient } from "@prisma/client";
-import cors from "cors";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import { createServer } from "http";
@@ -23,42 +22,53 @@ const prisma = new PrismaClient();
 const PORT = process.env.PORT || 3000;
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
 
-// Allowed origins
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
   "https://alaska-69fq.vercel.app",
 ];
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (Postman, curl, mobile)
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) return callback(null, true);
-      return callback(new Error(`CORS blocked for origin: ${origin}`));
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  }),
-);
+// ─── CORS: Manually set headers as the VERY FIRST middleware ───────────────
+// This runs before anything else — even if something below crashes,
+// the browser will still get CORS headers and won't show CORS errors.
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (!origin || allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin || "*");
+  }
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+  );
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+
+  // Handle preflight immediately — no need to go further
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+  next();
+});
+
 app.use(bodyParser.json());
 app.use(express.json());
 
-// Socket.IO — initialized always, but silently does nothing on Vercel
-// because Vercel kills the connection before any socket event fires.
-// On a real server (Railway/local), it works fully.
-const io = new Server(httpServer, {
-  cors: {
-    origin: allowedOrigins,
-    methods: ["GET", "POST"],
-  },
-  // On serverless: connections will fail silently, REST API still works fine
-  transports: IS_PRODUCTION ? ["polling"] : ["websocket", "polling"],
-});
+// ─── Socket.IO ──────────────────────────────────────────────────────────────
+// Wrapped in try/catch so if it fails on Vercel, it won't crash the whole app
+let io = null;
+try {
+  io = new Server(httpServer, {
+    cors: { origin: allowedOrigins, methods: ["GET", "POST"] },
+    transports: IS_PRODUCTION ? ["polling"] : ["websocket", "polling"],
+  });
+} catch (err) {
+  console.warn(
+    "Socket.IO failed to initialize (expected on serverless):",
+    err.message,
+  );
+}
 
-// Routes
+// ─── Routes ─────────────────────────────────────────────────────────────────
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/trips", tripRoutes);
@@ -83,94 +93,94 @@ app.get("/", (req, res) => {
   });
 });
 
-// Socket.IO Logic — code stays intact, works on real servers
-io.on("connection", (socket) => {
-  console.log("A user connected:", socket.id);
+// ─── Socket.IO Logic ─────────────────────────────────────────────────────────
+if (io) {
+  io.on("connection", (socket) => {
+    console.log("A user connected:", socket.id);
 
-  socket.on("join_user", (userId) => {
-    socket.join(userId);
-    console.log(`User ${userId} joined their room`);
-  });
+    socket.on("join_user", (userId) => {
+      socket.join(userId);
+      console.log(`User ${userId} joined their room`);
+    });
 
-  socket.on("send_message", async (data) => {
-    try {
-      const { senderId, receiverId, message } = data;
-      if (!senderId || !receiverId || !message) return;
+    socket.on("send_message", async (data) => {
+      try {
+        const { senderId, receiverId, message } = data;
+        if (!senderId || !receiverId || !message) return;
 
-      const friendship = await prisma.friendship.findFirst({
-        where: {
-          OR: [
-            { requesterId: senderId, receiverId: receiverId },
-            { requesterId: receiverId, receiverId: senderId },
-          ],
-          status: "ACCEPTED",
-        },
-      });
+        const friendship = await prisma.friendship.findFirst({
+          where: {
+            OR: [
+              { requesterId: senderId, receiverId: receiverId },
+              { requesterId: receiverId, receiverId: senderId },
+            ],
+            status: "ACCEPTED",
+          },
+        });
 
-      if (!friendship) {
-        socket.emit("error", { message: "You can only chat with friends" });
-        return;
+        if (!friendship) {
+          socket.emit("error", { message: "You can only chat with friends" });
+          return;
+        }
+
+        const newMessage = await prisma.chat.create({
+          data: { senderId, receiverId, message },
+          include: {
+            sender: {
+              select: {
+                id: true,
+                name: true,
+                username: true,
+                profile_image: true,
+              },
+            },
+            receiver: {
+              select: {
+                id: true,
+                name: true,
+                username: true,
+                profile_image: true,
+              },
+            },
+          },
+        });
+
+        io.to(receiverId).emit("receive_message", newMessage);
+        io.to(senderId).emit("message_sent", newMessage);
+      } catch (error) {
+        console.error("Error sending message via socket:", error);
+        socket.emit("error", { message: "Failed to send message" });
       }
+    });
 
-      const newMessage = await prisma.chat.create({
-        data: { senderId, receiverId, message },
-        include: {
-          sender: {
-            select: {
-              id: true,
-              name: true,
-              username: true,
-              profile_image: true,
-            },
-          },
-          receiver: {
-            select: {
-              id: true,
-              name: true,
-              username: true,
-              profile_image: true,
-            },
-          },
-        },
-      });
-
-      io.to(receiverId).emit("receive_message", newMessage);
-      io.to(senderId).emit("message_sent", newMessage);
-    } catch (error) {
-      console.error("Error sending message via socket:", error);
-      socket.emit("error", { message: "Failed to send message" });
-    }
+    socket.on("disconnect", () => {
+      console.log("User disconnected:", socket.id);
+    });
   });
+}
 
-  socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
-  });
-});
-
-// 404 handler
+// ─── 404 handler ─────────────────────────────────────────────────────────────
 app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: "Route not found",
-  });
+  res.status(404).json({ success: false, message: "Route not found" });
 });
 
-// Error handling middleware
+// ─── Error handler ────────────────────────────────────────────────────────────
 app.use((error, req, res, next) => {
   console.error("Error:", error);
   res.status(500).json({
     success: false,
     message: "Internal server error",
-    error: process.env.NODE_ENV === "development" ? error.message : undefined,
+    error: IS_PRODUCTION ? undefined : error.message,
   });
 });
 
+// ─── Start server (local only) ────────────────────────────────────────────────
 const startServer = async () => {
   try {
     await prisma.$connect();
     console.log("Database connected successfully");
     httpServer.listen(PORT, () => {
-      console.log(`Metro Lines API server is running on port ${PORT}`);
+      console.log(`Server running on port ${PORT}`);
     });
   } catch (error) {
     console.error("Failed to connect to the database:", error);
@@ -178,7 +188,6 @@ const startServer = async () => {
   }
 };
 
-// Local dev only — Vercel handles the server lifecycle itself
 if (!IS_PRODUCTION) {
   startServer();
 }
