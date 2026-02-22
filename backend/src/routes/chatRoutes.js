@@ -7,6 +7,7 @@ import {
   deleteChat,
   getChatsBetweenUsers,
   getChatsByUserId,
+  clearChatsBetweenUsers,
 } from "../controllers/chatController.js";
 import { authenticateToken } from "../middleware/auth.js";
 import {
@@ -27,7 +28,7 @@ router.get(
   "/user/:userId",
   authenticateToken,
   checkUserOwnership,
-  getChatsByUserId
+  getChatsByUserId,
 );
 
 // GET /api/chats/between/:senderId/:receiverId - Get chats between two users (protected - user can only access chats they're involved in)
@@ -35,7 +36,7 @@ router.get(
   "/between/:senderId/:receiverId",
   authenticateToken,
   checkChatOwnership,
-  getChatsBetweenUsers
+  getChatsBetweenUsers,
 );
 
 // POST /api/chats - Create new chat message (protected)
@@ -46,5 +47,13 @@ router.put("/:id", authenticateToken, checkChatOwnership, updateChat);
 
 // DELETE /api/chats/:id - Delete chat message (protected - user can only delete their own messages)
 router.delete("/:id", authenticateToken, checkChatOwnership, deleteChat);
+
+// DELETE /api/chats/between/:senderId/:receiverId - Clear all chats between two users
+router.delete(
+  "/between/:senderId/:receiverId",
+  authenticateToken,
+  checkChatOwnership,
+  clearChatsBetweenUsers,
+);
 
 export default router;

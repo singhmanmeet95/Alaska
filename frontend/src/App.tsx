@@ -31,6 +31,7 @@ function App() {
         {/* Profile Routes */}
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/profile/edit" element={<EditProfilePage />} />
+        <Route path="/user/:userId" element={<ProfilePage />} />
 
         {/* 404 - Not Found */}
         <Route path="*" element={<NotFound />} />

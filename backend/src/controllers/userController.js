@@ -1,4 +1,11 @@
 import { PrismaClient } from "@prisma/client";
+import { v2 as cloudinary } from "cloudinary";
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const prisma = new PrismaClient();
 
@@ -46,6 +53,18 @@ export const getUserById = async (req, res) => {
             },
           },
         },
+        writtenReviews: {
+          include: {
+            reviewee: {
+              select: {
+                id: true,
+                name: true,
+                profile_image: true,
+                username: true,
+              },
+            },
+          },
+        },
       },
     });
 
@@ -56,6 +75,40 @@ export const getUserById = async (req, res) => {
     }
 
     const { password, ...userWithoutPassword } = user;
+
+    // Fetch friendships to compile a friends list
+    const friendships = await prisma.friendship.findMany({
+      where: {
+        OR: [{ requesterId: id }, { receiverId: id }],
+        status: "ACCEPTED",
+      },
+      include: {
+        requester: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            profile_image: true,
+            bio: true,
+          },
+        },
+        receiver: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            profile_image: true,
+            bio: true,
+          },
+        },
+      },
+    });
+
+    const friendsList = friendships.map((f) =>
+      f.requesterId === id ? f.receiver : f.requester,
+    );
+
+    userWithoutPassword.friends = friendsList;
 
     res.status(200).json({ success: true, data: userWithoutPassword });
   } catch (error) {
@@ -96,7 +149,8 @@ export const createUser = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, username, email, password, image, about, bio } = req.body;
+    const { name, username, email, password, image, about, bio, images } =
+      req.body;
 
     // Check if user is updating their own profile
     if (req.user.id !== id) {
@@ -114,6 +168,7 @@ export const updateUser = async (req, res) => {
       ...(image !== undefined && { profile_image: image }),
       ...(about !== undefined && { about }),
       ...(bio !== undefined && { bio }),
+      ...(images !== undefined && { images }),
     };
 
     // Check if username is taken by another user
@@ -224,6 +279,63 @@ export const getUserByUsername = async (req, res) => {
     }
 
     res.status(200).json({ success: true, data: user });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// Upload gallery image
+export const uploadGalleryImage = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (req.user.id !== id) {
+      return res.status(403).json({
+        success: false,
+        message: "You can only update your own gallery",
+      });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "No file provided",
+      });
+    }
+
+    const uploadStream = cloudinary.uploader.upload_stream(
+      { folder: "alaska_gallery" },
+      async (error, result) => {
+        if (error) {
+          return res.status(500).json({ success: false, error: error.message });
+        }
+
+        try {
+          // fetch current user to add the image to the list
+          const user = await prisma.user.findUnique({ where: { id } });
+          const updatedImages = [...(user.images || []), result.secure_url];
+
+          const updatedUser = await prisma.user.update({
+            where: { id },
+            data: { images: updatedImages },
+            select: {
+              id: true,
+              name: true,
+              username: true,
+              email: true,
+              profile_image: true,
+              images: true,
+            },
+          });
+
+          res.status(200).json({ success: true, data: updatedUser });
+        } catch (dbError) {
+          res.status(500).json({ success: false, error: dbError.message });
+        }
+      },
+    );
+
+    uploadStream.end(req.file.buffer);
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }

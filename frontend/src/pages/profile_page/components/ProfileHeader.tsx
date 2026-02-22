@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { MessageCircle, Map, LogOut, Settings } from "lucide-react";
+import { MessageCircle, Map, LogOut, Settings, Bell } from "lucide-react";
 import SocialHandles from "./SocialHandles";
 
 interface ProfileHeaderProps {
@@ -9,6 +9,10 @@ interface ProfileHeaderProps {
   bio: string | null;
   socials?: Record<string, string>;
   onEdit?: () => void;
+  isOwnProfile?: boolean;
+  pendingRequestsCount?: number;
+  onOpenRequests?: () => void;
+  onChat?: () => void;
 }
 
 export default function ProfileHeader({
@@ -18,6 +22,10 @@ export default function ProfileHeader({
   bio,
   socials,
   onEdit,
+  isOwnProfile = true,
+  pendingRequestsCount = 0,
+  onOpenRequests,
+  onChat,
 }: ProfileHeaderProps) {
   const navigate = useNavigate();
 
@@ -54,7 +62,7 @@ export default function ProfileHeader({
             {/* Action Buttons */}
             <div className="flex gap-3">
               <button
-                onClick={() => navigate("/chat")}
+                onClick={onChat || (() => navigate("/chat"))}
                 className="flex items-center gap-2 px-5 py-2.5 bg-zinc-100 text-zinc-950 rounded hover:bg-white transition-colors font-medium text-sm"
               >
                 <MessageCircle className="w-4 h-4" />
@@ -69,26 +77,47 @@ export default function ProfileHeader({
                 <span>Map</span>
               </button>
 
-              <button
-                onClick={onEdit}
-                className="p-2.5 bg-zinc-900 text-zinc-400 rounded border border-zinc-800 hover:text-zinc-200 transition-colors"
-                title="Edit Profile"
-              >
-                <Settings className="w-5 h-5" />
-              </button>
+              {isOwnProfile && (
+                <>
+                  <button
+                    onClick={onEdit}
+                    className="p-2.5 bg-zinc-900 text-zinc-400 rounded border border-zinc-800 hover:text-zinc-200 transition-colors"
+                    title="Edit Profile"
+                  >
+                    <Settings className="w-5 h-5" />
+                  </button>
 
-              <button
-                onClick={() => navigate("/auth")}
-                className="p-2.5 bg-red-950/30 text-red-400 rounded border border-red-900/50 hover:bg-red-950/50 transition-colors"
-              >
-                <LogOut className="w-5 h-5" />
-              </button>
+                  <button
+                    onClick={() => navigate("/auth")}
+                    className="p-2.5 bg-red-950/30 text-red-400 rounded border border-red-900/50 hover:bg-red-950/50 transition-colors"
+                  >
+                    <LogOut className="w-5 h-5" />
+                  </button>
+                </>
+              )}
             </div>
 
             {/* Social Handles Inline */}
-            {socials && Object.keys(socials).length > 0 && (
-              <SocialHandles socials={socials} variant="inline" />
-            )}
+            <div className="flex items-center gap-3">
+              {socials && Object.keys(socials).length > 0 && (
+                <SocialHandles socials={socials} variant="inline" />
+              )}
+
+              {isOwnProfile && (
+                <button
+                  onClick={onOpenRequests}
+                  className="relative flex items-center justify-center p-2.5 bg-zinc-900 border border-zinc-800 text-zinc-400 rounded-full hover:bg-orange-500/10 hover:text-orange-400 hover:border-orange-500/30 transition-all shadow-sm"
+                  title="Connection Requests"
+                >
+                  <Bell className="w-5 h-5" />
+                  {pendingRequestsCount > 0 && (
+                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-orange-500 text-[10px] font-bold text-white shadow ring-2 ring-zinc-900">
+                      {pendingRequestsCount}
+                    </span>
+                  )}
+                </button>
+              )}
+            </div>
           </div>
         </div>
 

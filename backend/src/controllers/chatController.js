@@ -77,6 +77,22 @@ export const createChat = async (req, res) => {
   try {
     const { senderId, receiverId, message } = req.body;
 
+    const friendship = await prisma.friendship.findFirst({
+      where: {
+        OR: [
+          { requesterId: senderId, receiverId },
+          { requesterId: receiverId, receiverId: senderId },
+        ],
+        status: "ACCEPTED",
+      },
+    });
+
+    if (!friendship) {
+      return res
+        .status(403)
+        .json({ success: false, error: "You can only chat with friends" });
+    }
+
     const chat = await prisma.chat.create({
       data: {
         senderId,
@@ -179,6 +195,24 @@ export const deleteChat = async (req, res) => {
 export const getChatsBetweenUsers = async (req, res) => {
   try {
     const { senderId, receiverId } = req.params;
+
+    const friendship = await prisma.friendship.findFirst({
+      where: {
+        OR: [
+          { requesterId: senderId, receiverId },
+          { requesterId: receiverId, receiverId: senderId },
+        ],
+        status: "ACCEPTED",
+      },
+    });
+
+    if (!friendship) {
+      return res.status(403).json({
+        success: false,
+        error: "You can only view chats with friends",
+      });
+    }
+
     const chats = await prisma.chat.findMany({
       where: {
         OR: [
@@ -247,6 +281,28 @@ export const getChatsByUserId = async (req, res) => {
     });
 
     res.status(200).json({ success: true, data: chats });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// Clear all chats between two users
+export const clearChatsBetweenUsers = async (req, res) => {
+  try {
+    const { senderId, receiverId } = req.params;
+
+    await prisma.chat.deleteMany({
+      where: {
+        OR: [
+          { senderId, receiverId },
+          { senderId: receiverId, receiverId: senderId },
+        ],
+      },
+    });
+
+    res
+      .status(200)
+      .json({ success: true, message: "Chats cleared successfully" });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }

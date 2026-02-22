@@ -6,13 +6,13 @@ type AuthOverlayProps = {
 export default function AuthOverlay({ isSignUp, onToggle }: AuthOverlayProps) {
   return (
     <div
-      className="absolute z-10 bottom-0 top-0 w-1/2 text-left flex flex-col items-center justify-center bg-gradient-to-br from-zinc-800 to-zinc-900 text-zinc-100 transition-all duration-500 tracking-wide border-l border-zinc-700"
+      className="absolute z-10 bottom-0 top-0 w-1/2 text-left flex flex-col items-center justify-center bg-zinc-950 text-zinc-100 transition-all duration-500 tracking-wide border-l border-zinc-800"
       style={{ left: isSignUp ? "0" : "50%" }}
     >
       {/* Dark overlay to soften the background */}
-      <div className="absolute inset-0 bg-zinc-950/90"></div>
-      <div className="w-4/5 mx-auto text-left flex flex-col items-center justify-center text-center space-y-6">
-        <h2 className="md:text-5xl lg:text-7xl font-bold tracking-tight text-white">
+      <div className="absolute inset-0 bg-gradient-to-t from-orange-500/10 to-transparent"></div>
+      <div className="w-4/5 mx-auto text-left flex flex-col items-center justify-center text-center space-y-6 relative z-10">
+        <h2 className="md:text-5xl lg:text-7xl font-bold tracking-tight text-white drop-shadow-md">
           {isSignUp ? "Hello!" : "Welcome!"}
         </h2>
 
@@ -34,7 +34,7 @@ export default function AuthOverlay({ isSignUp, onToggle }: AuthOverlayProps) {
 
         {/* Toggle Button on the Overlay */}
         <button
-          className="cursor-pointer px-10 py-3 w-2/3 rounded-full bg-white text-black hover:bg-zinc-200 md:text-sm lg:text-base tracking-wide transition-all duration-300 font-semibold"
+          className="cursor-pointer px-10 py-3 w-2/3 rounded-xl border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white md:text-sm lg:text-base tracking-wide transition-all duration-300 font-bold shadow-sm"
           onClick={onToggle}
         >
           {isSignUp ? "LOGIN" : "SIGN UP"}

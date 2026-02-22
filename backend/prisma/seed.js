@@ -153,6 +153,27 @@ async function main() {
     });
   }
 
+  // Create some PENDING connection requests for the first user (User 1)
+  console.log("Creating pending connection requests for User 1...");
+  for (let i = 1; i <= 3; i++) {
+    await prisma.friendship.create({
+      data: {
+        requesterId: users[i].id,
+        receiverId: users[0].id, // Send to User 1
+        status: "PENDING",
+      },
+    });
+  }
+
+  // Create an extra ACCEPTED friend for User 1
+  await prisma.friendship.create({
+    data: {
+      requesterId: users[0].id,
+      receiverId: users[4].id,
+      status: "ACCEPTED",
+    },
+  });
+
   console.log("Creating meaningful reviews...");
 
   const reviewsData = [5, 5, 4, 4, 3, 2, 1, 5, 3, 2];
@@ -197,44 +218,64 @@ async function main() {
   }
 
   console.log("Creating realistic chat messages...");
-const chatMessages = [
-  "Hey! I’ve just reached the station entrance near Gate 3. It’s slightly crowded right now because of office hours, but I’m standing near the ticket counter. Let me know exactly where you are so we can coordinate properly and board together without confusion.",
+  const chatMessages = [
+    "Hey! I’ve just reached the station entrance near Gate 3. It’s slightly crowded right now because of office hours, but I’m standing near the ticket counter. Let me know exactly where you are so we can coordinate properly and board together without confusion.",
 
-  "I’m inside the metro now, second coach from the front. It’s moderately crowded but manageable. If you haven’t boarded yet, try coming towards the middle section because it usually has slightly less rush during this time. Let me know once you’re inside.",
+    "I’m inside the metro now, second coach from the front. It’s moderately crowded but manageable. If you haven’t boarded yet, try coming towards the middle section because it usually has slightly less rush during this time. Let me know once you’re inside.",
 
-  "I might be running about 5 to 7 minutes late due to unexpected traffic near the station road. Really sorry about that. If you reach earlier, please wait near the main security check area so we can enter together. I appreciate your patience.",
+    "I might be running about 5 to 7 minutes late due to unexpected traffic near the station road. Really sorry about that. If you reach earlier, please wait near the main security check area so we can enter together. I appreciate your patience.",
 
-  "Are you planning to get down at Rajiv Chowk or continuing till Central Secretariat? I just want to confirm so that we can stand near the correct exit gate and avoid unnecessary walking during the interchange.",
+    "Are you planning to get down at Rajiv Chowk or continuing till Central Secretariat? I just want to confirm so that we can stand near the correct exit gate and avoid unnecessary walking during the interchange.",
 
-  "It was really nice meeting you today. The conversation made the long journey much more enjoyable. Let’s plan tomorrow’s commute as well if our schedules match. Safe travels and message me once you reach your destination.",
+    "It was really nice meeting you today. The conversation made the long journey much more enjoyable. Let’s plan tomorrow’s commute as well if our schedules match. Safe travels and message me once you reach your destination.",
 
-  "The train seems slightly delayed due to congestion ahead. Don’t worry though, we still have enough buffer time before reaching our stop. Let’s stay near the door when our station approaches to avoid last-minute rush.",
+    "The train seems slightly delayed due to congestion ahead. Don’t worry though, we still have enough buffer time before reaching our stop. Let’s stay near the door when our station approaches to avoid last-minute rush.",
 
-  "If you’re already inside the station, try coming near the escalator on the left side of the concourse area. I’m standing there wearing a blue shirt. That might be easier than trying to locate each other inside the moving crowd.",
+    "If you’re already inside the station, try coming near the escalator on the left side of the concourse area. I’m standing there wearing a blue shirt. That might be easier than trying to locate each other inside the moving crowd.",
 
-  "Tomorrow I’ll be leaving slightly earlier than usual, around 8:15 AM instead of 8:30. If that works for you, we can board the earlier train and avoid peak crowd pressure. Let me know your availability.",
-];
+    "Tomorrow I’ll be leaving slightly earlier than usual, around 8:15 AM instead of 8:30. If that works for you, we can board the earlier train and avoid peak crowd pressure. Let me know your availability.",
+  ];
 
-  for (let i = 0; i < 30; i++) {
-    const sender = users[Math.floor(Math.random() * users.length)];
-    let receiver = users[Math.floor(Math.random() * users.length)];
+  // Fetch only ALL ACCEPTED friendships to ensure chats exist exclusively between friends
+  const acceptedFriendships = await prisma.friendship.findMany({
+    where: { status: "ACCEPTED" },
+  });
 
-    while (sender.id === receiver.id) {
-      receiver = users[Math.floor(Math.random() * users.length)];
+  if (acceptedFriendships.length > 0) {
+    for (let i = 0; i < 30; i++) {
+      // Pick a random friendship
+      const friendship =
+        acceptedFriendships[
+          Math.floor(Math.random() * acceptedFriendships.length)
+        ];
+
+      // Randomly assign sender/receiver between the two friends
+      const isRequesterSender = Math.random() > 0.5;
+      const senderId = isRequesterSender
+        ? friendship.requesterId
+        : friendship.receiverId;
+      const receiverId = isRequesterSender
+        ? friendship.receiverId
+        : friendship.requesterId;
+
+      await prisma.chat.create({
+        data: {
+          senderId: senderId,
+          receiverId: receiverId,
+          message:
+            chatMessages[Math.floor(Math.random() * chatMessages.length)],
+          createdAt: new Date(Date.now() - Math.random() * 10000000),
+        },
+      });
     }
-
-    await prisma.chat.create({
-      data: {
-        senderId: sender.id,
-        receiverId: receiver.id,
-        message: chatMessages[Math.floor(Math.random() * chatMessages.length)],
-        createdAt: new Date(Date.now() - Math.random() * 10000000),
-      },
-    });
+  } else {
+    console.warn(
+      "No accepted friendships found. Skipping chat seeding to maintain data integrity.",
+    );
   }
 
   console.log(
-    "✅ Database seeded thoroughly with realistic and meaningful test data!",
+    "Database seeded thoroughly with realistic and meaningful test data!",
   );
 }
 

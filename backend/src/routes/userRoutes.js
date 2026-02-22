@@ -6,8 +6,12 @@ import {
   updateUser,
   deleteUser,
   getUserByUsername,
+  uploadGalleryImage,
 } from "../controllers/userController.js";
 import { authenticateToken, optionalAuth } from "../middleware/auth.js";
+import multer from "multer";
+
+const upload = multer({ storage: multer.memoryStorage() });
 
 const router = express.Router();
 
@@ -28,5 +32,13 @@ router.put("/:id", authenticateToken, updateUser);
 
 // DELETE /api/users/:id - Delete user (protected - user can only delete their own account)
 router.delete("/:id", authenticateToken, deleteUser);
+
+// POST /api/users/:id/gallery - Upload image to gallery
+router.post(
+  "/:id/gallery",
+  authenticateToken,
+  upload.single("file"),
+  uploadGalleryImage,
+);
 
 export default router;

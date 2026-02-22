@@ -42,10 +42,14 @@ export default function ChatPage() {
 
   const [messages, setMessages] = useState<Record<string, Message[]>>({});
   const [backendChats, setBackendChats] = useState<BackendChat[]>([]);
+  const [friends, setFriends] = useState<any[]>([]);
   const [activeChat, setActiveChat] = useState<string | null>(chatId || null);
   const [showSidebar, setShowSidebar] = useState(!chatId);
   const [sidebarWidth, setSidebarWidth] = useState(384);
   const [socket, setSocket] = useState<Socket | null>(null);
+  const [externalActiveUser, setExternalActiveUser] = useState<ChatUser | null>(
+    null,
+  );
 
   // Resize handler
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -126,6 +130,7 @@ export default function ChatPage() {
     }
 
     const fetchChats = async () => {
+      // 1. Fetch Chats
       try {
         const res = await axios.get(`${API_URL}/chats/user/${user.id}`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -163,6 +168,18 @@ export default function ChatPage() {
       } catch (error) {
         console.error("Failed to fetch chats", error);
       }
+
+      // 2. Fetch Friends independently
+      try {
+        const friendRes = await axios.get(`${API_URL}/friendships/friends`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (friendRes.data && friendRes.data.data) {
+          setFriends(friendRes.data.data);
+        }
+      } catch (friendErr) {
+        console.error("Failed to fetch friends", friendErr);
+      }
     };
     fetchChats();
   }, [user, token, navigate]);
@@ -183,8 +200,12 @@ export default function ChatPage() {
       }
     });
 
+    const friendIds = new Set(
+      Array.isArray(friends) ? friends.map((f: any) => f.id) : [],
+    );
+
     // Map to frontend Chat format
-    return Array.from(latestChatsMap.values())
+    const frontendChats = Array.from(latestChatsMap.values())
       .map((c) => {
         const isSender = c.senderId === user.id;
         const contactId = isSender ? c.receiverId : c.senderId;
@@ -208,8 +229,46 @@ export default function ChatPage() {
           unreadCount: 0, // Unread count logic not maintained in DB schema currently
         };
       })
-      .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
-  }, [backendChats, user]);
+      .filter((c) => friendIds.has(c.id));
+
+    // Merge friends who don't have chat history yet
+    const chatContactIds = new Set(frontendChats.map((c: any) => c.id));
+
+    if (Array.isArray(friends)) {
+      friends.forEach((friend) => {
+        if (!chatContactIds.has(friend.id)) {
+          frontendChats.push({
+            id: friend.id,
+            user: {
+              id: friend.id,
+              name: friend.name || friend.username || "Unknown Friend",
+              avatar:
+                friend.profile_image ||
+                friend.image ||
+                `https://ui-avatars.com/api/?name=${friend.name || friend.username || "User"}&background=random&color=fff`,
+              status: "online",
+            },
+            lastMessage: "Say hello!",
+            timestamp: new Date(0), // Push to bottom of list
+            unreadCount: 0,
+          });
+          chatContactIds.add(friend.id); // Prevent dupes if friends list has dupes
+        }
+      });
+    }
+
+    return frontendChats.sort((a: any, b: any) => {
+      const timeA =
+        a.timestamp instanceof Date && !isNaN(a.timestamp.getTime())
+          ? a.timestamp.getTime()
+          : 0;
+      const timeB =
+        b.timestamp instanceof Date && !isNaN(b.timestamp.getTime())
+          ? b.timestamp.getTime()
+          : 0;
+      return timeB - timeA;
+    });
+  }, [backendChats, friends, user]);
 
   useEffect(() => {
     if (chatId) {
@@ -218,8 +277,36 @@ export default function ChatPage() {
     } else {
       setActiveChat(null);
       setShowSidebar(true);
+      setExternalActiveUser(null);
     }
   }, [chatId]);
+
+  useEffect(() => {
+    if (activeChat && !activeChatsList.find((c) => c.id === activeChat)) {
+      // User is not in chats/friends list locally yet, fetch their details so the header isn't blank
+      axios
+        .get(`${API_URL}/users/${activeChat}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        })
+        .then((res) => {
+          if (res.data && res.data.data) {
+            const u = res.data.data;
+            setExternalActiveUser({
+              id: u.id,
+              name: u.name || u.username || "Unknown User",
+              avatar:
+                u.profile_image ||
+                u.image ||
+                `https://ui-avatars.com/api/?name=${u.name || u.username || "User"}&background=random&color=fff`,
+              status: "online",
+            });
+          }
+        })
+        .catch((err) =>
+          console.error("Could not fetch active user details", err),
+        );
+    }
+  }, [activeChat, activeChatsList]);
 
   const handleChatSelect = (newChatId: string) => {
     navigate(`/chat/${newChatId}`);
@@ -242,10 +329,90 @@ export default function ChatPage() {
     navigate("/chat");
   };
 
+  const handleClearChat = async () => {
+    if (!activeChat || !user || !token) return;
+    if (!confirm("Are you sure you want to clear this entire chat history?"))
+      return;
+
+    try {
+      await axios.delete(`${API_URL}/chats/between/${user.id}/${activeChat}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setMessages((prev) => ({ ...prev, [activeChat]: [] }));
+      setBackendChats((prev) => {
+        const remaining = prev.filter(
+          (c) => !(c.senderId === activeChat || c.receiverId === activeChat),
+        );
+        const lastChat = prev.find(
+          (c) => c.senderId === activeChat || c.receiverId === activeChat,
+        );
+
+        if (lastChat) {
+          // Keep a stub so the user doesn't disappear from the sidebar immediately
+          return [
+            {
+              ...lastChat,
+              message: "Chat history cleared",
+              createdAt: new Date().toISOString(),
+            },
+            ...remaining,
+          ];
+        }
+        return remaining;
+      });
+    } catch (err) {
+      console.error("Failed to clear chat", err);
+      alert("Failed to clear chat");
+    }
+  };
+
+  const handleRemoveFriend = async () => {
+    if (!activeChat || !user || !token) return;
+    if (
+      !confirm(
+        "Are you sure you want to remove this person as a friend? This chat will also be cleared.",
+      )
+    )
+      return;
+
+    try {
+      await axios.delete(`${API_URL}/friendships/user/${activeChat}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      // Optional: clear chats locally / on backend too
+      await axios
+        .delete(`${API_URL}/chats/between/${user.id}/${activeChat}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .catch((e) =>
+          console.error("Failed clearing chats when removing friend", e),
+        );
+
+      setFriends((prev) => prev.filter((f) => f.id !== activeChat));
+      setMessages((prev) => {
+        const next = { ...prev };
+        delete next[activeChat];
+        return next;
+      });
+      setBackendChats((prev) =>
+        prev.filter(
+          (c) => !(c.senderId === activeChat || c.receiverId === activeChat),
+        ),
+      );
+      setActiveChat(null);
+      setShowSidebar(true);
+      navigate("/chat");
+    } catch (err) {
+      console.error("Failed to remove friend", err);
+      alert("Failed to remove friend");
+    }
+  };
+
   if (!user) return null; // Handle unauthenticated edge visually smoothly
 
   const activeUser =
-    activeChatsList.find((chat) => chat.id === activeChat)?.user || null;
+    activeChatsList.find((chat) => chat.id === activeChat)?.user ||
+    externalActiveUser;
   const currentMessages = activeChat ? messages[activeChat] || [] : [];
 
   return (
@@ -285,6 +452,8 @@ export default function ChatPage() {
             onSendMessage={handleSendMessage}
             onBackClick={handleBackClick}
             showBack={!showSidebar}
+            onClearChat={handleClearChat}
+            onRemoveFriend={handleRemoveFriend}
           />
         ) : (
           <EmptyChatState />

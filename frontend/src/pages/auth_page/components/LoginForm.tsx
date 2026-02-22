@@ -30,7 +30,7 @@ export default function LoginForm({
           placeholder="Email address"
           value={email}
           onChange={onEmailChange}
-          className="w-full h-10 px-4 bg-zinc-900/50 border border-zinc-700 rounded-lg focus:outline-none focus:border-zinc-500 text-zinc-100 placeholder-zinc-500 transition-colors"
+          className="w-full h-11 px-4 bg-zinc-900 border border-zinc-800 rounded-xl focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 text-zinc-100 placeholder-zinc-500 transition-all shadow-sm"
         />
         <input
           type="password"
@@ -38,7 +38,7 @@ export default function LoginForm({
           placeholder="Password"
           value={password}
           onChange={onPasswordChange}
-          className="w-full h-10 px-4 bg-zinc-900/50 border border-zinc-700 rounded-lg focus:outline-none focus:border-zinc-500 text-zinc-100 placeholder-zinc-500 transition-colors"
+          className="w-full h-11 px-4 bg-zinc-900 border border-zinc-800 rounded-xl focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 text-zinc-100 placeholder-zinc-500 transition-all shadow-sm"
         />
 
         {/* LOGIN Button */}
@@ -46,10 +46,10 @@ export default function LoginForm({
           onClick={onSubmit}
           type="submit"
           disabled={isSubmitting}
-          className="w-full h-10 mt-4 bg-white text-black font-semibold rounded-lg hover:bg-zinc-200 transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed tracking-wide"
+          className="w-full h-11 mt-4 bg-orange-500 text-white font-bold rounded-xl hover:bg-orange-600 transition-all shadow-lg hover:shadow-orange-500/20 active:scale-[0.98] flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed tracking-wide"
         >
           {isSubmitting ? (
-            <div className="w-5 h-5 border-2 border-zinc-800 border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
           ) : (
             "SIGN IN"
           )}
@@ -58,7 +58,7 @@ export default function LoginForm({
         <p className="text-center text-xs mt-6 text-zinc-500">
           Don't have an account?{" "}
           <span
-            className="text-zinc-300 hover:text-white cursor-pointer font-medium underline-offset-4 hover:underline transition-all"
+            className="text-orange-400 hover:text-orange-300 font-semibold cursor-pointer transition-colors"
             onClick={onSignUpClick}
           >
             Create one

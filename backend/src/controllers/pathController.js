@@ -1,5 +1,6 @@
 import express from "express";
 import { PrismaClient } from "@prisma/client";
+import { optionalAuth } from "../middleware/auth.js";
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -125,7 +126,7 @@ class SuffixAutomaton {
 
 // ---------- Express Route ----------
 
-router.get("/sorted_trips", async (req, res) => {
+router.get("/sorted_trips", optionalAuth, async (req, res) => {
   try {
     const tripId = req.query.id;
     if (!tripId) {
@@ -148,12 +149,15 @@ router.get("/sorted_trips", async (req, res) => {
     const minTime = new Date(refTime.getTime() - TIME_WINDOW_MINUTES * 60000);
     const maxTime = new Date(refTime.getTime() + TIME_WINDOW_MINUTES * 60000);
 
+    const baseConditions = [{ id: { not: tripId } }];
+    if (req.user) {
+      baseConditions.push({ userId: { not: req.user.id } });
+    }
+    baseConditions.push({ startTime: { gte: minTime, lte: maxTime } });
+
     const trips = await prisma.trip.findMany({
       where: {
-        AND: [
-          { id: { not: tripId } },
-          { startTime: { gte: minTime, lte: maxTime } },
-        ],
+        AND: baseConditions,
       },
       include: {
         user: { select: { id: true, name: true, username: true, email: true } },
@@ -235,7 +239,7 @@ router.get("/sorted_trips", async (req, res) => {
 });
 
 // ---------- POST: User sends custom stationList (and optional startTime), get matching trips ----------
-router.post("/match_trips", async (req, res) => {
+router.post("/match_trips", optionalAuth, async (req, res) => {
   try {
     const { stationList, startTime, k } = req.body;
 
@@ -264,12 +268,34 @@ router.post("/match_trips", async (req, res) => {
       dateFilter = { startTime: { gte: minTime, lte: maxTime } };
     }
 
+    if (req.user) {
+      dateFilter.userId = { not: req.user.id };
+    }
+
     const trips = await prisma.trip.findMany({
       where: dateFilter,
       include: {
-        user: { select: { id: true, name: true, username: true, email: true } },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            email: true,
+            profile_image: true,
+            ratings: true,
+          },
+        },
       },
     });
+
+    let userFriendships = [];
+    if (req.user) {
+      userFriendships = await prisma.friendship.findMany({
+        where: {
+          OR: [{ requesterId: req.user.id }, { receiverId: req.user.id }],
+        },
+      });
+    }
 
     const queryPath = stationList.map(normalizeStation);
 
@@ -319,6 +345,32 @@ router.post("/match_trips", async (req, res) => {
         }
       }
 
+      let friendshipStatus = "NONE";
+      let friendshipId = null;
+      if (req.user) {
+        const relationship = userFriendships.find(
+          (f) =>
+            (f.requesterId === trip.user.id && f.receiverId === req.user.id) ||
+            (f.receiverId === trip.user.id && f.requesterId === req.user.id),
+        );
+        if (relationship) {
+          friendshipId = relationship.id;
+          if (
+            relationship.status === "PENDING" &&
+            relationship.receiverId === req.user.id
+          ) {
+            friendshipStatus = "RECEIVED_REQUEST";
+          } else if (
+            relationship.status === "PENDING" &&
+            relationship.requesterId === req.user.id
+          ) {
+            friendshipStatus = "SENT_REQUEST";
+          } else {
+            friendshipStatus = relationship.status;
+          }
+        }
+      }
+
       return {
         ...trip,
         lcsLen: length,
@@ -326,6 +378,8 @@ router.post("/match_trips", async (req, res) => {
         startInCandidate: startCand,
         timeDiffAtOverlap,
         isViable,
+        friendshipStatus,
+        friendshipId,
       };
     });
 

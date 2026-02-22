@@ -12,6 +12,7 @@ import chatRoutes from "./routes/chatRoutes.js";
 import utilRoutes from "./routes/utilsRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
+import friendshipRoutes from "./routes/friendshipRoutes.js";
 
 dotenv.config();
 
@@ -39,6 +40,7 @@ app.use("/api/trips", tripRoutes);
 app.use("/api/chats", chatRoutes);
 app.use("/api/utils", utilRoutes);
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/friendships", friendshipRoutes);
 
 // Default route
 app.get("/", (req, res) => {
@@ -72,6 +74,22 @@ io.on("connection", (socket) => {
       const { senderId, receiverId, message } = data;
 
       if (!senderId || !receiverId || !message) {
+        return;
+      }
+
+      // Check friendship
+      const friendship = await prisma.friendship.findFirst({
+        where: {
+          OR: [
+            { requesterId: senderId, receiverId: receiverId },
+            { requesterId: receiverId, receiverId: senderId },
+          ],
+          status: "ACCEPTED",
+        },
+      });
+
+      if (!friendship) {
+        socket.emit("error", { message: "You can only chat with friends" });
         return;
       }
 
