@@ -18,20 +18,45 @@ dotenv.config();
 
 const app = express();
 const httpServer = createServer(app);
-const io = new Server(httpServer, {
-  cors: {
-    origin: "*", // Allow all origins for now
-    methods: ["GET", "POST"],
-  },
-});
-
-const env = process.env;
-const PORT = env.PORT || 3000;
 const prisma = new PrismaClient();
 
-app.use(cors());
+const PORT = process.env.PORT || 3000;
+const IS_PRODUCTION = process.env.NODE_ENV === "production";
+
+// Allowed origins
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "https://alaska-69fq.vercel.app",
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (Postman, curl, mobile)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
 app.use(bodyParser.json());
 app.use(express.json());
+
+// Socket.IO — initialized always, but silently does nothing on Vercel
+// because Vercel kills the connection before any socket event fires.
+// On a real server (Railway/local), it works fully.
+const io = new Server(httpServer, {
+  cors: {
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+  },
+  // On serverless: connections will fail silently, REST API still works fine
+  transports: IS_PRODUCTION ? ["polling"] : ["websocket", "polling"],
+});
 
 // Routes
 app.use("/api/auth", authRoutes);
@@ -58,26 +83,20 @@ app.get("/", (req, res) => {
   });
 });
 
-// Socket.IO Logic
+// Socket.IO Logic — code stays intact, works on real servers
 io.on("connection", (socket) => {
   console.log("A user connected:", socket.id);
 
-  // User joins their personal room to receive messages
   socket.on("join_user", (userId) => {
     socket.join(userId);
     console.log(`User ${userId} joined their room`);
   });
 
-  // Handle sending messages
   socket.on("send_message", async (data) => {
     try {
       const { senderId, receiverId, message } = data;
+      if (!senderId || !receiverId || !message) return;
 
-      if (!senderId || !receiverId || !message) {
-        return;
-      }
-
-      // Check friendship
       const friendship = await prisma.friendship.findFirst({
         where: {
           OR: [
@@ -93,13 +112,8 @@ io.on("connection", (socket) => {
         return;
       }
 
-      // Save message to database
       const newMessage = await prisma.chat.create({
-        data: {
-          senderId,
-          receiverId,
-          message,
-        },
+        data: { senderId, receiverId, message },
         include: {
           sender: {
             select: {
@@ -120,10 +134,7 @@ io.on("connection", (socket) => {
         },
       });
 
-      // Emit to receiver
       io.to(receiverId).emit("receive_message", newMessage);
-
-      // Emit back to sender (for confirmation/UI update if needed)
       io.to(senderId).emit("message_sent", newMessage);
     } catch (error) {
       console.error("Error sending message via socket:", error);
@@ -167,11 +178,10 @@ const startServer = async () => {
   }
 };
 
-// Keep startServer() for local dev
-if (process.env.NODE_ENV !== 'production') {
+// Local dev only — Vercel handles the server lifecycle itself
+if (!IS_PRODUCTION) {
   startServer();
 }
 
 // Export for Vercel
 export default app;
-
