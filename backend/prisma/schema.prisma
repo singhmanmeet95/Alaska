@@ -19,8 +19,6 @@ model User {
   bio           String?
   images        String[]
   trips         Trip[]   @relation("UserTrips")
-  sentChats     Chat[]   @relation("SentChats")
-  receivedChats Chat[]   @relation("ReceivedChats")
   ratings       Float      @default(0)
   ratingCount   Int      @default(0)
   json          Json?    @default("{}")
@@ -65,18 +63,6 @@ model Trip {
   length       Int
   startStation Int
   endStation   Int
-}
-
-model Chat {
-  id         String   @id @default(uuid())
-  sender     User     @relation("SentChats", fields: [senderId], references: [id])
-  senderId   String
-  receiver   User     @relation("ReceivedChats", fields: [receiverId], references: [id])
-  receiverId String
-  message    String
-  createdAt  DateTime @default(now())
-
-  @@index([senderId, receiverId])
 }
 
 model Review {

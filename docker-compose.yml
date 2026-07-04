@@ -1,0 +1,75 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: alaska_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: alaska
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    build: ./backend
+    container_name: alaska_backend
+    restart: always
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - db
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/prisma:/app/prisma
+
+  redis:
+    image: redis:7-alpine
+    container_name: alaska_redis
+    restart: always
+    ports:
+      - "6380:6379"
+
+  mongodb:
+    image: mongo:7
+    container_name: alaska_mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodata:/data/db
+
+  chat-gateway:
+    build: ./chat-gateway
+    container_name: alaska_chat_gateway
+    restart: always
+    ports:
+      - "4001:4001"
+    environment:
+      - PORT=4001
+      - WORKER_URL=http://chat-worker:4002
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+      - chat-worker
+
+  chat-worker:
+    build: ./chat-worker
+    container_name: alaska_chat_worker
+    restart: always
+    ports:
+      - "4002:4002"
+    environment:
+      - PORT=4002
+      - REDIS_URL=redis://redis:6379
+      - MONGO_URI=mongodb://mongodb:27017/alaska-chat
+    depends_on:
+      - redis
+      - mongodb
+
+volumes:
+  pgdata:
+  mongodata:

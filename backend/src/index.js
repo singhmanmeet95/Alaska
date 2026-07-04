@@ -2,13 +2,10 @@ import express from "express";
 import { PrismaClient } from "@prisma/client";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
-import { createServer } from "http";
-import { Server } from "socket.io";
 import cors from "cors";
 
 import userRoutes from "./routes/userRoutes.js";
 import tripRoutes from "./routes/tripRoutes.js";
-import chatRoutes from "./routes/chatRoutes.js";
 import utilRoutes from "./routes/utilsRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
@@ -17,7 +14,6 @@ import friendshipRoutes from "./routes/friendshipRoutes.js";
 dotenv.config();
 
 const app = express();
-const httpServer = createServer(app);
 const prisma = new PrismaClient();
 
 const PORT = process.env.PORT || 3000;
@@ -38,101 +34,16 @@ app.use(cors({
 app.use(bodyParser.json());
 app.use(express.json());
 
-// ─── Socket.IO ──────────────────────────────────────────────────────────────
-// Wrapped in try/catch so if it fails on Vercel, it won't crash the whole app
-let io = null;
-try {
-  io = new Server(httpServer, {
-    cors: { origin: allowedOrigins, methods: ["GET", "POST"] },
-    transports: IS_PRODUCTION ? ["polling"] : ["websocket", "polling"],
-  });
-} catch (err) {
-  console.warn(
-    "Socket.IO failed to initialize (expected on serverless):",
-    err.message,
-  );
-}
-
 // ─── Routes ─────────────────────────────────────────────────────────────────
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/trips", tripRoutes);
-app.use("/api/chats", chatRoutes);
 app.use("/api/utils", utilRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/friendships", friendshipRoutes);
 app.get("/health", (req,res)=>{
   res.status(200).json({message:"health endpoint is working fine"})
 });
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
-
-// ─── Socket.IO Logic ─────────────────────────────────────────────────────────
-if (io) {
-  io.on("connection", (socket) => {
-    console.log("A user connected:", socket.id);
-
-    socket.on("join_user", (userId) => {
-      socket.join(userId);
-      console.log(`User ${userId} joined their room`);
-    });
-
-    socket.on("send_message", async (data) => {
-      try {
-        const { senderId, receiverId, message } = data;
-        if (!senderId || !receiverId || !message) return;
-
-        const friendship = await prisma.friendship.findFirst({
-          where: {
-            OR: [
-              { requesterId: senderId, receiverId: receiverId },
-              { requesterId: receiverId, receiverId: senderId },
-            ],
-            status: "ACCEPTED",
-          },
-        });
-
-        if (!friendship) {
-          socket.emit("error", { message: "You can only chat with friends" });
-          return;
-        }
-
-        const newMessage = await prisma.chat.create({
-          data: { senderId, receiverId, message },
-          include: {
-            sender: {
-              select: {
-                id: true,
-                name: true,
-                username: true,
-                profile_image: true,
-              },
-            },
-            receiver: {
-              select: {
-                id: true,
-                name: true,
-                username: true,
-                profile_image: true,
-              },
-            },
-          },
-        });
-
-        io.to(receiverId).emit("receive_message", newMessage);
-        io.to(senderId).emit("message_sent", newMessage);
-      } catch (error) {
-        console.error("Error sending message via socket:", error);
-        socket.emit("error", { message: "Failed to send message" });
-      }
-    });
-
-    socket.on("disconnect", () => {
-      console.log("User disconnected:", socket.id);
-    });
-  });
-}
 
 // ─── Error handler ────────────────────────────────────────────────────────────
 app.use((error, req, res, next) => {
@@ -149,7 +60,7 @@ const startServer = async () => {
   try {
     await prisma.$connect();
     console.log("Database connected successfully");
-    httpServer.listen(PORT, () => {
+    app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
   } catch (error) {

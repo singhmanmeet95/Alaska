@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuthStore } from "../../../store/useAuthStore";
 import { Star, ChevronLeft, ChevronRight } from "lucide-react";
+import { getStationId } from "../../../../utils/stationsMap";
+import { SuffixAutomaton } from "../../../../utils/SuffixAutomaton";
 
 interface MapOverlayProps {
   customPath: string[]; // List of station names
@@ -66,10 +68,32 @@ export default function MapOverlay({ customPath }: MapOverlayProps) {
   const fetchMatchers = async (p: number) => {
     setIsLoading(true);
     try {
+      const idmap = new Map<string, number>();
+      const encodedIds: number[] = [];
+      let nextId = 1;
+
+      for (const station of customPath) {
+        let stationId = getStationId(station);
+        if (stationId !== null) {
+          encodedIds.push(stationId);
+          // idmap for building SuffixAutomaton needs string -> id, but here we can just use the stationId as the 'character'
+          if (!idmap.has(stationId.toString())) {
+            idmap.set(stationId.toString(), stationId);
+          }
+        }
+      }
+
+      // We use stringified IDs for building SAM because it expects string tokens in the original logic,
+      // but actually SuffixAutomaton in TS expects tokens: string[], idmap: Map<string, number>
+      // Let's pass the stringified IDs as tokens.
+      const tokens = encodedIds.map(String);
+      const sa = new SuffixAutomaton(tokens, idmap);
+
       const res = await axios.post(
         `${API_URL}/utils/path/match_trips`,
         {
-          stationList: customPath,
+          sam: sa.serialize(),
+          totalStations: customPath.length, // For pagination/stats
           page: p,
           limit: 10,
         },
@@ -91,15 +115,16 @@ export default function MapOverlay({ customPath }: MapOverlayProps) {
     setIsLoading(true);
     try {
       if (saveToDb && user) {
+        const encodedIds = customPath.map(getStationId).filter(id => id !== null) as number[];
         await axios.post(
           `${API_URL}/trips`,
           {
             userId: user.id,
             startTime: new Date().toISOString(),
-            stationList: customPath,
-            length: customPath.length - 1,
-            startStation: customPath[0],
-            endStation: customPath[customPath.length - 1],
+            stationList: encodedIds,
+            length: encodedIds.length - 1,
+            startStation: encodedIds[0],
+            endStation: encodedIds[encodedIds.length - 1],
           },
           { headers: { Authorization: `Bearer ${token}` } },
         );
