@@ -6,8 +6,7 @@
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
-    "test:seed": "node prisma/seed.js",
-    "postinstall": "prisma generate"
+    "test:seed": "node prisma/seed.js"
   },
   "keywords": [],
   "author": "",

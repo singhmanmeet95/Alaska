@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import { createServer } from "http";
 import { Server } from "socket.io";
+import cors from "cors";
 
 import userRoutes from "./routes/userRoutes.js";
 import tripRoutes from "./routes/tripRoutes.js";
@@ -28,27 +29,11 @@ const allowedOrigins = [
   "https://alaska-69fq.vercel.app",
 ];
 
-// ─── CORS: Manually set headers as the VERY FIRST middleware ───────────────
-// This runs before anything else — even if something below crashes,
-// the browser will still get CORS headers and won't show CORS errors.
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  if (!origin || allowedOrigins.includes(origin)) {
-    res.setHeader("Access-Control-Allow-Origin", origin || "*");
-  }
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, PATCH, OPTIONS",
-  );
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-
-  // Handle preflight immediately — no need to go further
-  if (req.method === "OPTIONS") {
-    return res.status(200).end();
-  }
-  next();
-});
+// ─── CORS ───────────────────────────────────────────────────────────────────
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
 
 app.use(bodyParser.json());
 app.use(express.json());
@@ -76,21 +61,11 @@ app.use("/api/chats", chatRoutes);
 app.use("/api/utils", utilRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/friendships", friendshipRoutes);
-
-// Default route
-app.get("/", (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "Welcome to Metro Lines API",
-    endpoints: {
-      auth: "/api/auth",
-      users: "/api/users",
-      trips: "/api/trips",
-      chats: "/api/chats",
-      utils: "/api/utils",
-      reviews: "/api/reviews",
-    },
-  });
+app.get("/health", (req,res)=>{
+  res.status(200).json({message:"health endpoint is working fine"})
+});
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
 
 // ─── Socket.IO Logic ─────────────────────────────────────────────────────────
@@ -158,11 +133,6 @@ if (io) {
     });
   });
 }
-
-// ─── 404 handler ─────────────────────────────────────────────────────────────
-app.use((req, res) => {
-  res.status(404).json({ success: false, message: "Route not found" });
-});
 
 // ─── Error handler ────────────────────────────────────────────────────────────
 app.use((error, req, res, next) => {

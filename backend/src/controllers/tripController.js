@@ -160,8 +160,6 @@ export const deleteTrip = async (req, res) => {
     }
   }
 };
-//match trips by longest common substring
-export const longestCommonSubstring = (str1, str2) => {};
 // Get trips by user ID
 export const getTripsByUserId = async (req, res) => {
   try {
@@ -195,13 +193,18 @@ export const getTripsByUserId = async (req, res) => {
 // Get trips by station
 export const getTripsByStation = async (req, res) => {
   try {
-    const { station } = req.params;
+    const stationId = parseInt(req.params.station, 10);
+    
+    if (isNaN(stationId)) {
+      return res.status(400).json({ success: false, error: "Invalid station ID" });
+    }
+
     const trips = await prisma.trip.findMany({
       where: {
         OR: [
-          { startStation: station },
-          { endStation: station },
-          { stationList: { has: station } },
+          { startStation: stationId },
+          { endStation: stationId },
+          { stationList: { has: stationId } },
         ],
       },
       include: {

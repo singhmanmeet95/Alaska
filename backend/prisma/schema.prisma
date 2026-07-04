@@ -61,10 +61,10 @@ model Trip {
   user         User     @relation("UserTrips", fields: [userId], references: [id])
   userId       String
   startTime    DateTime
-  stationList  String[]
+  stationList  Int[]
   length       Int
-  startStation String
-  endStation   String
+  startStation Int
+  endStation   Int
 }
 
 model Chat {
