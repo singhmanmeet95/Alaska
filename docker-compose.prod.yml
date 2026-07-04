@@ -58,6 +58,7 @@ services:
       - WORKER_URL=http://chat-worker:4002
       - REDIS_URL=redis://redis:6379
       - NODE_ENV=production
+      - INTERNAL_API_KEY=${INTERNAL_API_KEY:-prod_secure_secret_123}
     depends_on:
       - redis
       - chat-worker
@@ -75,6 +76,7 @@ services:
       - REDIS_URL=redis://redis:6379
       - MONGO_URI=mongodb://mongodb:27017/alaska-chat
       - NODE_ENV=production
+      - INTERNAL_API_KEY=${INTERNAL_API_KEY:-prod_secure_secret_123}
     depends_on:
       - redis
       - mongodb

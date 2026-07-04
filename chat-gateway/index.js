@@ -17,6 +17,7 @@ const httpServer = createServer(app);
 const PORT = process.env.PORT || 4001;
 const WORKER_URL = process.env.WORKER_URL || 'http://chat-worker:4002';
 const REDIS_URL = process.env.REDIS_URL || 'redis://redis:6379';
+const INTERNAL_API_KEY = process.env.INTERNAL_API_KEY || 'default_dev_secret';
 
 const pubClient = createClient({ url: REDIS_URL });
 const subClient = pubClient.duplicate();
@@ -53,11 +54,15 @@ async function bootstrap() {
         const { senderId, receiverId, message } = data;
         if (!senderId || !receiverId || !message) return;
 
-        // Forward to Hono worker
+        // Forward to Hono worker securely
         const response = await axios.post(`${WORKER_URL}/api/messages`, {
           senderId,
           receiverId,
           message
+        }, {
+          headers: {
+            'x-internal-secret': INTERNAL_API_KEY
+          }
         });
 
         console.log("Message forwarded to worker:", response.data);

@@ -14,6 +14,7 @@ app.use('*', cors());
 
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://mongodb:27017/alaska-chat';
 const REDIS_URL = process.env.REDIS_URL || 'redis://redis:6379';
+const INTERNAL_API_KEY = process.env.INTERNAL_API_KEY || 'default_dev_secret';
 
 // Setup Redis Publisher
 const pubClient = createClient({ url: REDIS_URL });
@@ -36,6 +37,15 @@ connectDatabases();
 // Health check
 app.get('/health', (c) => c.json({ status: 'Worker OK' }));
 
+// ─── INTERNAL SERVICE AUTHENTICATION MIDDLEWARE ───
+app.use('/api/messages', async (c, next) => {
+  const secret = c.req.header('x-internal-secret');
+  if (secret !== INTERNAL_API_KEY) {
+    return c.json({ success: false, error: 'Unauthorized: Invalid Service Secret' }, 401);
+  }
+  await next();
+});
+
 // POST /api/messages - Gateway sends messages here
 app.post('/api/messages', async (c) => {
   try {
@@ -45,9 +55,6 @@ app.post('/api/messages', async (c) => {
     if (!senderId || !receiverId || !message) {
       return c.json({ success: false, error: 'Missing required fields' }, 400);
     }
-
-    // Ideally, call main backend here to verify friendship
-    // but for now, we just save and publish
 
     const newChat = new Chat({
       senderId,
@@ -78,6 +85,8 @@ app.post('/api/messages', async (c) => {
 // GET /api/chats/between/:senderId/:receiverId
 app.get('/api/chats/between/:senderId/:receiverId', async (c) => {
   try {
+    // Note: If you want to restrict this endpoint to internal use only, 
+    // you can apply the same middleware here.
     const { senderId, receiverId } = c.req.param();
     
     const chats = await Chat.find({

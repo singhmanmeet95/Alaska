@@ -52,6 +52,7 @@ services:
       - PORT=4001
       - WORKER_URL=http://chat-worker:4002
       - REDIS_URL=redis://redis:6379
+      - INTERNAL_API_KEY=dev_secret_key_123
     depends_on:
       - redis
       - chat-worker
@@ -66,6 +67,7 @@ services:
       - PORT=4002
       - REDIS_URL=redis://redis:6379
       - MONGO_URI=mongodb://mongodb:27017/alaska-chat
+      - INTERNAL_API_KEY=dev_secret_key_123
     depends_on:
       - redis
       - mongodb
