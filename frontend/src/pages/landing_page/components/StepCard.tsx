@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 
-export function StepCard({ number, title, description, color }: { number: string; title: string; description: string; color: string }) {
+export function StepCard({ number, title, description }: { number: string; title: string; description: string; color: string }) {
   return (
     <motion.div 
       variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0 } }} 

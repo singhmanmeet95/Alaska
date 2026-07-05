@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuthStore } from "../../store/useAuthStore";
 import {
   ArrowRight, Shield, Users, MapPin, Globe, Lock, Activity,
-  Menu, X, Sparkles, Zap, Star
+  Menu, X, Zap, Star
 } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import {
