@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { Users, MessageCircle, ChevronRight } from "lucide-react";
 
 interface Friend {
   id: string;
@@ -18,74 +19,67 @@ export default function FriendsListCard({ friends }: FriendsListCardProps) {
   if (!friends || friends.length === 0) return null;
 
   return (
-    <div className="bg-card backdrop-blur border border-border rounded-[var(--radius-card)] p-6 shadow-sm overflow-hidden animate-fade-in font-sans">
-      <div className="flex items-center gap-2 mb-4">
-        <svg
-          className="w-5 h-5 text-primary"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-          />
-        </svg>
-        <h2 className="text-xl font-headline tracking-tight text-foreground">
-          Friends ({friends.length})
-        </h2>
+    <div className="glass-panel rounded-[var(--radius-3xl)] p-8 shadow-xl overflow-hidden animate-fade-in font-sans relative bg-background/50 hover:shadow-2xl transition-shadow duration-500">
+      <div className="absolute top-0 left-0 w-64 h-64 bg-primary/10 rounded-full blur-[80px] -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+      
+      <div className="relative z-10 flex items-center justify-between mb-8">
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-primary/10 rounded-2xl shadow-inner border border-primary/20">
+             <Users className="w-6 h-6 text-primary" />
+          </div>
+          <h2 className="text-2xl font-headline tracking-tight text-foreground">
+            Connections <span className="text-primary/70 text-xl font-normal ml-1">({friends.length})</span>
+          </h2>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {friends.map((friend) => (
+      <div className="grid grid-cols-1 gap-5 relative z-10">
+        {friends.map((friend, index) => (
           <div
             key={friend.id}
             onClick={() => navigate(`/user/${friend.id}`)}
-            className="flex items-center gap-3 p-3 rounded-[var(--radius-card)] bg-background hover:bg-card border border-border hover:border-primary/50 transition-all cursor-pointer group"
+            className="flex items-center gap-5 p-4 rounded-[var(--radius-2xl)] glass-panel bg-card/30 hover:bg-card/80 border border-transparent hover:border-primary/30 transition-all duration-500 cursor-pointer group hover:-translate-y-1 hover:shadow-lg"
+            style={{ animationDelay: `${index * 100}ms` }}
           >
-            {friend.profile_image ? (
-              <img
-                src={friend.profile_image}
-                alt={friend.name}
-                className="w-12 h-12 rounded-[var(--radius-pill)] object-cover border border-border group-hover:border-primary/30 transition-colors"
-              />
-            ) : (
-              <div className="w-12 h-12 rounded-[var(--radius-pill)] bg-card flex items-center justify-center text-foreground/80 font-headline border border-border">
-                {friend.name.charAt(0)}
-              </div>
-            )}
-            <div className="flex flex-col flex-1 overflow-hidden">
-              <span className="text-foreground font-headline truncate group-hover:text-primary transition-colors">
+            <div className="relative shrink-0">
+              <div className="absolute inset-0 bg-primary/30 rounded-full blur-md group-hover:scale-125 transition-transform duration-700 opacity-0 group-hover:opacity-100" />
+              {friend.profile_image ? (
+                <img
+                  src={friend.profile_image}
+                  alt={friend.name}
+                  className="relative w-16 h-16 rounded-full object-cover border-2 border-background/50 group-hover:border-primary transition-colors duration-500 z-10 shadow-sm"
+                />
+              ) : (
+                <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center text-primary text-2xl font-headline border-2 border-background/50 group-hover:border-primary transition-colors duration-500 z-10 shadow-sm">
+                  {friend.name.charAt(0)}
+                </div>
+              )}
+            </div>
+            
+            <div className="flex flex-col flex-1 overflow-hidden pr-2">
+              <span className="text-foreground font-headline text-lg truncate group-hover:text-primary transition-colors duration-300">
                 {friend.name}
               </span>
-              <span className="text-foreground/50 font-body-sm text-[12px] truncate">
+              <span className="text-foreground/50 font-body text-sm truncate mt-0.5">
                 @{friend.username}
               </span>
             </div>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                navigate(`/chat/${friend.id}`);
-              }}
-              className="p-2 text-foreground/50 hover:text-primary hover:bg-primary/10 rounded-[var(--radius-pill)] transition-colors"
-              title="Chat"
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+            
+            <div className="flex items-center gap-2">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/chat/${friend.id}`);
+                }}
+                className="p-3 bg-background/50 hover:bg-primary hover:text-primary-foreground rounded-full transition-all duration-300 shadow-sm hover:shadow-md hover:scale-110 group/btn"
+                title="Chat"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                />
-              </svg>
-            </button>
+                <MessageCircle className="w-5 h-5 group-hover/btn:animate-pulse" />
+              </button>
+              <div className="p-3 text-foreground/30 group-hover:text-primary/70 group-hover:translate-x-1 transition-all duration-300">
+                <ChevronRight className="w-5 h-5" />
+              </div>
+            </div>
           </div>
         ))}
       </div>

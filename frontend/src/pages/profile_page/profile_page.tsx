@@ -57,7 +57,6 @@ export default function ProfilePage() {
           if (res.data && res.data.data) {
             setFullUser(res.data.data);
 
-            // calculate stats dynamically from trips if possible
             const userTrips = res.data.data.trips || [];
             let totalDistance = 0;
             const stationCounts: Record<string, number> = {};
@@ -114,10 +113,13 @@ export default function ProfilePage() {
   }, [targetUserId, refetchTrigger, isOwnProfile, token]);
 
   if (isLoading || loadingProfile || (!isOwnProfile && !fullUser)) {
-    return <LoadingSpinner />;
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+         <LoadingSpinner />
+      </div>
+    );
   }
 
-  // Parse JSON socials if we have stringified JSON
   let socialHandles = {};
   if (fullUser?.json) {
     try {
@@ -200,11 +202,18 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-8 font-sans">
+    <div className="min-h-screen bg-background text-foreground font-sans relative overflow-x-hidden pb-20">
+      {/* Global Ambient Background */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[120px] animate-float" />
+         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-500/5 rounded-full blur-[120px] animate-float-delayed" />
+      </div>
+
       {/* Main Container */}
-      <div className="max-w-7xl mx-auto space-y-8">
+      <div className="max-w-7xl mx-auto space-y-12 relative z-10 px-4 sm:px-6 lg:px-8 pt-8">
+        
         {/* Profile Header */}
-        <div className="bg-card backdrop-blur border border-border rounded-2xl overflow-hidden animate-fade-in">
+        <div className="animate-fade-in-up" style={{ animationDuration: '0.8s' }}>
           <ProfileHeader
             name={fullUser?.name || user?.name || "User"}
             username={fullUser?.username || user?.username || "user"}
@@ -220,50 +229,60 @@ export default function ProfilePage() {
         </div>
 
         {/* Stats Cards */}
-        <StatsCard stats={stats} />
+        <div className="animate-fade-in-up delay-100">
+           <StatsCard stats={stats} />
+        </div>
 
         {/* Main Content Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
           {/* Left Column - User Info, Friends & Trips */}
-          <div className="space-y-6">
+          <div className="lg:col-span-7 space-y-8 animate-fade-in-up delay-200">
             <UserInfoCard about={fullUser?.about ?? user?.about ?? null} />
             <FriendsListCard friends={fullUser?.friends || []} />
             <RecentTripsCard trips={fullUser?.trips || []} />
           </div>
 
           {/* Right Column - Gallery */}
-          <div className="space-y-6">
+          <div className="lg:col-span-5 space-y-8 animate-fade-in-up delay-300">
             {((fullUser?.images && fullUser.images.length > 0) ||
               isOwnProfile) && (
-              <UserGallery
-                images={fullUser?.images || []}
-                isOwnProfile={isOwnProfile}
-                onUpdateImages={handleUpdateGallery}
-                onUploadImage={handleUploadGalleryImage}
-              />
+              <div className="glass-panel rounded-[var(--radius-3xl)] p-2">
+                 <UserGallery
+                   images={fullUser?.images || []}
+                   isOwnProfile={isOwnProfile}
+                   onUpdateImages={handleUpdateGallery}
+                   onUploadImage={handleUploadGalleryImage}
+                 />
+              </div>
             )}
+            
+            {/* Reviews Section Sidebar style */}
+            <div className="space-y-8">
+               {fullUser?.receivedReviews && fullUser.receivedReviews.length > 0 && (
+                 <div className="glass-panel rounded-[var(--radius-3xl)] p-6">
+                    <ReviewsSection
+                      reviews={fullUser.receivedReviews}
+                      title="Reviews Received"
+                      isAnonymous={true}
+                    />
+                 </div>
+               )}
+
+               {fullUser?.writtenReviews && fullUser.writtenReviews.length > 0 && (
+                 <div className="glass-panel rounded-[var(--radius-3xl)] p-6">
+                    <ReviewsSection
+                      reviews={fullUser.writtenReviews}
+                      title="Reviews Given"
+                      onEditClick={
+                        isOwnProfile ? (review) => setEditingReview(review) : undefined
+                      }
+                    />
+                 </div>
+               )}
+            </div>
           </div>
         </div>
-
-        {/* Reviews Section at bottom */}
-        {fullUser?.receivedReviews && fullUser.receivedReviews.length > 0 && (
-          <ReviewsSection
-            reviews={fullUser.receivedReviews}
-            title="Reviews Received"
-            isAnonymous={true}
-          />
-        )}
-
-        {/* Reviews Given Section */}
-        {fullUser?.writtenReviews && fullUser.writtenReviews.length > 0 && (
-          <ReviewsSection
-            reviews={fullUser.writtenReviews}
-            title="Reviews Given"
-            onEditClick={
-              isOwnProfile ? (review) => setEditingReview(review) : undefined
-            }
-          />
-        )}
 
         {/* Edit Review Modal */}
         <EditReviewModal
@@ -275,40 +294,41 @@ export default function ProfilePage() {
 
         {/* Connection Requests Modal */}
         {showRequestsModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm font-sans p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-md font-sans p-4 animate-fade-in">
             <div
-              className="bg-card border border-border rounded-[var(--radius-card)] w-full max-w-2xl max-h-[80vh] flex flex-col shadow-2xl overflow-hidden"
+              className="bg-card/90 backdrop-blur-xl border border-border/50 rounded-[var(--radius-3xl)] w-full max-w-2xl max-h-[80vh] flex flex-col shadow-2xl overflow-hidden transform animate-fade-in-up"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Modal Header */}
-              <div className="flex items-center justify-between p-6 border-b border-border shrink-0">
-                <div className="flex items-center gap-2 text-primary font-semibold">
-                  <Bell className="w-5 h-5" />
-                  <h2 className="text-xl font-headline text-foreground">Connection Requests</h2>
+              <div className="flex items-center justify-between p-6 border-b border-border/50 shrink-0 bg-background/50">
+                <div className="flex items-center gap-3 text-primary font-semibold">
+                  <div className="p-2 bg-primary/10 rounded-xl">
+                    <Bell className="w-5 h-5" />
+                  </div>
+                  <h2 className="text-2xl font-headline text-foreground">Connection Requests</h2>
                 </div>
                 <button
                   onClick={() => setShowRequestsModal(false)}
-                  className="text-foreground/50 hover:text-foreground p-1 rounded-[var(--radius-pill)] transition-colors"
+                  className="text-foreground/50 hover:text-foreground p-2 bg-background/50 hover:bg-background rounded-full transition-all duration-300 hover:rotate-90"
                 >
                   <X className="w-6 h-6" />
                 </button>
               </div>
 
-              {/* Modal Body */}
-              <div className="flex-1 overflow-y-auto p-6">
+              <div className="flex-1 overflow-y-auto p-6 bg-gradient-to-b from-background/30 to-background/10">
                 {pendingRequests.length === 0 ? (
-                  <div className="text-foreground/50 font-body-sm text-[12px] py-12 text-center border border-dashed border-border rounded-[var(--radius-card)]">
+                  <div className="text-foreground/50 font-body text-base py-16 text-center glass-panel rounded-[var(--radius-2xl)]">
+                    <Bell className="w-12 h-12 mx-auto mb-4 opacity-20" />
                     No new connection requests.
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {pendingRequests.map((req) => (
                       <div
                         key={req.id}
-                        className="bg-background border border-border rounded-[var(--radius-card)] p-4 flex items-center justify-between shadow-sm"
+                        className="glass-panel border border-border/50 rounded-[var(--radius-2xl)] p-4 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow"
                       >
                         <div
-                          className="flex items-center gap-3 cursor-pointer group"
+                          className="flex items-center gap-4 cursor-pointer group flex-1 min-w-0"
                           onClick={() => {
                             setShowRequestsModal(false);
                             navigate(`/user/${req.requester.id}`);
@@ -318,36 +338,36 @@ export default function ProfilePage() {
                             <img
                               src={req.requester.profile_image}
                               alt={req.requester.name}
-                              className="w-10 h-10 rounded-[var(--radius-pill)] object-cover border border-border group-hover:border-primary/50 transition-colors"
+                              className="w-12 h-12 rounded-full object-cover border-2 border-transparent group-hover:border-primary/50 transition-colors shrink-0"
                             />
                           ) : (
-                            <div className="w-10 h-10 rounded-[var(--radius-pill)] bg-card flex items-center justify-center text-foreground/80 font-headline border border-border">
+                            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xl font-headline border-2 border-transparent group-hover:border-primary/50 shrink-0">
                               {req.requester.name.charAt(0)}
                             </div>
                           )}
-                          <div className="flex flex-col">
-                            <span className="text-foreground font-headline text-sm group-hover:text-primary transition-colors">
+                          <div className="flex flex-col truncate">
+                            <span className="text-foreground font-headline text-base group-hover:text-primary transition-colors truncate">
                               {req.requester.name}
                             </span>
-                            <span className="text-foreground/50 font-body-sm text-[12px]">
+                            <span className="text-foreground/50 font-body text-xs truncate">
                               @{req.requester.username}
                             </span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 ml-4 shrink-0">
                           <button
                             onClick={() => handleAcceptRequest(req.id)}
-                            className="p-2 bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white rounded-lg transition-colors"
+                            className="p-2.5 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white rounded-xl transition-all duration-300 hover:scale-110"
                             title="Accept"
                           >
-                            <Check className="w-4 h-4" />
+                            <Check className="w-5 h-5" />
                           </button>
                           <button
                             onClick={() => handleRejectRequest(req.id)}
-                            className="p-2 bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white rounded-lg transition-colors"
+                            className="p-2.5 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-xl transition-all duration-300 hover:scale-110"
                             title="Reject"
                           >
-                            <X className="w-4 h-4" />
+                            <X className="w-5 h-5" />
                           </button>
                         </div>
                       </div>

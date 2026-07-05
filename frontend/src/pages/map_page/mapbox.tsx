@@ -37,14 +37,16 @@ export default function MapMetro() {
 
   return (
     <div className="relative h-full w-full">
-      <div className="z-100">
-        <MapOverlay customPath={customPath} onSubmit={handleSubmit} />
-      </div>
       <div
         ref={containerRef}
         style={{ height: "100%", width: "100%" }}
-        className="z-80 bg-background absolute inset-0"
+        className="bg-background absolute inset-0 z-0"
       ></div>
+      <div className="absolute inset-y-0 left-0 z-[2000] pointer-events-none">
+        <div className="pointer-events-auto h-full">
+          <MapOverlay customPath={customPath} onSubmit={handleSubmit} />
+        </div>
+      </div>
     </div>
   );
 }
