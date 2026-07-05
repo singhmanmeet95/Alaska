@@ -305,6 +305,36 @@ export const uploadGalleryImage = async (req, res) => {
       });
     }
 
+    if (!process.env.CLOUDINARY_API_KEY) {
+      // Dummy mode
+      const dummyUrl = `https://dummyimage.com/600x400/000/fff&text=Dummy+Image+${Date.now()}`;
+      try {
+        const user = await prisma.user.findUnique({ where: { id } });
+        const updatedImages = [...(user.images || []), dummyUrl];
+
+        const updatedUser = await prisma.user.update({
+          where: { id },
+          data: { images: updatedImages },
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            email: true,
+            profile_image: true,
+            images: true,
+          },
+        });
+
+        return res.status(200).json({
+          success: true,
+          message: "Gallery image uploaded (dummy mode)",
+          data: updatedUser,
+        });
+      } catch (err) {
+        return res.status(500).json({ success: false, error: err.message });
+      }
+    }
+
     const uploadStream = cloudinary.uploader.upload_stream(
       { folder: "alaska_gallery" },
       async (error, result) => {

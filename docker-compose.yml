@@ -72,6 +72,21 @@ services:
       - redis
       - mongodb
 
+  frontend:
+    build: ./frontend
+    container_name: alaska_frontend
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      - VITE_API_URL=http://localhost:3000/api
+      - VITE_CHAT_WORKER_URL=http://localhost:4002/api
+      - VITE_CHAT_GATEWAY_URL=http://localhost:4001
+    depends_on:
+      - api
+      - chat-gateway
+      - chat-worker
+
 volumes:
   pgdata:
   mongodata:
