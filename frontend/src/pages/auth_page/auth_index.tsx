@@ -111,12 +111,14 @@ export default function Credentials() {
   return (
     <div className="relative min-h-screen w-full">
       {/* Background Image with Blur */}
-      <AuthBackground imageUrl="/images/carousel_images/12.jpg" />
+      <AuthBackground />
 
       {/* Main Content Container */}
       <div className="relative flex h-screen w-full items-center justify-center">
         {/* Desktop Layout */}
-        <div className="hidden md:flex relative flex-row lg:h-2/3 w-5/6 mx-auto rounded-xl overflow-hidden shadow-2xl bg-zinc-950/80 border border-zinc-800 backdrop-blur-sm">
+        <div className="hidden md:flex relative flex-row lg:h-2/3 w-5/6 mx-auto rounded-[var(--radius-card)] overflow-hidden shadow-2xl bg-card border border-border backdrop-blur-sm">
+          {/* Left panel */}
+          <div className="w-1/2 flex items-center justify-center p-12 bg-background relative overflow-hidden group">
           {/* LOGIN Section */}
           <LoginForm
             email={loginData.email}
@@ -127,6 +129,7 @@ export default function Credentials() {
             onSubmit={handleLoginSubmit}
             onSignUpClick={() => setIsSignUp(true)}
           />
+          </div>
 
           {/* SIGN UP Section */}
           <SignupForm

@@ -7,9 +7,8 @@ import { io, Socket } from "socket.io-client";
 import type { Message, User as ChatUser } from "./types";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
-const SOCKET_URL = import.meta.env.VITE_API_URL
-  ? import.meta.env.VITE_API_URL.replace("/api", "")
-  : "http://localhost:3000";
+const SOCKET_URL = import.meta.env.VITE_CHAT_GATEWAY_URL || "http://localhost:4001";
+const CHAT_WORKER_URL = import.meta.env.VITE_CHAT_WORKER_URL || "http://localhost:4002/api";
 
 interface BackendChat {
   id: string;
@@ -130,18 +129,42 @@ export default function ChatPage() {
     }
 
     const fetchChats = async () => {
-      // 1. Fetch Chats
+      let fetchedFriends: any[] = [];
+      // 1. Fetch Friends
       try {
-        const res = await axios.get(`${API_URL}/chats/user/${user.id}`, {
+        const friendRes = await axios.get(`${API_URL}/friendships/friends`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        if (friendRes.data && friendRes.data.data) {
+          fetchedFriends = friendRes.data.data;
+          setFriends(fetchedFriends);
+        }
+      } catch (friendErr) {
+        console.error("Failed to fetch friends", friendErr);
+      }
 
-        const rawChats: BackendChat[] = res.data.data;
-        setBackendChats(rawChats);
+      // 2. Fetch Chats for each friend and activeChat
+      try {
+        const chatTargets = new Set(fetchedFriends.map((f) => f.id));
+        if (chatId) chatTargets.add(chatId);
+
+        let allRawChats: BackendChat[] = [];
+
+        for (const targetId of chatTargets) {
+          const res = await axios.get(
+            `${CHAT_WORKER_URL}/chats/between/${user.id}/${targetId}`,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          if (res.data && res.data.data) {
+            allRawChats = [...allRawChats, ...res.data.data];
+          }
+        }
+
+        setBackendChats(allRawChats);
 
         // Group into messages
         const msgsData: Record<string, Message[]> = {};
-        rawChats.forEach((c) => {
+        allRawChats.forEach((c) => {
           const isSender = c.senderId === user.id;
           const contactId = isSender ? c.receiverId : c.senderId;
 
@@ -167,18 +190,6 @@ export default function ChatPage() {
         setMessages(msgsData);
       } catch (error) {
         console.error("Failed to fetch chats", error);
-      }
-
-      // 2. Fetch Friends independently
-      try {
-        const friendRes = await axios.get(`${API_URL}/friendships/friends`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (friendRes.data && friendRes.data.data) {
-          setFriends(friendRes.data.data);
-        }
-      } catch (friendErr) {
-        console.error("Failed to fetch friends", friendErr);
       }
     };
     fetchChats();
@@ -335,7 +346,7 @@ export default function ChatPage() {
       return;
 
     try {
-      await axios.delete(`${API_URL}/chats/between/${user.id}/${activeChat}`, {
+      await axios.delete(`${CHAT_WORKER_URL}/chats/between/${user.id}/${activeChat}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMessages((prev) => ({ ...prev, [activeChat]: [] }));
@@ -381,7 +392,7 @@ export default function ChatPage() {
       });
       // Optional: clear chats locally / on backend too
       await axios
-        .delete(`${API_URL}/chats/between/${user.id}/${activeChat}`, {
+        .delete(`${CHAT_WORKER_URL}/chats/between/${user.id}/${activeChat}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .catch((e) =>
@@ -417,7 +428,7 @@ export default function ChatPage() {
 
   return (
     <div
-      className="h-screen flex overflow-hidden bg-zinc-950"
+      className="h-full flex overflow-hidden bg-background font-sans"
       style={{ "--sidebar-width": `${sidebarWidth}px` } as React.CSSProperties}
     >
       {/* Sidebar */}
@@ -426,7 +437,7 @@ export default function ChatPage() {
           showSidebar
             ? "w-full md:w-[var(--sidebar-width)]"
             : "hidden md:flex md:w-[var(--sidebar-width)] flex-col"
-        } relative flex-shrink-0 border-r border-zinc-800 transition-none h-full`}
+        } relative flex-shrink-0 border-r border-border transition-none h-full`}
       >
         <ChatSidebar
           chats={activeChatsList}
@@ -435,7 +446,7 @@ export default function ChatPage() {
         />
         {/* Resize Handle */}
         <div
-          className="absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-zinc-600 active:bg-zinc-500 z-50 hidden md:block transition-colors"
+          className="absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-border active:bg-border/80 z-50 hidden md:block transition-colors"
           onMouseDown={handleMouseDown}
         />
       </div>

@@ -84,11 +84,8 @@ export default function MessageInput({
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Create a temporary object URL for preview, this will be replaced with real Cloudinary API later
       const temporaryUrl = URL.createObjectURL(file);
-      onSendMessage(`[Image: ${temporaryUrl}]`); // Fallback formatting until actual image components exists
-
-      // Optionally trigger backend upload here later when Cloudinary is ready
+      onSendMessage(`[Image: ${temporaryUrl}]`);
     }
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -96,18 +93,18 @@ export default function MessageInput({
   };
 
   return (
-    <div className="border-t border-zinc-800 bg-zinc-950 px-4 py-4 relative">
+    <div className="border-t border-border bg-background px-4 py-4 relative font-sans">
       {/* Emoji Picker Popover */}
       {showEmojis && (
         <div
           ref={emojiPickerRef}
-          className="absolute bottom-full left-4 mb-2 bg-zinc-900 border border-zinc-800 p-3 rounded-2xl shadow-xl w-64 max-h-48 overflow-y-auto custom-scrollbar animate-fade-in-up z-50 grid grid-cols-5 gap-2"
+          className="absolute bottom-full left-4 mb-2 bg-card border border-border p-3 rounded-2xl shadow-xl w-64 max-h-48 overflow-y-auto custom-scrollbar animate-fade-in-up z-50 grid grid-cols-5 gap-2"
         >
           {EMOJI_LIST.map((emoji, index) => (
             <button
               key={index}
               onClick={() => handleEmojiClick(emoji)}
-              className="text-2xl hover:bg-zinc-800 p-1.5 rounded-lg transition-colors flex items-center justify-center cursor-pointer"
+              className="text-2xl hover:bg-background p-1.5 rounded-[8px] transition-colors flex items-center justify-center cursor-pointer"
             >
               {emoji}
             </button>
@@ -121,7 +118,7 @@ export default function MessageInput({
           type="button"
           onClick={() => setShowEmojis(!showEmojis)}
           disabled={disabled}
-          className={`p-2 rounded-full transition-colors ${showEmojis ? "bg-zinc-800 text-zinc-100" : "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900"}`}
+          className={`p-2 rounded-full transition-colors ${showEmojis ? "bg-card text-foreground" : "text-foreground/50 hover:text-foreground hover:bg-card"}`}
         >
           <Smile className="w-5 h-5" />
         </button>
@@ -131,7 +128,7 @@ export default function MessageInput({
           type="button"
           disabled={disabled}
           onClick={() => fileInputRef.current?.click()}
-          className="text-zinc-500 hover:text-zinc-300 transition-colors p-2 rounded-full hover:bg-zinc-900"
+          className="text-foreground/50 hover:text-foreground transition-colors p-2 rounded-full hover:bg-card"
         >
           <ImageIcon className="w-5 h-5" />
         </button>
@@ -144,7 +141,7 @@ export default function MessageInput({
         />
 
         {/* Text Input */}
-        <div className="flex-1 bg-zinc-900 border border-zinc-800 rounded-2xl px-4 py-2 flex items-center shadow-inner">
+        <div className="flex-1 bg-card border border-border rounded-[var(--radius-pill)] px-4 py-2 flex items-center shadow-inner">
           <textarea
             ref={textareaRef}
             value={message}
@@ -153,7 +150,7 @@ export default function MessageInput({
             placeholder="Type a message..."
             disabled={disabled}
             rows={1}
-            className="flex-1 bg-transparent text-sm text-zinc-200 focus:outline-none resize-none max-h-32 placeholder-zinc-500 custom-scrollbar mt-1"
+            className="flex-1 bg-transparent font-body-sm text-foreground focus:outline-none resize-none max-h-32 placeholder-foreground/50 custom-scrollbar mt-1"
           />
         </div>
 
@@ -161,10 +158,10 @@ export default function MessageInput({
         <button
           type="submit"
           disabled={!message.trim() || disabled}
-          className={`p-3.5 rounded-full transition-all duration-200 flex items-center justify-center ${
+          className={`p-3.5 rounded-[var(--radius-pill)] transition-all duration-200 flex items-center justify-center border ${
             message.trim() && !disabled
-              ? "bg-zinc-100 text-zinc-950 hover:bg-white shadow-lg shadow-zinc-900/20"
-              : "bg-zinc-800 text-zinc-600 cursor-not-allowed border border-zinc-800"
+              ? "bg-primary text-primary-foreground border-primary hover:opacity-90 shadow-sm"
+              : "bg-background text-foreground/30 cursor-not-allowed border-border"
           }`}
         >
           <Send className="w-4 h-4 ml-0.5" />

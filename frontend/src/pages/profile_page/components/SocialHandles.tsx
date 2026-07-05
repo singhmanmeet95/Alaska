@@ -26,19 +26,19 @@ export default function SocialHandles({
       case "facebook":
         return <Facebook className="w-5 h-5 text-blue-500" />;
       case "github":
-        return <Github className="w-5 h-5 text-zinc-100" />;
+        return <Github className="w-5 h-5 text-foreground" />;
       case "linkedin":
         return <Linkedin className="w-5 h-5 text-blue-400" />;
       case "website":
         return <Globe className="w-5 h-5 text-emerald-400" />;
       default:
-        return <HelpCircle className="w-5 h-5 text-zinc-400" />;
+        return <HelpCircle className="w-5 h-5 text-foreground/50" />;
     }
   };
 
   if (variant === "inline") {
     return (
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2 font-sans">
         {Object.entries(socials).map(([key, value]) => (
           <a
             key={key}
@@ -48,7 +48,7 @@ export default function SocialHandles({
             target="_blank"
             rel="noreferrer"
             title={key}
-            className="flex items-center justify-center p-2.5 bg-zinc-900 text-zinc-300 hover:bg-zinc-800 hover:text-white rounded border border-zinc-800 transition-colors"
+            className="flex items-center justify-center p-2.5 bg-background text-foreground/80 hover:bg-card hover:text-foreground rounded-[var(--radius-pill)] border border-border transition-colors"
           >
             {getIcon(key)}
           </a>
@@ -58,8 +58,8 @@ export default function SocialHandles({
   }
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
-      <h2 className="text-lg font-semibold tracking-tight text-zinc-100 mb-4">
+    <div className="bg-card border border-border rounded-[var(--radius-card)] p-6 font-sans">
+      <h2 className="text-lg font-headline tracking-tight text-foreground mb-4">
         Connect
       </h2>
       <div className="flex flex-wrap gap-3">
@@ -71,10 +71,10 @@ export default function SocialHandles({
             }
             target="_blank"
             rel="noreferrer"
-            className="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-sm text-zinc-300 hover:text-white transition-all border border-zinc-700 hover:border-zinc-600"
+            className="flex items-center gap-2 px-4 py-2 bg-background hover:bg-card rounded-[var(--radius-pill)] font-button text-[12px] text-foreground/80 hover:text-foreground transition-all border border-border hover:border-primary/50"
           >
             {getIcon(key)}
-            <span className="font-medium capitalize">{key}</span>
+            <span className="font-headline capitalize">{key}</span>
           </a>
         ))}
       </div>

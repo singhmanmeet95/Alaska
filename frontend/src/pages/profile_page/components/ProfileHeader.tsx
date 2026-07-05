@@ -30,11 +30,10 @@ export default function ProfileHeader({
   const navigate = useNavigate();
 
   return (
-    <div className="relative">
-      {/* Background Banner (Minimalist Dark) */}
-      <div className="h-48 bg-zinc-900 border-b border-zinc-800 relative overflow-hidden">
-        <div className="absolute inset-0 bg-black/20"></div>
-        {/* Subtle grid pattern or gradient could go here if needed, but keeping it clean */}
+    <div className="relative font-sans">
+      {/* Background Banner (Minimalist) */}
+      <div className="h-48 bg-card border-b border-border relative overflow-hidden">
+        <div className="absolute inset-0 bg-primary/5"></div>
       </div>
 
       {/* Profile Content */}
@@ -42,7 +41,7 @@ export default function ProfileHeader({
         {/* Avatar */}
         <div className="flex justify-between items-end -mt-16 mb-6">
           <div className="relative group">
-            <div className="w-32 h-32 rounded-full border-4 border-zinc-950 bg-zinc-800 overflow-hidden shadow-xl">
+            <div className="w-32 h-32 rounded-[var(--radius-pill)] border-4 border-background bg-card overflow-hidden shadow-sm">
               {image ? (
                 <img
                   src={image}
@@ -50,7 +49,7 @@ export default function ProfileHeader({
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-zinc-400 text-4xl font-bold bg-zinc-900">
+                <div className="w-full h-full flex items-center justify-center text-foreground/50 text-4xl font-headline bg-card">
                   {name.charAt(0)}
                 </div>
               )}
@@ -63,7 +62,7 @@ export default function ProfileHeader({
             <div className="flex gap-3">
               <button
                 onClick={onChat || (() => navigate("/chat"))}
-                className="flex items-center gap-2 px-5 py-2.5 bg-zinc-100 text-zinc-950 rounded hover:bg-white transition-colors font-medium text-sm"
+                className="flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-[var(--radius-pill)] hover:opacity-90 transition-colors font-button text-[12px]"
               >
                 <MessageCircle className="w-4 h-4" />
                 <span>Chat</span>
@@ -71,7 +70,7 @@ export default function ProfileHeader({
 
               <button
                 onClick={() => navigate("/map")}
-                className="flex items-center gap-2 px-5 py-2.5 bg-zinc-800 text-zinc-100 rounded border border-zinc-700 hover:bg-zinc-700 transition-colors font-medium text-sm"
+                className="flex items-center gap-2 px-5 py-2.5 bg-background text-foreground rounded-[var(--radius-pill)] border border-border hover:bg-card transition-colors font-button text-[12px]"
               >
                 <Map className="w-4 h-4" />
                 <span>Map</span>
@@ -81,7 +80,7 @@ export default function ProfileHeader({
                 <>
                   <button
                     onClick={onEdit}
-                    className="p-2.5 bg-zinc-900 text-zinc-400 rounded border border-zinc-800 hover:text-zinc-200 transition-colors"
+                    className="p-2.5 bg-background text-foreground/60 rounded-[var(--radius-pill)] border border-border hover:text-foreground transition-colors"
                     title="Edit Profile"
                   >
                     <Settings className="w-5 h-5" />
@@ -89,7 +88,7 @@ export default function ProfileHeader({
 
                   <button
                     onClick={() => navigate("/auth")}
-                    className="p-2.5 bg-red-950/30 text-red-400 rounded border border-red-900/50 hover:bg-red-950/50 transition-colors"
+                    className="p-2.5 bg-red-50 text-red-600 rounded-[var(--radius-pill)] border border-red-200 hover:bg-red-100 transition-colors dark:bg-red-900/20 dark:border-red-900/50 dark:text-red-400"
                   >
                     <LogOut className="w-5 h-5" />
                   </button>
@@ -106,12 +105,12 @@ export default function ProfileHeader({
               {isOwnProfile && (
                 <button
                   onClick={onOpenRequests}
-                  className="relative flex items-center justify-center p-2.5 bg-zinc-900 border border-zinc-800 text-zinc-400 rounded-full hover:bg-orange-500/10 hover:text-orange-400 hover:border-orange-500/30 transition-all shadow-sm"
+                  className="relative flex items-center justify-center p-2.5 bg-background border border-border text-foreground/50 rounded-[var(--radius-pill)] hover:text-primary hover:border-primary/30 transition-all shadow-sm"
                   title="Connection Requests"
                 >
                   <Bell className="w-5 h-5" />
                   {pendingRequestsCount > 0 && (
-                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-orange-500 text-[10px] font-bold text-white shadow ring-2 ring-zinc-900">
+                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-[var(--radius-pill)] bg-primary text-[10px] font-bold text-primary-foreground shadow ring-2 ring-background">
                       {pendingRequestsCount}
                     </span>
                   )}
@@ -124,10 +123,10 @@ export default function ProfileHeader({
         {/* User Info */}
         <div className="mt-2 space-y-1">
           <div className="flex items-center gap-2">
-            <h1 className="text-3xl font-bold text-zinc-100 tracking-tight">
+            <h1 className="text-3xl font-headline text-foreground tracking-tight">
               {name}
             </h1>
-            <span className="text-blue-500" title="Verified">
+            <span className="text-primary" title="Verified">
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fillRule="evenodd"
@@ -137,9 +136,9 @@ export default function ProfileHeader({
               </svg>
             </span>
           </div>
-          <p className="text-zinc-500 font-medium">@{username}</p>
+          <p className="text-foreground/50 font-body-sm text-[12px]">@{username}</p>
           {bio && (
-            <p className="text-zinc-400 text-base leading-relaxed max-w-2xl pt-2">
+            <p className="text-foreground/70 font-body-sm text-[12px] leading-relaxed max-w-2xl pt-2">
               {bio}
             </p>
           )}

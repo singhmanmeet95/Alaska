@@ -25,7 +25,7 @@ export default function ChatWindow({
   onRemoveFriend,
 }: ChatWindowProps) {
   return (
-    <div className="flex flex-col h-full bg-zinc-950">
+    <div className="flex flex-col h-full bg-background">
       <ChatHeader
         user={user}
         onBackClick={onBackClick}

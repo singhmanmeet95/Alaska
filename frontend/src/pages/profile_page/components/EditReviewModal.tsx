@@ -52,13 +52,13 @@ export default function EditReviewModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="bg-zinc-900 border border-zinc-700 p-6 rounded-xl w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4 text-white">Edit Review</h2>
-        {error && <div className="text-red-500 mb-4">{error}</div>}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm font-sans">
+      <div className="bg-card border border-border p-6 rounded-[var(--radius-card)] w-full max-w-md shadow-2xl animate-fade-in-up">
+        <h2 className="text-xl font-headline mb-4 text-foreground">Edit Review</h2>
+        {error && <div className="text-red-500 font-button text-[12px] mb-4">{error}</div>}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-zinc-400 mb-2">
+            <label className="block font-headline text-sm text-foreground/70 mb-2">
               Rating
             </label>
             <div className="flex gap-2">
@@ -68,7 +68,7 @@ export default function EditReviewModal({
                   key={star}
                   onClick={() => setRating(star)}
                   className={`p-1 transition-colors ${
-                    star <= rating ? "text-amber-400" : "text-zinc-600"
+                    star <= rating ? "text-amber-400" : "text-foreground/30"
                   }`}
                 >
                   <Star className="w-8 h-8 fill-current" />
@@ -77,13 +77,13 @@ export default function EditReviewModal({
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-zinc-400 mb-1">
+            <label className="block font-headline text-sm text-foreground/70 mb-1">
               Comment
             </label>
             <textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              className="w-full bg-zinc-800 border border-zinc-700 rounded px-3 py-2 text-white resize-none"
+              className="w-full bg-background border border-border rounded-[var(--radius-card)] px-4 py-3 text-foreground font-body-sm text-[12px] placeholder-foreground/40 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all resize-none"
               rows={4}
               placeholder="Write your review here..."
             ></textarea>
@@ -92,14 +92,14 @@ export default function EditReviewModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded font-medium transition-colors"
+              className="px-4 py-2 bg-background hover:bg-card text-foreground/80 font-button text-[12px] rounded-[var(--radius-pill)] border border-border transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading || rating === 0}
-              className="px-4 py-2 bg-white hover:bg-zinc-200 text-black rounded font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 bg-primary hover:opacity-90 text-primary-foreground rounded-[var(--radius-pill)] font-button text-[12px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Saving..." : "Save Changes"}
             </button>

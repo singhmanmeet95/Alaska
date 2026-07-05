@@ -23,7 +23,7 @@ export default function MessageBubble({
 
   return (
     <div
-      className={`flex items-end mb-4 animate-fade-in ${
+      className={`flex items-end mb-4 animate-fade-in font-sans ${
         isOwn ? "justify-end" : "justify-start"
       }`}
     >
@@ -33,7 +33,7 @@ export default function MessageBubble({
             <img
               src={avatar}
               alt="Avatar"
-              className="w-8 h-8 rounded-full bg-zinc-800 object-cover"
+              className="w-8 h-8 rounded-[var(--radius-pill)] bg-card object-cover border border-border"
             />
           )}
         </div>
@@ -45,10 +45,10 @@ export default function MessageBubble({
         }`}
       >
         <div
-          className={`px-4 py-2.5 rounded-2xl shadow-sm ${
+          className={`px-4 py-2.5 rounded-3xl shadow-sm ${
             isOwn
-              ? "bg-zinc-100 text-zinc-950 rounded-br-none border border-zinc-100"
-              : "bg-zinc-900 text-zinc-200 rounded-bl-none border border-zinc-800"
+              ? "bg-primary text-primary-foreground rounded-br-sm border border-primary"
+              : "bg-card text-foreground rounded-bl-sm border border-border"
           } ${message.content.startsWith("[Image: ") ? "p-1.5" : ""}`}
         >
           {message.content.startsWith("[Image: ") &&
@@ -56,10 +56,10 @@ export default function MessageBubble({
             <img
               src={message.content.replace("[Image: ", "").slice(0, -1)}
               alt="Uploaded content"
-              className="max-w-full rounded-xl max-h-64 object-cover"
+              className="max-w-full rounded-2xl max-h-64 object-cover"
             />
           ) : (
-            <p className="text-sm break-words leading-relaxed whitespace-pre-wrap">
+            <p className="font-body-sm break-words leading-relaxed whitespace-pre-wrap">
               {message.content}
             </p>
           )}
@@ -69,14 +69,14 @@ export default function MessageBubble({
             isOwn ? "justify-end" : "justify-start"
           }`}
         >
-          <span className="text-[10px] text-zinc-500 font-medium">
+          <span className="font-eyebrow text-[10px] text-foreground/50 lowercase">
             {formatTime(message.timestamp)}
           </span>
           {isOwn && (
-            <span className="flex items-center">
+            <span className="flex items-center text-primary/80">
               {message.status === "read" && (
                 <svg
-                  className="w-3.5 h-3.5 text-emerald-500"
+                  className="w-3.5 h-3.5"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
@@ -86,7 +86,7 @@ export default function MessageBubble({
               )}
               {message.status === "delivered" && (
                 <svg
-                  className="w-3.5 h-3.5 text-zinc-500"
+                  className="w-3.5 h-3.5 text-foreground/30"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
@@ -96,7 +96,7 @@ export default function MessageBubble({
               )}
               {message.status === "sent" && (
                 <svg
-                  className="w-3.5 h-3.5 text-zinc-500"
+                  className="w-3.5 h-3.5 text-foreground/30"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >

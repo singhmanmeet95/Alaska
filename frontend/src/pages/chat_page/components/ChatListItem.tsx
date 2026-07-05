@@ -27,14 +27,14 @@ export default function ChatListItem({
   return (
     <div
       onClick={onClick}
-      className={`flex items-center p-3 cursor-pointer transition-all border-b border-zinc-900 group ${
+      className={`flex items-center p-3 cursor-pointer transition-all border-b border-border group ${
         isActive
-          ? "bg-zinc-900 border-l-2 border-l-zinc-100"
-          : "hover:bg-zinc-900/50 border-l-2 border-l-transparent"
+          ? "bg-card border-l-2 border-l-primary"
+          : "hover:bg-card/50 border-l-2 border-l-transparent"
       }`}
     >
       <div className="relative">
-        <div className="w-12 h-12 rounded-full overflow-hidden bg-zinc-800 border border-zinc-700">
+        <div className="w-12 h-12 rounded-[var(--radius-pill)] overflow-hidden bg-background border border-border">
           <img
             src={chat.user.avatar}
             alt={chat.user.name}
@@ -42,40 +42,40 @@ export default function ChatListItem({
           />
         </div>
         {chat.user.status === "online" && (
-          <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-zinc-950 rounded-full"></span>
+          <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-background rounded-full"></span>
         )}
       </div>
-      <div className="ml-3 flex-1 overflow-hidden">
+      <div className="ml-3 flex-1 overflow-hidden font-sans">
         <div className="flex justify-between items-center">
           <h3
-            className={`font-medium truncate ${
+            className={`font-headline text-sm truncate ${
               isActive
-                ? "text-zinc-100"
-                : "text-zinc-300 group-hover:text-zinc-200"
+                ? "text-primary"
+                : "text-foreground group-hover:text-foreground/90"
             }`}
           >
             {chat.user.name}
           </h3>
-          <span className="text-xs text-zinc-500">
+          <span className="font-eyebrow text-[10px] text-foreground/50">
             {formatTime(chat.timestamp)}
           </span>
         </div>
         <div className="flex justify-between items-center mt-1">
           <p
-            className={`text-sm truncate ${
+            className={`font-body-sm text-[12px] truncate ${
               chat.unreadCount > 0
-                ? "text-zinc-100 font-medium"
-                : "text-zinc-500 group-hover:text-zinc-400"
+                ? "text-foreground font-bold"
+                : "text-foreground/70 group-hover:text-foreground/60"
             }`}
           >
             {chat.isTyping ? (
-              <span className="text-emerald-400 italic text-xs">Typing...</span>
+              <span className="text-primary italic">Typing...</span>
             ) : (
               chat.lastMessage
             )}
           </p>
           {chat.unreadCount > 0 && (
-            <span className="ml-2 bg-zinc-100 text-zinc-950 text-xs font-bold rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
+            <span className="ml-2 bg-primary text-primary-foreground text-[10px] font-bold rounded-[var(--radius-pill)] px-1.5 py-0.5 min-w-[18px] text-center">
               {chat.unreadCount}
             </span>
           )}

@@ -1,11 +1,11 @@
 export default function EmptyChatState() {
   return (
-    <div className="flex flex-col items-center justify-center h-full bg-zinc-950">
+    <div className="flex flex-col items-center justify-center h-full bg-background">
       <div className="text-center space-y-6">
         <div className="relative">
-          <div className="absolute inset-0 bg-zinc-800 blur-3xl opacity-20 rounded-full"></div>
+          <div className="absolute inset-0 bg-primary blur-3xl opacity-5 rounded-full"></div>
           <svg
-            className="w-32 h-32 mx-auto text-zinc-800 relative"
+            className="w-32 h-32 mx-auto text-foreground/20 relative"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -20,17 +20,16 @@ export default function EmptyChatState() {
         </div>
 
         <div className="space-y-2">
-          <h2 className="text-2xl font-semibold text-zinc-100 tracking-tight">
+          <h2 className="font-headline text-foreground">
             Welcome to Alaska Chat
           </h2>
-          <p className="text-zinc-500 max-w-sm mx-auto text-sm leading-relaxed">
-            Select a chat from the sidebar to start messaging your friends and
-            colleagues
+          <p className="font-body-sm text-foreground/70 max-w-sm mx-auto">
+            Select a chat from the sidebar to start messaging your friends and colleagues
           </p>
         </div>
 
         <div className="flex items-center justify-center space-x-4 pt-8">
-          <div className="flex items-center space-x-2 text-zinc-600">
+          <div className="flex items-center space-x-2 text-foreground/50">
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fillRule="evenodd"
@@ -38,7 +37,7 @@ export default function EmptyChatState() {
                 clipRule="evenodd"
               />
             </svg>
-            <span className="text-xs font-medium uppercase tracking-wide">
+            <span className="font-eyebrow text-[10px]">
               End-to-end encrypted
             </span>
           </div>

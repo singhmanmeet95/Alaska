@@ -31,7 +31,7 @@ export class SuffixAutomaton {
   }
 
   extend(c: number, idx: number) {
-    let cur = this.st.length;
+    const cur = this.st.length;
     this.st.push(new State());
     this.st[cur].len = this.st[this.last].len + 1;
     this.st[cur].firstEndPos = idx;
@@ -45,11 +45,11 @@ export class SuffixAutomaton {
     if (p === -1) {
       this.st[cur].link = 0;
     } else {
-      let q = this.st[p].next.get(c)!;
+      const q = this.st[p].next.get(c)!;
       if (this.st[p].len + 1 === this.st[q].len) {
         this.st[cur].link = q;
       } else {
-        let clone = this.st.length;
+        const clone = this.st.length;
         this.st.push(new State());
         this.st[clone].len = this.st[p].len + 1;
         this.st[clone].next = new Map(this.st[q].next);

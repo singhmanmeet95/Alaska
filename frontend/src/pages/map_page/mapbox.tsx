@@ -36,14 +36,14 @@ export default function MapMetro() {
   };
 
   return (
-    <div className="relative">
+    <div className="relative h-full w-full">
       <div className="z-100">
         <MapOverlay customPath={customPath} onSubmit={handleSubmit} />
       </div>
       <div
         ref={containerRef}
-        style={{ height: "100vh", width: "100%" }}
-        className="z-80 bg-zinc-50"
+        style={{ height: "100%", width: "100%" }}
+        className="z-80 bg-background absolute inset-0"
       ></div>
     </div>
   );

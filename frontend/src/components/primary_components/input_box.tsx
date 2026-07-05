@@ -13,7 +13,7 @@ export default function InputBox({
   placeholder = "",
   value = "",
   onChange,
-  className = "w-11/12 h-10 p-2 mb-3 text-xs bg-zinc-900 border border-zinc-700 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-500 transition-colors",
+  className = "w-11/12 h-10 p-2 mb-3 bg-card border border-border rounded-[var(--radius-pill)] text-foreground placeholder-foreground/40 font-body-sm text-[12px] font-sans focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors",
 }: InputBoxProps) {
   return (
     <input

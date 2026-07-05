@@ -200,11 +200,11 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 p-8">
+    <div className="min-h-screen bg-background text-foreground p-8 font-sans">
       {/* Main Container */}
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Profile Header */}
-        <div className="bg-zinc-900/50 backdrop-blur border border-zinc-800 rounded-2xl overflow-hidden animate-fade-in">
+        <div className="bg-card backdrop-blur border border-border rounded-2xl overflow-hidden animate-fade-in">
           <ProfileHeader
             name={fullUser?.name || user?.name || "User"}
             username={fullUser?.username || user?.username || "user"}
@@ -275,30 +275,29 @@ export default function ProfilePage() {
 
         {/* Connection Requests Modal */}
         {showRequestsModal && (
-          <div
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in"
-            onClick={() => setShowRequestsModal(false)}
-          >
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm font-sans p-4">
             <div
-              className="bg-zinc-900 border border-zinc-800 rounded-xl w-full max-w-2xl max-h-[80vh] flex flex-col shadow-2xl overflow-hidden"
+              className="bg-card border border-border rounded-[var(--radius-card)] w-full max-w-2xl max-h-[80vh] flex flex-col shadow-2xl overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between p-6 border-b border-zinc-800 shrink-0">
-                <div className="flex items-center gap-2 text-orange-400 font-semibold">
+              {/* Modal Header */}
+              <div className="flex items-center justify-between p-6 border-b border-border shrink-0">
+                <div className="flex items-center gap-2 text-primary font-semibold">
                   <Bell className="w-5 h-5" />
-                  <h2>Connection Requests </h2>
+                  <h2 className="text-xl font-headline text-foreground">Connection Requests</h2>
                 </div>
                 <button
                   onClick={() => setShowRequestsModal(false)}
-                  className="text-zinc-500 hover:text-white p-1 rounded-full transition-colors"
+                  className="text-foreground/50 hover:text-foreground p-1 rounded-[var(--radius-pill)] transition-colors"
                 >
                   <X className="w-6 h-6" />
                 </button>
               </div>
 
-              <div className="p-6 overflow-y-auto">
+              {/* Modal Body */}
+              <div className="flex-1 overflow-y-auto p-6">
                 {pendingRequests.length === 0 ? (
-                  <div className="text-zinc-500 text-sm py-12 text-center border border-dashed border-zinc-800 rounded-xl">
+                  <div className="text-foreground/50 font-body-sm text-[12px] py-12 text-center border border-dashed border-border rounded-[var(--radius-card)]">
                     No new connection requests.
                   </div>
                 ) : (
@@ -306,25 +305,31 @@ export default function ProfilePage() {
                     {pendingRequests.map((req) => (
                       <div
                         key={req.id}
-                        className="bg-zinc-800 border border-zinc-700/50 rounded-xl p-4 flex items-center justify-between shadow-sm"
+                        className="bg-background border border-border rounded-[var(--radius-card)] p-4 flex items-center justify-between shadow-sm"
                       >
-                        <div className="flex items-center gap-3">
+                        <div
+                          className="flex items-center gap-3 cursor-pointer group"
+                          onClick={() => {
+                            setShowRequestsModal(false);
+                            navigate(`/user/${req.requester.id}`);
+                          }}
+                        >
                           {req.requester.profile_image ? (
                             <img
                               src={req.requester.profile_image}
                               alt={req.requester.name}
-                              className="w-10 h-10 rounded-full object-cover"
+                              className="w-10 h-10 rounded-[var(--radius-pill)] object-cover border border-border group-hover:border-primary/50 transition-colors"
                             />
                           ) : (
-                            <div className="w-10 h-10 rounded-full bg-zinc-700 flex items-center justify-center text-zinc-300 font-bold">
+                            <div className="w-10 h-10 rounded-[var(--radius-pill)] bg-card flex items-center justify-center text-foreground/80 font-headline border border-border">
                               {req.requester.name.charAt(0)}
                             </div>
                           )}
                           <div className="flex flex-col">
-                            <span className="text-zinc-100 text-sm font-medium">
+                            <span className="text-foreground font-headline text-sm group-hover:text-primary transition-colors">
                               {req.requester.name}
                             </span>
-                            <span className="text-zinc-400 text-xs">
+                            <span className="text-foreground/50 font-body-sm text-[12px]">
                               @{req.requester.username}
                             </span>
                           </div>

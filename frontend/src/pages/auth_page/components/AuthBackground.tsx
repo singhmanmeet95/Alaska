@@ -1,19 +1,5 @@
-interface AuthBackgroundProps {
-  imageUrl: string;
-}
-
-export default function AuthBackground({ imageUrl }: AuthBackgroundProps) {
+export default function AuthBackground() {
   return (
-    <>
-      {/* Background Image with Blur */}
-      <div
-        className="absolute inset-0 bg-cover bg-center filter blur-md"
-        style={{
-          backgroundImage: `url(${imageUrl})`,
-        }}
-      ></div>
-      {/* Dark overlay to soften the background */}
-      <div className="absolute inset-0 bg-zinc-950/90"></div>
-    </>
+    <div className="absolute inset-0 bg-background pointer-events-none z-[-1]" />
   );
 }

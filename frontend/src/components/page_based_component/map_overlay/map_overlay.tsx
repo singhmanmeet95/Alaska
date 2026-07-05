@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuthStore } from "../../../store/useAuthStore";
 import { Star, ChevronLeft, ChevronRight } from "lucide-react";
-import { getStationId } from "../../../../utils/stationsMap";
-import { SuffixAutomaton } from "../../../../utils/SuffixAutomaton";
+import { getStationId } from "../../../utils/stationsMap";
+import { SuffixAutomaton } from "../../../utils/SuffixAutomaton";
 
 interface MapOverlayProps {
   customPath: string[]; // List of station names
@@ -70,10 +70,9 @@ export default function MapOverlay({ customPath }: MapOverlayProps) {
     try {
       const idmap = new Map<string, number>();
       const encodedIds: number[] = [];
-      let nextId = 1;
 
       for (const station of customPath) {
-        let stationId = getStationId(station);
+        const stationId = getStationId(station);
         if (stationId !== null) {
           encodedIds.push(stationId);
           // idmap for building SuffixAutomaton needs string -> id, but here we can just use the stationId as the 'character'
@@ -162,32 +161,32 @@ export default function MapOverlay({ customPath }: MapOverlayProps) {
 
   return (
     <div
-      className="absolute top-0 bottom-0 left-0 bg-zinc-950 border-r border-zinc-800 flex flex-col z-[1000] shadow-xl"
+      className="absolute top-0 bottom-0 left-0 bg-background border-r border-border flex flex-col z-[1000] shadow-xl font-sans"
       style={{ width: `${width}px` }}
     >
       {/* Top Controls Section */}
-      <div className="flex flex-col p-4 gap-4 shrink-0 border-b border-zinc-800">
-        <h2 className="text-zinc-100 font-semibold text-lg">Route Settings</h2>
+      <div className="flex flex-col p-4 gap-4 shrink-0 border-b border-border">
+        <h2 className="text-foreground font-headline text-lg">Route Settings</h2>
 
         {/* Stations Grid */}
         <div className="grid grid-cols-2 gap-3">
           <div className="flex flex-col gap-1">
-            <span className="text-xs text-zinc-500 uppercase tracking-wider font-medium">
+            <span className="font-eyebrow text-[10px] text-foreground/50 uppercase tracking-wider">
               Start
             </span>
             <div
-              className="bg-zinc-900 border border-zinc-700/50 p-3 rounded text-sm text-zinc-300 font-mono truncate"
+              className="bg-card border border-border p-3 rounded-[var(--radius-pill)] text-sm text-foreground font-mono truncate"
               title={startStation}
             >
               {startStation || "None"}
             </div>
           </div>
           <div className="flex flex-col gap-1">
-            <span className="text-xs text-zinc-500 uppercase tracking-wider font-medium">
+            <span className="font-eyebrow text-[10px] text-foreground/50 uppercase tracking-wider">
               End
             </span>
             <div
-              className="bg-zinc-900 border border-zinc-700/50 p-3 rounded text-sm text-zinc-300 font-mono truncate"
+              className="bg-card border border-border p-3 rounded-[var(--radius-pill)] text-sm text-foreground font-mono truncate"
               title={endStation}
             >
               {endStation || "None"}
@@ -199,10 +198,10 @@ export default function MapOverlay({ customPath }: MapOverlayProps) {
         <button
           onClick={handleInitialSubmit}
           disabled={customPath.length < 2 || isLoading}
-          className={`w-full py-2.5 rounded font-medium text-sm transition-colors ${
+          className={`w-full py-2.5 rounded-[var(--radius-pill)] font-button text-sm transition-colors border ${
             customPath.length >= 2
-              ? "bg-white text-black hover:bg-zinc-200"
-              : "bg-zinc-800 text-zinc-500 cursor-not-allowed"
+              ? "bg-primary text-primary-foreground border-primary hover:opacity-90"
+              : "bg-background text-foreground/30 border-border cursor-not-allowed"
           }`}
         >
           {isLoading
@@ -213,16 +212,16 @@ export default function MapOverlay({ customPath }: MapOverlayProps) {
         </button>
       </div>
 
-      <div className="flex-1 w-full bg-zinc-900/30 p-4 overflow-y-auto flex flex-col gap-4">
+      <div className="flex-1 w-full bg-background p-4 overflow-y-auto flex flex-col gap-4">
         {!hasSearched ? (
-          <div className="border border-dashed border-zinc-700 rounded-lg h-full flex flex-col items-center justify-center text-zinc-500 text-sm gap-2">
-            <p>Analysis Results Area</p>
-            <p className="text-xs text-zinc-600">
+          <div className="border border-dashed border-border rounded-lg h-full flex flex-col items-center justify-center text-foreground/50 text-sm gap-2">
+            <p className="font-headline">Analysis Results Area</p>
+            <p className="font-body-sm text-[12px] text-foreground/40">
               Submit a path to find matchers
             </p>
           </div>
         ) : matchers.length === 0 ? (
-          <div className="border border-dashed border-zinc-700 rounded-lg h-full flex items-center justify-center text-zinc-500 text-sm">
+          <div className="border border-dashed border-border rounded-lg h-full flex items-center justify-center text-foreground/50 text-sm font-body">
             No active matchers found for this route.
           </div>
         ) : (
@@ -231,7 +230,7 @@ export default function MapOverlay({ customPath }: MapOverlayProps) {
               <div
                 key={match.id}
                 onClick={() => navigate(`/user/${match.user.id}`)}
-                className="bg-zinc-800 border border-zinc-700/50 rounded-xl p-4 flex flex-col gap-3 cursor-pointer hover:border-zinc-500 transition-colors"
+                className="bg-card border border-border rounded-xl p-4 flex flex-col gap-3 cursor-pointer hover:border-primary/50 transition-colors"
                 title="View Profile"
               >
                 <div className="flex items-center justify-between">
@@ -240,51 +239,51 @@ export default function MapOverlay({ customPath }: MapOverlayProps) {
                       <img
                         src={match.user.profile_image}
                         alt={match.user.name}
-                        className="w-10 h-10 rounded-full object-cover"
+                        className="w-10 h-10 rounded-[var(--radius-pill)] object-cover border border-border"
                       />
                     ) : (
-                      <div className="w-10 h-10 rounded-full bg-zinc-700 flex items-center justify-center text-zinc-300 font-bold">
+                      <div className="w-10 h-10 rounded-[var(--radius-pill)] bg-background flex items-center justify-center text-foreground font-bold border border-border">
                         {match.user.name.charAt(0)}
                       </div>
                     )}
                     <div className="flex flex-col">
-                      <span className="text-zinc-100 font-medium text-sm border-b border-transparent hover:border-zinc-300 transition-colors w-max">
+                      <span className="text-foreground font-headline text-sm w-max">
                         {match.user.name}
                       </span>
-                      <span className="text-zinc-400 text-xs">
+                      <span className="text-foreground/50 font-body-sm text-[10px]">
                         {match.lcsLen} stations match
                       </span>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-1 bg-zinc-900/50 px-2 py-1 rounded">
-                      <span className="text-sm font-bold text-amber-400">
+                    <div className="flex items-center gap-1 bg-background px-2 py-1 rounded-[var(--radius-pill)] border border-border">
+                      <span className="text-[12px] font-headline text-yellow-500">
                         {Number(match.user.ratings || 0).toFixed(1)}
                       </span>
-                      <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                      <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
                     </div>
 
                     {/* Friend Request Button */}
                     {match.friendshipStatus === "NONE" && (
                       <button
                         onClick={(e) => handleAddFriend(e, match.user.id)}
-                        className="px-3 py-1 bg-white text-black text-xs font-semibold rounded hover:bg-zinc-200 transition-colors"
+                        className="px-3 py-1 bg-primary text-primary-foreground font-button text-[12px] rounded-[var(--radius-pill)] hover:opacity-90 transition-colors"
                       >
                         Add
                       </button>
                     )}
                     {match.friendshipStatus === "SENT_REQUEST" && (
-                      <span className="px-3 py-1 bg-zinc-800 text-zinc-400 text-xs font-semibold rounded border border-zinc-700">
+                      <span className="px-3 py-1 bg-background text-foreground/50 text-[10px] font-eyebrow rounded-[var(--radius-pill)] border border-border">
                         Pending
                       </span>
                     )}
                     {match.friendshipStatus === "RECEIVED_REQUEST" && (
-                      <span className="px-3 py-1 bg-zinc-800 text-zinc-400 text-xs font-semibold rounded border border-zinc-700">
+                      <span className="px-3 py-1 bg-background text-foreground/50 text-[10px] font-eyebrow rounded-[var(--radius-pill)] border border-border">
                         Respond
                       </span>
                     )}
                     {match.friendshipStatus === "ACCEPTED" && (
-                      <span className="px-3 py-1 bg-blue-900/30 text-blue-400 text-xs font-semibold rounded border border-blue-900/50">
+                      <span className="px-3 py-1 bg-green-50 text-green-700 text-[10px] font-eyebrow rounded-[var(--radius-pill)] border border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800">
                         Friends
                       </span>
                     )}
@@ -295,21 +294,21 @@ export default function MapOverlay({ customPath }: MapOverlayProps) {
 
             {/* Pagination Controls */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-between mt-4 bg-zinc-900 p-2 rounded-lg border border-zinc-800">
+              <div className="flex items-center justify-between mt-4 bg-card p-2 rounded-xl border border-border">
                 <button
                   onClick={() => fetchMatchers(page - 1)}
                   disabled={page <= 1}
-                  className="p-1.5 text-zinc-400 hover:text-white disabled:opacity-30 disabled:hover:text-zinc-400 transition-colors"
+                  className="p-1.5 text-foreground/50 hover:text-foreground disabled:opacity-30 disabled:hover:text-foreground/50 transition-colors"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
-                <span className="text-xs font-medium text-zinc-500">
+                <span className="font-eyebrow text-[10px] text-foreground/50">
                   Page {page} of {totalPages}
                 </span>
                 <button
                   onClick={() => fetchMatchers(page + 1)}
                   disabled={page >= totalPages}
-                  className="p-1.5 text-zinc-400 hover:text-white disabled:opacity-30 disabled:hover:text-zinc-400 transition-colors"
+                  className="p-1.5 text-foreground/50 hover:text-foreground disabled:opacity-30 disabled:hover:text-foreground/50 transition-colors"
                 >
                   <ChevronRight className="w-5 h-5" />
                 </button>
@@ -327,23 +326,23 @@ export default function MapOverlay({ customPath }: MapOverlayProps) {
 
       {/* Confirmation Dialog */}
       {showDialog && (
-        <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-xl w-full max-w-sm shadow-2xl flex flex-col gap-4 animate-fade-in-up">
-            <h3 className="text-lg font-semibold text-white">Save Trip?</h3>
-            <p className="text-sm text-zinc-400 leading-relaxed">
+        <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-card border border-border p-6 rounded-2xl w-full max-w-sm shadow-2xl flex flex-col gap-4 animate-fade-in-up">
+            <h3 className="text-lg font-headline text-foreground">Save Trip?</h3>
+            <p className="font-body-sm text-[12px] text-foreground/70 leading-relaxed">
               Do you want us to put your data in the database too, so other
               people can match with you on this route?
             </p>
             <div className="flex gap-3 justify-end mt-2">
               <button
                 onClick={() => handleFinalSubmit(false)}
-                className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-sm font-medium rounded transition-colors"
+                className="px-4 py-2 bg-background hover:bg-card border border-border text-foreground font-button text-[12px] rounded-[var(--radius-pill)] transition-colors"
               >
                 No, just search
               </button>
               <button
                 onClick={() => handleFinalSubmit(true)}
-                className="px-4 py-2 bg-white hover:bg-zinc-200 text-black text-sm font-medium rounded transition-colors"
+                className="px-4 py-2 bg-primary hover:opacity-90 text-primary-foreground font-button text-[12px] rounded-[var(--radius-pill)] transition-colors"
               >
                 Yes, save it
               </button>

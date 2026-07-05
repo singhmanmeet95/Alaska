@@ -40,19 +40,19 @@ export default function StatsCard({ stats }: StatsCardProps) {
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 font-sans">
       {statItems.map((item, index) => {
         return (
           <div
             key={item.label}
-            className="group relative bg-zinc-900 border border-zinc-800 rounded-xl p-5 hover:border-zinc-700 transition-all duration-300 animate-fade-in-up"
+            className="group relative bg-card border border-border rounded-[var(--radius-card)] p-5 hover:border-primary/50 transition-all duration-300 animate-fade-in-up"
             style={{ animationDelay: `${index * 100}ms` }}
           >
             <div>
-              <p className="text-zinc-500 text-xs uppercase tracking-wider font-medium mb-1">
+              <p className="font-eyebrow text-[10px] text-foreground/50 uppercase tracking-wider mb-1">
                 {item.label}
               </p>
-              <p className="text-2xl font-bold text-zinc-100 truncate">
+              <p className="text-2xl font-headline text-foreground truncate">
                 {item.value}
               </p>
             </div>

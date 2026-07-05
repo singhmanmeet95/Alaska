@@ -145,25 +145,25 @@ export default function EditProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100">
+    <div className="min-h-screen bg-background text-foreground font-sans">
       {/* Toast Notification */}
       {toast && (
         <div
-          className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-3 rounded-lg border shadow-2xl animate-slide-in-right ${
+          className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-3 rounded-[var(--radius-pill)] border shadow-2xl animate-slide-in-right font-sans ${
             toast.type === "success"
-              ? "bg-emerald-950/80 border-emerald-700 text-emerald-200"
-              : "bg-red-950/80 border-red-700 text-red-200"
+              ? "bg-green-50 border-green-200 text-green-800 dark:bg-green-900/20 dark:border-green-800 dark:text-green-400"
+              : "bg-red-50 border-red-200 text-red-800 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400"
           }`}
         >
           {toast.type === "success" ? (
-            <CheckCircle className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+            <CheckCircle className="w-5 h-5 flex-shrink-0" />
           ) : (
-            <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
+            <AlertCircle className="w-5 h-5 flex-shrink-0" />
           )}
-          <span className="text-sm font-medium">{toast.message}</span>
+          <span className="font-button text-[12px]">{toast.message}</span>
           <button
             onClick={() => setToast(null)}
-            className="ml-2 text-zinc-400 hover:text-white"
+            className="ml-2 opacity-70 hover:opacity-100"
           >
             <X className="w-4 h-4" />
           </button>
@@ -171,20 +171,20 @@ export default function EditProfilePage() {
       )}
 
       {/* Header Bar */}
-      <header className="sticky top-0 z-40 bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-800">
+      <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border">
         <div className="max-w-3xl mx-auto flex items-center justify-between px-6 py-4">
           <button
             onClick={() => navigate("/profile")}
-            className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors group"
+            className="flex items-center gap-2 text-foreground/50 hover:text-foreground transition-colors group"
           >
             <ArrowLeft className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" />
-            <span className="text-sm font-medium">Back to Profile</span>
+            <span className="font-button text-[12px]">Back to Profile</span>
           </button>
-          <h1 className="text-lg font-semibold tracking-tight">Edit Profile</h1>
+          <h1 className="font-headline text-lg tracking-tight">Edit Profile</h1>
           <button
             onClick={handleSubmit}
             disabled={saving}
-            className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-lg hover:bg-zinc-200 transition-all font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-[var(--radius-pill)] hover:opacity-90 transition-all font-button text-[12px] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Save className="w-4 h-4" />
             {saving ? "Saving..." : "Save"}
@@ -193,12 +193,12 @@ export default function EditProfilePage() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-3xl mx-auto px-6 py-10">
+      <main className="max-w-3xl mx-auto px-6 py-10 font-sans">
         <form onSubmit={handleSubmit} className="space-y-10">
           {/* Avatar Section */}
           <section className="flex flex-col items-center gap-4">
             <div className="relative group">
-              <div className="w-32 h-32 rounded-full border-4 border-zinc-800 bg-zinc-900 overflow-hidden shadow-2xl transition-all group-hover:border-zinc-600">
+              <div className="w-32 h-32 rounded-[var(--radius-pill)] border-4 border-background bg-card overflow-hidden shadow-sm transition-all group-hover:border-primary/50">
                 {imagePreview ? (
                   <img
                     src={imagePreview}
@@ -206,7 +206,7 @@ export default function EditProfilePage() {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-zinc-500 text-5xl font-bold bg-zinc-900">
+                  <div className="w-full h-full flex items-center justify-center text-foreground/50 text-5xl font-headline bg-card">
                     {formData.name?.charAt(0)?.toUpperCase() || "?"}
                   </div>
                 )}
@@ -226,10 +226,8 @@ export default function EditProfilePage() {
                   />
                 </label>
               </div>
-              {/* Status dot */}
-              <div className="absolute bottom-1.5 right-1.5 w-5 h-5 bg-emerald-500 border-4 border-zinc-950 rounded-full" />
             </div>
-            <p className="text-zinc-500 text-sm">
+            <p className="font-eyebrow text-[10px] text-foreground/50 lowercase">
               Click the avatar to change your photo
             </p>
           </section>
@@ -238,8 +236,8 @@ export default function EditProfilePage() {
           <div className="space-y-6">
             {/* Name */}
             <div className="group">
-              <label className="flex items-center gap-2 text-sm font-medium text-zinc-400 mb-2">
-                <User className="w-4 h-4" />
+              <label className="flex items-center gap-2 font-headline text-sm text-foreground mb-2">
+                <User className="w-4 h-4 text-primary" />
                 Full Name
               </label>
               <input
@@ -248,18 +246,18 @@ export default function EditProfilePage() {
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="Enter your full name"
-                className="w-full bg-zinc-900/70 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 transition-all"
+                className="w-full bg-card border border-border rounded-[var(--radius-pill)] px-4 py-3 text-foreground font-body-sm text-[12px] placeholder-foreground/40 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
               />
             </div>
 
             {/* Username */}
             <div className="group">
-              <label className="flex items-center gap-2 text-sm font-medium text-zinc-400 mb-2">
-                <AtSign className="w-4 h-4" />
+              <label className="flex items-center gap-2 font-headline text-sm text-foreground mb-2">
+                <AtSign className="w-4 h-4 text-primary" />
                 Username
               </label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600 text-sm">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40 font-body-sm text-[12px]">
                   @
                 </span>
                 <input
@@ -268,17 +266,17 @@ export default function EditProfilePage() {
                   value={formData.username}
                   onChange={handleChange}
                   placeholder="your_username"
-                  className="w-full bg-zinc-900/70 border border-zinc-800 rounded-xl pl-8 pr-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 transition-all"
+                  className="w-full bg-card border border-border rounded-[var(--radius-pill)] pl-8 pr-4 py-3 text-foreground font-body-sm text-[12px] placeholder-foreground/40 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
                 />
               </div>
             </div>
 
             {/* Bio */}
             <div className="group">
-              <label className="flex items-center gap-2 text-sm font-medium text-zinc-400 mb-2">
-                <FileText className="w-4 h-4" />
+              <label className="flex items-center gap-2 font-headline text-sm text-foreground mb-2">
+                <FileText className="w-4 h-4 text-primary" />
                 Bio
-                <span className="text-zinc-600 text-xs ml-auto">
+                <span className="text-foreground/40 font-eyebrow text-[10px] ml-auto">
                   {formData.bio.length}/160
                 </span>
               </label>
@@ -289,14 +287,14 @@ export default function EditProfilePage() {
                 maxLength={160}
                 placeholder="A short bio about yourself..."
                 rows={3}
-                className="w-full bg-zinc-900/70 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 transition-all resize-none"
+                className="w-full bg-card border border-border rounded-xl px-4 py-3 text-foreground font-body-sm text-[12px] placeholder-foreground/40 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all resize-none"
               />
             </div>
 
             {/* About */}
             <div className="group">
-              <label className="flex items-center gap-2 text-sm font-medium text-zinc-400 mb-2">
-                <Info className="w-4 h-4" />
+              <label className="flex items-center gap-2 font-headline text-sm text-foreground mb-2">
+                <Info className="w-4 h-4 text-primary" />
                 About
               </label>
               <textarea
@@ -305,28 +303,28 @@ export default function EditProfilePage() {
                 onChange={handleChange}
                 placeholder="Tell the community more about yourself, your travel interests, favourite routes..."
                 rows={5}
-                className="w-full bg-zinc-900/70 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 transition-all resize-none"
+                className="w-full bg-card border border-border rounded-xl px-4 py-3 text-foreground font-body-sm text-[12px] placeholder-foreground/40 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all resize-none"
               />
             </div>
           </div>
 
           {/* Bottom Actions (visible on mobile) */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-zinc-800">
+          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-border">
             <button
               type="button"
               onClick={() => navigate("/profile")}
-              className="flex-1 px-6 py-3 bg-zinc-900 border border-zinc-800 text-zinc-300 rounded-xl hover:bg-zinc-800 transition-colors font-medium text-center"
+              className="flex-1 px-6 py-3 bg-card border border-border text-foreground rounded-[var(--radius-pill)] hover:bg-background transition-colors font-button text-[12px] text-center"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-white text-black rounded-xl hover:bg-zinc-200 transition-all font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-[var(--radius-pill)] hover:opacity-90 transition-all font-button text-[12px] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {saving ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-zinc-800 border-t-transparent rounded-full animate-spin" />
+                  <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-[var(--radius-pill)] animate-spin" />
                   Saving...
                 </>
               ) : (

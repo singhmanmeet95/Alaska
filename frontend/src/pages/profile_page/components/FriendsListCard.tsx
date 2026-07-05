@@ -18,10 +18,10 @@ export default function FriendsListCard({ friends }: FriendsListCardProps) {
   if (!friends || friends.length === 0) return null;
 
   return (
-    <div className="bg-zinc-900/50 backdrop-blur border border-zinc-800 rounded-2xl p-6 shadow-sm overflow-hidden animate-fade-in">
+    <div className="bg-card backdrop-blur border border-border rounded-[var(--radius-card)] p-6 shadow-sm overflow-hidden animate-fade-in font-sans">
       <div className="flex items-center gap-2 mb-4">
         <svg
-          className="w-5 h-5 text-blue-400"
+          className="w-5 h-5 text-primary"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -33,7 +33,7 @@ export default function FriendsListCard({ friends }: FriendsListCardProps) {
             d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
           />
         </svg>
-        <h2 className="text-xl font-bold tracking-tight text-zinc-100">
+        <h2 className="text-xl font-headline tracking-tight text-foreground">
           Friends ({friends.length})
         </h2>
       </div>
@@ -43,24 +43,24 @@ export default function FriendsListCard({ friends }: FriendsListCardProps) {
           <div
             key={friend.id}
             onClick={() => navigate(`/user/${friend.id}`)}
-            className="flex items-center gap-3 p-3 rounded-xl bg-zinc-800/40 hover:bg-zinc-800 border border-zinc-700/50 hover:border-zinc-700 transition-all cursor-pointer group"
+            className="flex items-center gap-3 p-3 rounded-[var(--radius-card)] bg-background hover:bg-card border border-border hover:border-primary/50 transition-all cursor-pointer group"
           >
             {friend.profile_image ? (
               <img
                 src={friend.profile_image}
                 alt={friend.name}
-                className="w-12 h-12 rounded-full object-cover border border-zinc-700 group-hover:border-zinc-600 transition-colors"
+                className="w-12 h-12 rounded-[var(--radius-pill)] object-cover border border-border group-hover:border-primary/30 transition-colors"
               />
             ) : (
-              <div className="w-12 h-12 rounded-full bg-zinc-700 flex items-center justify-center text-zinc-300 font-bold border border-zinc-600">
+              <div className="w-12 h-12 rounded-[var(--radius-pill)] bg-card flex items-center justify-center text-foreground/80 font-headline border border-border">
                 {friend.name.charAt(0)}
               </div>
             )}
             <div className="flex flex-col flex-1 overflow-hidden">
-              <span className="text-zinc-100 font-medium truncate group-hover:text-blue-400 transition-colors">
+              <span className="text-foreground font-headline truncate group-hover:text-primary transition-colors">
                 {friend.name}
               </span>
-              <span className="text-zinc-400 text-xs truncate">
+              <span className="text-foreground/50 font-body-sm text-[12px] truncate">
                 @{friend.username}
               </span>
             </div>
@@ -69,7 +69,7 @@ export default function FriendsListCard({ friends }: FriendsListCardProps) {
                 e.stopPropagation();
                 navigate(`/chat/${friend.id}`);
               }}
-              className="p-2 text-zinc-500 hover:text-blue-400 hover:bg-blue-500/10 rounded-full transition-colors"
+              className="p-2 text-foreground/50 hover:text-primary hover:bg-primary/10 rounded-[var(--radius-pill)] transition-colors"
               title="Chat"
             >
               <svg
