@@ -6,16 +6,12 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import {
   ArrowLeft,
-  Camera,
   Save,
-  User,
-  AtSign,
-  FileText,
-  Info,
   CheckCircle,
   AlertCircle,
   X,
 } from "lucide-react";
+import { AvatarUpload, ProfileFormFields } from "./components";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
@@ -196,117 +192,15 @@ export default function EditProfilePage() {
       <main className="max-w-3xl mx-auto px-6 py-10 font-sans">
         <form onSubmit={handleSubmit} className="space-y-10">
           {/* Avatar Section */}
-          <section className="flex flex-col items-center gap-4">
-            <div className="relative group">
-              <div className="w-32 h-32 rounded-[var(--radius-pill)] border-4 border-background bg-card overflow-hidden shadow-sm transition-all group-hover:border-primary/50">
-                {imagePreview ? (
-                  <img
-                    src={imagePreview}
-                    alt="Profile"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-foreground/50 text-5xl font-headline bg-card">
-                    {formData.name?.charAt(0)?.toUpperCase() || "?"}
-                  </div>
-                )}
-                {/* Overlay */}
-                <label className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer rounded-full">
-                  {uploading ? (
-                    <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  ) : (
-                    <Camera className="w-7 h-7 text-white" />
-                  )}
-                  <input
-                    type="file"
-                    onChange={handleFileChange}
-                    accept="image/*"
-                    className="hidden"
-                    disabled={uploading}
-                  />
-                </label>
-              </div>
-            </div>
-            <p className="font-eyebrow text-[10px] text-foreground/50 lowercase">
-              Click the avatar to change your photo
-            </p>
-          </section>
+          <AvatarUpload
+            imagePreview={imagePreview}
+            name={formData.name}
+            uploading={uploading}
+            onFileChange={handleFileChange}
+          />
 
           {/* Form Fields */}
-          <div className="space-y-6">
-            {/* Name */}
-            <div className="group">
-              <label className="flex items-center gap-2 font-headline text-sm text-foreground mb-2">
-                <User className="w-4 h-4 text-primary" />
-                Full Name
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="Enter your full name"
-                className="w-full bg-card border border-border rounded-[var(--radius-pill)] px-4 py-3 text-foreground font-body-sm text-[12px] placeholder-foreground/40 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-              />
-            </div>
-
-            {/* Username */}
-            <div className="group">
-              <label className="flex items-center gap-2 font-headline text-sm text-foreground mb-2">
-                <AtSign className="w-4 h-4 text-primary" />
-                Username
-              </label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40 font-body-sm text-[12px]">
-                  @
-                </span>
-                <input
-                  type="text"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  placeholder="your_username"
-                  className="w-full bg-card border border-border rounded-[var(--radius-pill)] pl-8 pr-4 py-3 text-foreground font-body-sm text-[12px] placeholder-foreground/40 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-                />
-              </div>
-            </div>
-
-            {/* Bio */}
-            <div className="group">
-              <label className="flex items-center gap-2 font-headline text-sm text-foreground mb-2">
-                <FileText className="w-4 h-4 text-primary" />
-                Bio
-                <span className="text-foreground/40 font-eyebrow text-[10px] ml-auto">
-                  {formData.bio.length}/160
-                </span>
-              </label>
-              <textarea
-                name="bio"
-                value={formData.bio}
-                onChange={handleChange}
-                maxLength={160}
-                placeholder="A short bio about yourself..."
-                rows={3}
-                className="w-full bg-card border border-border rounded-xl px-4 py-3 text-foreground font-body-sm text-[12px] placeholder-foreground/40 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all resize-none"
-              />
-            </div>
-
-            {/* About */}
-            <div className="group">
-              <label className="flex items-center gap-2 font-headline text-sm text-foreground mb-2">
-                <Info className="w-4 h-4 text-primary" />
-                About
-              </label>
-              <textarea
-                name="about"
-                value={formData.about}
-                onChange={handleChange}
-                placeholder="Tell the community more about yourself, your travel interests, favourite routes..."
-                rows={5}
-                className="w-full bg-card border border-border rounded-xl px-4 py-3 text-foreground font-body-sm text-[12px] placeholder-foreground/40 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all resize-none"
-              />
-            </div>
-          </div>
+          <ProfileFormFields formData={formData} onChange={handleChange} />
 
           {/* Bottom Actions (visible on mobile) */}
           <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-border">

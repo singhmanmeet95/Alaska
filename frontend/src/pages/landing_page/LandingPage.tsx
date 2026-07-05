@@ -1,13 +1,19 @@
-import { useEffect, useState } from "react";
-import type { ReactNode } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../../store/useAuthStore";
 import {
   ArrowRight, Shield, Users, MapPin, Globe, Lock, Activity,
-  MessageSquare, Menu, X, Plus, Minus, Sparkles, Zap, Star
+  Menu, X, Sparkles, Zap, Star
 } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
-
+import {
+  ProblemCard,
+  FeatureCard,
+  StatItem,
+  StepCard,
+  TestimonialCard,
+  FAQItem
+} from "./components";
 export default function LandingPage() {
   const [scrollYState, setScrollYState] = useState(0);
   const [hasMounted, setHasMounted] = useState(false);
@@ -605,136 +611,5 @@ export default function LandingPage() {
         </div>
       </footer>
     </div>
-  );
-}
-
-// Subcomponents
-
-function ProblemCard({ title, desc }: { title: string; desc: string }) {
-  return (
-    <motion.div variants={{ hidden: { opacity: 0, x: -20 }, visible: { opacity: 1, x: 0 } }} className="flex gap-6 items-start group">
-      <div className="mt-1 w-14 h-14 rounded-2xl bg-card border border-border/50 text-foreground/50 flex items-center justify-center shrink-0 font-bold group-hover:bg-primary/10 group-hover:text-primary group-hover:border-primary/30 transition-all shadow-sm">
-        <X size={24} />
-      </div>
-      <div>
-        <h3 className="font-headline text-2xl mb-3 group-hover:text-primary transition-colors">{title}</h3>
-        <p className="text-foreground/60 text-lg leading-relaxed">{desc}</p>
-      </div>
-    </motion.div>
-  );
-}
-
-function FeatureCard({ icon, title, description }: { icon: ReactNode, title: string, description: string }) {
-  return (
-    <motion.div 
-      variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} 
-      whileHover={{ y: -5, scale: 1.02 }}
-      className="group p-8 md:p-10 rounded-3xl bg-background border border-border/50 hover:border-primary/30 transition-all shadow-sm hover:shadow-xl hover:shadow-primary/5 relative overflow-hidden"
-    >
-      <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-full blur-[40px] -translate-y-1/2 translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      <div className="mb-8 w-16 h-16 rounded-2xl bg-card border border-border/50 flex items-center justify-center text-foreground group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all duration-300">
-        {icon}
-      </div>
-      <h3 className="font-headline text-2xl mb-4 relative z-10">{title}</h3>
-      <p className="font-body-sm text-foreground/60 text-lg leading-relaxed relative z-10">
-        {description}
-      </p>
-    </motion.div>
-  );
-}
-
-function StatItem({ value, label, delay }: { value: string; label: string; delay: number }) {
-  return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay, duration: 0.8 }}
-      className="text-center md:text-left px-4"
-    >
-      <h3 className="font-display-xl text-black mb-4 leading-none text-5xl md:text-7xl font-bold tracking-tighter">{value}</h3>
-      <p className="font-eyebrow text-black/70 text-sm md:text-base font-bold uppercase tracking-widest">{label}</p>
-    </motion.div>
-  );
-}
-
-function StepCard({ number, title, description, color }: { number: string; title: string; description: string; color: string }) {
-  return (
-    <motion.div 
-      variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0 } }} 
-      whileHover={{ y: -10 }}
-      className="relative group p-10 rounded-3xl bg-card border border-border/50 shadow-sm hover:shadow-xl transition-all overflow-hidden"
-    >
-      <div className={`absolute top-0 right-0 w-32 h-32 rounded-full blur-[50px] -translate-y-1/2 translate-x-1/2 opacity-20 ${color.split(' ')[0]}`} />
-      <div className={`w-16 h-16 rounded-2xl border ${color} flex items-center justify-center font-bold text-2xl mb-8 group-hover:scale-110 transition-transform`}>
-        {number}
-      </div>
-      <h3 className="font-headline text-2xl mb-4 relative z-10">{title}</h3>
-      <p className="font-body-sm text-foreground/60 text-lg leading-relaxed relative z-10">{description}</p>
-    </motion.div>
-  );
-}
-
-function TestimonialCard({ quote, author, role, color }: { quote: string; author: string; role: string; color: string }) {
-  return (
-    <motion.div 
-      variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
-      whileHover={{ y: -10 }}
-      className="p-10 rounded-3xl bg-card border border-border/50 flex flex-col justify-between h-full shadow-sm hover:shadow-xl transition-all relative overflow-hidden"
-    >
-      <div className={`absolute top-0 right-0 w-48 h-48 ${color} rounded-full blur-[60px] -translate-y-1/2 translate-x-1/2 opacity-60`} />
-      <div className="relative z-10">
-        <div className="mb-8 text-primary">
-          <MessageSquare size={40} className="opacity-40" />
-        </div>
-        <p className="font-body text-xl text-foreground mb-12 leading-relaxed font-light italic">
-          "{quote}"
-        </p>
-      </div>
-      <div className="flex items-center gap-5 relative z-10">
-        <div className="w-14 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-xl shadow-md">
-          {author.charAt(0)}
-        </div>
-        <div>
-          <h4 className="font-bold font-sans text-lg">{author}</h4>
-          <p className="font-body-sm text-foreground/60">{role}</p>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-function FAQItem({ question, answer }: { question: string; answer: string }) {
-  const [isOpen, setIsOpen] = useState(false);
-  
-  return (
-    <motion.div 
-      initial={false}
-      className="border border-border/50 rounded-3xl bg-card overflow-hidden shadow-sm hover:shadow-md transition-shadow"
-    >
-      <button 
-        onClick={() => setIsOpen(!isOpen)} 
-        className="w-full px-8 py-6 flex items-center justify-between text-left focus:outline-none group"
-      >
-        <span className="font-headline text-foreground text-xl group-hover:text-primary transition-colors pr-8">{question}</span>
-        <motion.div animate={{ rotate: isOpen ? 180 : 0 }} className="w-10 h-10 rounded-full bg-background flex items-center justify-center shrink-0 border border-border/50 group-hover:border-primary/50 transition-colors">
-          {isOpen ? <Minus size={20} className="text-foreground/70" /> : <Plus size={20} className="text-foreground/70" />}
-        </motion.div>
-      </button>
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div 
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <div className="px-8 pb-8 text-foreground/60 font-body text-lg leading-relaxed border-t border-border/50 pt-6 mt-2">
-              {answer}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
   );
 }
