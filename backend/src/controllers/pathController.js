@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 
 const TIME_WINDOW_MINUTES = 120; // Increased to catch overlapping trips even if start times differ significantly
 const AVG_STATION_TIME_MINUTES = 3; // Est. time between stations
-const MATCH_THRESHOLD_MINUTES = 20; // Strict window for "meeting" at the overlap
+const DEFAULT_MATCH_THRESHOLD_MINUTES = 10; // Default strict window for "meeting" at the overlap
 
 function getLongestCommonWithIndices(st, candidateIds) {
   let v = 0;
@@ -60,7 +60,8 @@ function deserializeSam(serializedSam) {
 // ---------- POST: User sends custom stationList (and optional startTime), get matching trips ----------
 router.post("/match_trips", optionalAuth, async (req, res) => {
   try {
-    const { sam, startTime, k, totalStations } = req.body;
+    const { sam, startTime, k, totalStations, matchThreshold } = req.body;
+    const thresholdMinutes = matchThreshold !== undefined ? parseInt(matchThreshold) : DEFAULT_MATCH_THRESHOLD_MINUTES;
 
     if (!sam) {
       return res
@@ -143,7 +144,7 @@ router.post("/match_trips", optionalAuth, async (req, res) => {
             (overlapTimeCan - overlapTimeRef) / 60000,
           );
 
-          if (Math.abs(timeDiffAtOverlap) <= MATCH_THRESHOLD_MINUTES) {
+          if (Math.abs(timeDiffAtOverlap) <= thresholdMinutes) {
             isViable = true;
           }
         } else {

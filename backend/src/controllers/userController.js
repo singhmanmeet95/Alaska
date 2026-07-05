@@ -25,6 +25,7 @@ export const getAllUsers = async (req, res) => {
         ratings: true,
         ratingCount: true,
         trips: true,
+        tripHistory: true,
       },
     });
     res.status(200).json({ success: true, data: users });
@@ -41,6 +42,7 @@ export const getUserById = async (req, res) => {
       where: { id },
       include: {
         trips: true,
+        tripHistory: true,
         receivedReviews: {
           include: {
             reviewer: {

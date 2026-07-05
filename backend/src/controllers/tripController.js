@@ -184,7 +184,29 @@ export const getTripsByUserId = async (req, res) => {
       },
     });
 
-    res.status(200).json({ success: true, data: trips });
+    const history = await prisma.tripHistory.findMany({
+      where: { userId },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            email: true,
+            profile_image: true,
+            ratings: true,
+            ratingCount: true,
+          },
+        },
+      },
+      orderBy: {
+        startTime: "desc",
+      },
+    });
+
+    const allTrips = [...trips, ...history].sort((a, b) => b.startTime - a.startTime);
+
+    res.status(200).json({ success: true, data: allTrips });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }

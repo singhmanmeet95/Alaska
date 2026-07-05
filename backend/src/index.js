@@ -10,8 +10,12 @@ import utilRoutes from "./routes/utilsRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
 import friendshipRoutes from "./routes/friendshipRoutes.js";
+import { initCronJobs } from "./jobs/tripCron.js";
 
 dotenv.config();
+
+// Initialize scheduled background jobs
+initCronJobs();
 
 const app = express();
 const prisma = new PrismaClient();
@@ -73,5 +77,4 @@ if (!IS_PRODUCTION) {
   startServer();
 }
 
-// Export for Vercel
 export default app;

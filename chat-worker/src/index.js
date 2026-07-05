@@ -16,23 +16,72 @@ const MONGO_URI = process.env.MONGO_URI || 'mongodb://mongodb:27017/alaska-chat'
 const REDIS_URL = process.env.REDIS_URL || 'redis://redis:6379';
 const INTERNAL_API_KEY = process.env.INTERNAL_API_KEY || 'default_dev_secret';
 
-// Setup Redis Publisher
+// Setup Redis Publisher and Queue Client
 const pubClient = createClient({ url: REDIS_URL });
+const queueClient = pubClient.duplicate();
 
 async function connectDatabases() {
   try {
-    await mongoose.connect(MONGO_URI);
-    console.log("Connected to MongoDB");
+    await mongoose.connect(MONGO_URI, {
+      maxPoolSize: 50, // maximum number of connections in the pool
+      minPoolSize: 10, // minimum number of connections in the pool
+      serverSelectionTimeoutMS: 5000, // how long to wait for a connection
+      socketTimeoutMS: 45000, // how long to wait for socket response
+    });
+    console.log("Connected to MongoDB with connection pooling enabled");
     
     await pubClient.connect();
-    console.log("Connected to Redis for Pub/Sub");
+    await queueClient.connect();
+    console.log("Connected to Redis for Pub/Sub and Queueing");
   } catch (err) {
     console.error("Database connection failed:", err);
     process.exit(1);
   }
 }
 
-connectDatabases();
+connectDatabases().then(() => {
+  // Start the background queue polling loop once connected
+  pollQueue();
+});
+
+// Background task to process the chat ingestion queue
+async function pollQueue() {
+  console.log("Started polling chat_ingestion_queue...");
+  while (true) {
+    try {
+      // brPop blocks until an item is available in the queue (timeout 0 = infinite)
+      const result = await queueClient.brPop('chat_ingestion_queue', 0);
+      if (result) {
+        const { key, element } = result;
+        const data = JSON.parse(element);
+        
+        const newChat = new Chat({
+          senderId: data.senderId,
+          receiverId: data.receiverId,
+          message: data.message
+        });
+
+        await newChat.save();
+
+        // Publish back to Redis so Gateway can emit it via WebSocket (Double Tick)
+        const payload = JSON.stringify({
+          id: newChat._id,
+          senderId: newChat.senderId,
+          receiverId: newChat.receiverId,
+          message: newChat.message,
+          createdAt: newChat.createdAt
+        });
+
+        await pubClient.publish('chat_messages', payload);
+        console.log("Successfully processed and published message:", payload);
+      }
+    } catch (err) {
+      console.error("Error processing queue message:", err);
+      // Brief pause before retrying on error to prevent tight looping
+      await new Promise(res => setTimeout(res, 1000));
+    }
+  }
+}
 
 // Health check
 app.get('/health', (c) => c.json({ status: 'Worker OK' }));
@@ -46,7 +95,7 @@ app.use('/api/messages', async (c, next) => {
   await next();
 });
 
-// POST /api/messages - Gateway sends messages here
+// POST /api/messages - Gateway fallback/legacy endpoint
 app.post('/api/messages', async (c) => {
   try {
     const body = await c.req.json();

@@ -23,6 +23,10 @@ const pubClient = createClient({ url: REDIS_URL });
 const subClient = pubClient.duplicate();
 const subscriber = pubClient.duplicate();
 
+pubClient.on('error', (err) => console.error('Redis pubClient Error:', err));
+subClient.on('error', (err) => console.error('Redis subClient Error:', err));
+subscriber.on('error', (err) => console.error('Redis subscriber Error:', err));
+
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
@@ -45,7 +49,7 @@ async function bootstrap() {
     console.log('User connected to Gateway:', socket.id);
 
     socket.on('join_user', (userId) => {
-      socket.join(userId);
+      socket.join(String(userId));
       console.log(`User ${userId} joined their room`);
     });
 
@@ -54,21 +58,28 @@ async function bootstrap() {
         const { senderId, receiverId, message } = data;
         if (!senderId || !receiverId || !message) return;
 
-        // Forward to Hono worker securely
-        const response = await axios.post(`${WORKER_URL}/api/messages`, {
+        // Push to Redis Queue for background processing (Non-blocking)
+        const payload = JSON.stringify({
           senderId,
           receiverId,
-          message
-        }, {
-          headers: {
-            'x-internal-secret': INTERNAL_API_KEY
-          }
+          message,
+          timestamp: new Date().toISOString()
+        });
+        
+        await pubClient.lPush('chat_ingestion_queue', payload);
+        console.log("Message queued for worker processing:", payload);
+
+        // Instantly acknowledge back to sender (Single Tick)
+        socket.emit("message_sent_ack", { 
+          senderId, 
+          receiverId, 
+          message, 
+          status: "queued" 
         });
 
-        console.log("Message forwarded to worker:", response.data);
       } catch (err) {
-        console.error("Error forwarding message to worker:", err.message);
-        socket.emit("error", { message: "Failed to send message" });
+        console.error("Error queuing message:", err.message);
+        socket.emit("error", { message: "Failed to queue message" });
       }
     });
 
@@ -80,11 +91,13 @@ async function bootstrap() {
   // Subscribe to Redis Pub/Sub for outgoing messages
   await subscriber.subscribe('chat_messages', (message, channel) => {
     try {
+      console.log("Redis published message:", message);
       const data = JSON.parse(message);
       if (io) {
-        // Emit to receiver and sender
-        io.to(data.receiverId).emit("receive_message", data);
-        io.to(data.senderId).emit("message_sent", data);
+        // Emit locally to prevent redis-adapter from broadcasting the message to other nodes again,
+        // which would cause duplicate messages if multiple gateway instances are running.
+        io.local.to(String(data.receiverId)).emit("receive_message", data);
+        io.local.to(String(data.senderId)).emit("message_sent", data);
       }
     } catch (err) {
       console.error("Error parsing message from redis:", err);

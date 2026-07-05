@@ -19,6 +19,7 @@ model User {
   bio           String?
   images        String[]
   trips         Trip[]   @relation("UserTrips")
+  tripHistory   TripHistory[] @relation("UserTripHistory")
   ratings       Float      @default(0)
   ratingCount   Int      @default(0)
   json          Json?    @default("{}")
@@ -63,6 +64,18 @@ model Trip {
   length       Int
   startStation Int
   endStation   Int
+}
+
+model TripHistory {
+  id           String   @id @default(uuid())
+  user         User     @relation("UserTripHistory", fields: [userId], references: [id])
+  userId       String
+  startTime    DateTime
+  stationList  Int[]
+  length       Int
+  startStation Int
+  endStation   Int
+  archivedAt   DateTime @default(now())
 }
 
 model Review {
