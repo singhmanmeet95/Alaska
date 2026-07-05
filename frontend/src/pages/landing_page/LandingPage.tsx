@@ -11,8 +11,7 @@ import {
   FeatureCard,
   StatItem,
   StepCard,
-  TestimonialCard,
-  FAQItem
+  TestimonialCard
 } from "./components";
 export default function LandingPage() {
   const [scrollYState, setScrollYState] = useState(0);
@@ -73,12 +72,12 @@ export default function LandingPage() {
       <nav className={`fixed top-0 w-full z-50 transition-all duration-500 bg-background/70 backdrop-blur-xl border-b ${scrollYState > 20 || isMobileMenuOpen ? "border-border/50 py-3 shadow-sm" : "border-border/10 py-5"}`}>
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3 group">
-            <motion.div 
-              whileHover={{ rotate: 180 }}
-              transition={{ duration: 0.6, ease: easeOutExpo }}
-              className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg"
+            <motion.div
+              whileHover={{ rotate: 15 }}
+              transition={{ type: "spring", stiffness: 200, damping: 10 }}
+              className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 overflow-hidden"
             >
-              <span className="text-primary-foreground font-bold text-xl font-mono">A</span>
+              <img src="/alaska-logo.jpg" alt="Alaska Logo" className="w-full h-full object-contain" />
             </motion.div>
             <span className="text-2xl font-bold tracking-tighter group-hover:tracking-tight transition-all duration-300">Alaska</span>
           </Link>
@@ -167,7 +166,7 @@ export default function LandingPage() {
                     <a onClick={() => setIsMobileMenuOpen(false)} href="#how-it-works" className="hover:text-primary">How it Works</a>
                     <a onClick={() => setIsMobileMenuOpen(false)} href="#features" className="hover:text-primary">Features</a>
                     <a onClick={() => setIsMobileMenuOpen(false)} href="#testimonials" className="hover:text-primary">Testimonials</a>
-                    <a onClick={() => setIsMobileMenuOpen(false)} href="#faq" className="hover:text-primary">FAQ</a>
+                    <a onClick={() => setIsMobileMenuOpen(false)} href="#safety" className="hover:text-primary">Safety</a>
                     <div className="h-px w-full bg-border/50 my-2" />
                     <Link onClick={() => setIsMobileMenuOpen(false)} to="/auth" className="text-center px-6 py-4 border border-border/50 rounded-2xl hover:bg-card transition-colors">Log In</Link>
                     <Link onClick={() => setIsMobileMenuOpen(false)} to="/auth" className="text-center px-6 py-4 bg-primary text-primary-foreground rounded-2xl shadow-lg transition-transform active:scale-95">Get Started</Link>
@@ -188,10 +187,7 @@ export default function LandingPage() {
           variants={staggerContainer}
           className="flex-1 flex flex-col space-y-8"
         >
-          <motion.div variants={fadeInUp} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/20 text-primary font-medium text-sm w-fit shadow-sm backdrop-blur-md">
-            <Sparkles size={16} />
-            <span>The #1 app for daily commuters</span>
-          </motion.div>
+      
           
           <motion.h1 variants={fadeInUp} className="font-display-xl leading-[1.1] text-5xl md:text-6xl lg:text-[84px] tracking-tighter">
             Turn your <span className="text-transparent bg-clip-text bg-gradient-to-r from-block-lilac to-primary">commute</span> into connections.
@@ -261,30 +257,8 @@ export default function LandingPage() {
           transition={{ duration: 1, ease: easeOutExpo, delay: 0.2 }}
           className="flex-1 w-full relative perspective-[1000px]"
         >
-          {/* Floating interactive elements */}
-          <motion.div 
-            animate={{ y: [0, -15, 0] }}
-            transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-            className="absolute -left-6 md:-left-12 top-10 bg-background/80 backdrop-blur-xl p-4 rounded-2xl border border-border/50 shadow-2xl z-20 flex items-center gap-4"
-          >
-            <div className="w-12 h-12 rounded-full bg-block-lime flex items-center justify-center text-black font-bold text-xs shadow-inner">MATCH</div>
-            <div>
-              <p className="font-bold text-sm">Found Sarah J.</p>
-              <p className="text-xs text-foreground/60">0.2 miles away • Same route</p>
-            </div>
-          </motion.div>
+          
 
-          <motion.div 
-            animate={{ y: [0, 15, 0] }}
-            transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }}
-            className="absolute -right-4 md:-right-8 bottom-10 md:bottom-20 bg-background/80 backdrop-blur-xl p-4 rounded-2xl border border-border/50 shadow-2xl z-20 flex items-center gap-3"
-          >
-            <Shield className="text-green-500" size={24} />
-            <div>
-              <p className="font-bold text-sm">Verified User</p>
-              <p className="text-xs text-foreground/60">ID & Work Email checked</p>
-            </div>
-          </motion.div>
 
           <div className="relative rounded-[2rem] overflow-hidden shadow-2xl border border-border/30 group">
             <motion.div
@@ -409,13 +383,12 @@ export default function LandingPage() {
 
       {/* How It Works Section */}
       <section id="how-it-works" className="py-[120px] px-6 relative z-10 w-full max-w-7xl mx-auto border-t border-border/50">
-        <div className="text-center mb-20">
+        <div className="text-center mb-10">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <span className="text-primary font-bold tracking-widest uppercase text-sm mb-4 block">Process</span>
             <h2 className="font-display-lg text-foreground mb-6">How It Works</h2>
             <p className="font-subhead text-foreground/60 max-w-2xl mx-auto">
               Three simple steps to revolutionize your daily travel experience.
@@ -470,7 +443,7 @@ export default function LandingPage() {
 
           <motion.div variants={staggerContainer} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative z-10">
             <FeatureCard icon={<Activity />} title="Instant Matching" description="Our algorithms find you the perfect travel companion in seconds." />
-            <FeatureCard icon={<Shield />} title="Verified Profiles" description="Every profile is verified to ensure a secure community environment." />
+            <FeatureCard icon={<Shield />} title="Verified Profiles" description="Every profile is authenticated using a verified university or corporate email." />
             <FeatureCard icon={<MapPin />} title="Live Tracking" description="Real-time location sharing ensures you never miss a meeting." />
             <FeatureCard icon={<Users />} title="Community" description="Join a network of commuters turning travel into meaningful connections." />
             <FeatureCard icon={<Lock />} title="Private & Secure" description="Your data is encrypted end-to-end. We prioritize your privacy." />
@@ -508,26 +481,6 @@ export default function LandingPage() {
         </motion.div>
       </section>
 
-      {/* FAQ Section */}
-      <section id="faq" className="py-[120px] px-6 max-w-3xl mx-auto border-t border-border/50 relative z-10">
-        <motion.div 
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={fadeInUp}
-        >
-          <div className="text-center mb-16">
-            <h2 className="font-display-lg mb-6 text-4xl md:text-5xl">Questions?</h2>
-            <p className="text-foreground/60 text-lg">Everything you need to know about the product.</p>
-          </div>
-          <div className="space-y-4">
-            <FAQItem question="Is Alaska safe to use?" answer="Absolutely. Every user must verify their identity using a valid ID or university/work email before they can start matching. We also provide live location sharing during active journeys and a 24/7 report system." />
-            <FAQItem question="Is the app free?" answer="Yes! Core matching and chat features are completely free. We believe safe commutes should be accessible to everyone." />
-            <FAQItem question="What if I don't want to talk?" answer="That's perfectly fine. You can set your commute preference to 'Quiet Ride' in your profile, letting others know you just want a safe companion without the small talk." />
-            <FAQItem question="How does the matching work?" answer="We use your selected start station, end station, and departure time to find commuters on the exact same route. Our algorithm also factors in mutual interests and past positive reviews." />
-          </div>
-        </motion.div>
-      </section>
 
       {/* CTA Section */}
       <section className="px-6 mb-[120px] relative z-10">
