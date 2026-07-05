@@ -28,7 +28,7 @@ export default function MapMetro() {
 
   // Handle path submission
   const handleSubmit = () => {
-    console.log("Submitting path to backend:", customPath);
+
     // Placeholder for API call
     alert(
       `Route confirmed! ${customPath.length} stations selected.\nCheck console for data array.`,

@@ -37,7 +37,7 @@ export default function SignupForm({
 
       <form 
         onSubmit={(e) => { e.preventDefault(); onSubmit(); }}
-        className="w-full max-w-sm space-y-3 font-body-sm"
+        className="w-full max-w-lg space-y-3 font-body-sm"
       >
         <input
           type="text"

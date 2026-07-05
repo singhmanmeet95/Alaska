@@ -56,6 +56,10 @@ services:
     depends_on:
       - redis
       - chat-worker
+    command: npx nodemon index.js
+    volumes:
+      - ./chat-gateway:/app
+      - /app/node_modules
 
   chat-worker:
     build: ./chat-worker
@@ -71,6 +75,10 @@ services:
     depends_on:
       - redis
       - mongodb
+    command: npx nodemon src/index.js
+    volumes:
+      - ./chat-worker:/app
+      - /app/node_modules
 
   frontend:
     image: node:22-alpine

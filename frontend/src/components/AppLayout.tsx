@@ -1,21 +1,36 @@
-import React from "react";
+import { useState } from "react";
 import { Outlet, Link, useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
 import { Dock, DockIcon } from "@/components/ui/dock";
-import { Map, MessageCircle, User, Home } from "lucide-react";
+import { Map, MessageCircle, User, Home, Moon, Sun } from "lucide-react";
 
 const navItems = [
-  { href: "/", icon: Home, label: "Home" },
   { href: "/map", icon: Map, label: "Map" },
   { href: "/chat", icon: MessageCircle, label: "Chat" },
+  { href: "/", icon: Home, label: "Home" },
   { href: "/profile", icon: User, label: "Profile" },
 ];
 
 export function AppLayout({ children }: { children?: React.ReactNode }) {
   const location = useLocation();
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    return document.documentElement.classList.contains("dark");
+  });
+
+  const toggleDarkMode = () => {
+    const root = document.documentElement;
+    if (isDarkMode) {
+      root.classList.remove("dark");
+      setIsDarkMode(false);
+    } else {
+      root.classList.add("dark");
+      setIsDarkMode(true);
+    }
+  };
 
   // Hide dock on Auth pages or if we want specific full-screen pages
   const isFullScreenPage = location.pathname.startsWith("/map") || location.pathname.startsWith("/chat");
-  const hideDock = location.pathname.startsWith("/auth") || isFullScreenPage;
+  const hideDock = location.pathname.startsWith("/auth");
 
   return (
     <div className="relative h-[100dvh] w-full bg-background font-sans text-foreground flex flex-col overflow-hidden">
@@ -26,8 +41,13 @@ export function AppLayout({ children }: { children?: React.ReactNode }) {
 
       {/* Global Dock Navigation */}
       {!hideDock && (
-        <div className="fixed bottom-6 inset-x-0 z-[999] flex justify-center pointer-events-none">
-          <div className="pointer-events-auto">
+        <div className="fixed inset-0 z-[999] pointer-events-none flex items-end justify-center pb-6">
+          <motion.div 
+            drag 
+            dragMomentum={false}
+            className="pointer-events-auto cursor-grab active:cursor-grabbing"
+            style={{ touchAction: 'none' }}
+          >
             <Dock direction="middle" className="bg-background/80 backdrop-blur-md border border-border shadow-lg">
               {navItems.map((item) => {
                 const isActive = location.pathname === item.href || (item.href !== "/" && location.pathname.startsWith(item.href));
@@ -45,8 +65,17 @@ export function AppLayout({ children }: { children?: React.ReactNode }) {
                   </DockIcon>
                 );
               })}
+              <DockIcon>
+                <button
+                  onClick={toggleDarkMode}
+                  className="flex h-full w-full items-center justify-center rounded-full transition-all duration-300 hover:-translate-y-2 text-foreground/60 hover:text-primary hover:bg-foreground/5"
+                  aria-label="Toggle Dark Mode"
+                >
+                  {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                </button>
+              </DockIcon>
             </Dock>
-          </div>
+          </motion.div>
         </div>
       )}
     </div>

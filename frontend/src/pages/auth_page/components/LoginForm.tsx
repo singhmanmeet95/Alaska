@@ -18,12 +18,12 @@ export default function LoginForm({
   onSignUpClick,
 }: LoginFormProps) {
   return (
-    <div className="w-1/2 flex flex-col items-center justify-center p-8 bg-background text-foreground">
+    <div className="w-3/4 flex flex-col items-center justify-center p-8 bg-background text-foreground">
       <h2 className="font-headline mb-8">LOGIN</h2>
 
       <form 
         onSubmit={(e) => { e.preventDefault(); onSubmit(); }}
-        className="w-full max-w-sm space-y-4 font-body-sm"
+        className="w-full max-w-lg space-y-4 font-body-sm"
       >
         <input
           type="email"

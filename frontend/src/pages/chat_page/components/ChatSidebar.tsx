@@ -8,12 +8,15 @@ type ChatSidebarProps = {
   onChatSelect: (chatId: string) => void;
 };
 
+import { useNavigate } from "react-router-dom";
+
 export default function ChatSidebar({
   chats,
   activeChat,
   onChatSelect,
 }: ChatSidebarProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
 
   const filteredChats = chats.filter((chat) =>
     chat.user.name.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -26,7 +29,11 @@ export default function ChatSidebar({
         <h1 className="font-headline text-foreground">
           Messages
         </h1>
-        <button className="text-foreground/70 hover:text-foreground hover:bg-card p-2 rounded-full transition-colors">
+        <button 
+          onClick={() => navigate('/map')}
+          className="text-foreground/70 hover:text-foreground hover:bg-card p-2 rounded-full transition-colors"
+          title="Find new connections on the Map"
+        >
           <svg
             className="w-5 h-5"
             fill="none"

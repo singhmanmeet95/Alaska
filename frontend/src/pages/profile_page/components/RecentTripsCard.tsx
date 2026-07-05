@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Train, Clock, MapPin, ArrowRight, Activity } from "lucide-react";
 import type { Trip } from "../types";
+import { STATIONS_MAP } from "../../../utils/stationsMap";
 
 interface RecentTripsCardProps {
   trips: Trip[];
@@ -65,7 +66,7 @@ export default function RecentTripsCard({ trips }: RecentTripsCardProps) {
                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500/20 to-indigo-500/20 rounded-2xl flex items-center justify-center shrink-0 shadow-inner border border-blue-500/20 group-hover:scale-110 group-hover:rotate-12 transition-all duration-500">
                    <MapPin className="w-5 h-5 text-blue-500" />
                  </div>
-                 <p className="font-headline text-lg text-foreground truncate">{trip.startStation}</p>
+                 <p className="font-headline text-lg text-foreground truncate">{STATIONS_MAP[trip.startStation as any] || trip.startStation}</p>
                </div>
 
                {/* Arrow / Connection */}
@@ -83,7 +84,7 @@ export default function RecentTripsCard({ trips }: RecentTripsCardProps) {
                  <div className="sm:hidden w-12 h-12 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-2xl flex items-center justify-center shrink-0 shadow-inner border border-purple-500/20 group-hover:scale-110 group-hover:-rotate-12 transition-all duration-500">
                    <MapPin className="w-5 h-5 text-purple-500" />
                  </div>
-                 <p className="font-headline text-lg text-foreground truncate order-2 sm:order-1">{trip.endStation}</p>
+                 <p className="font-headline text-lg text-foreground truncate order-2 sm:order-1">{STATIONS_MAP[trip.endStation as any] || trip.endStation}</p>
                  <div className="hidden sm:flex w-12 h-12 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-2xl items-center justify-center shrink-0 shadow-inner border border-purple-500/20 group-hover:scale-110 group-hover:-rotate-12 transition-all duration-500 order-1 sm:order-2">
                    <MapPin className="w-5 h-5 text-purple-500" />
                  </div>

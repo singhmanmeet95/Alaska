@@ -16,13 +16,11 @@ export function useMapInitialization() {
     // Check if container already has a map (prevents StrictMode double init)
     const container = containerRef.current;
     if ((container as any)._leaflet_id) {
-      console.log(
-        "useMapInitialization: Container already initialized, skipping",
-      );
+
       return;
     }
 
-    console.log("useMapInitialization: Creating map");
+
 
     // Initialize map
     const newMap = L.map(container).setView(MAP_CONFIG.CENTER, MAP_CONFIG.ZOOM);
@@ -55,14 +53,15 @@ export function useMapInitialization() {
       markersRef.current.forEach((m) => m.setRadius(newR));
     });
 
-    console.log("useMapInitialization: Map created successfully");
+
 
     // Cleanup function
     return () => {
-      console.log("useMapInitialization: Cleaning up map");
+
       newMap.remove();
       markersRef.current = [];
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Remove map from dependency array to prevent infinite loop
 
   return {

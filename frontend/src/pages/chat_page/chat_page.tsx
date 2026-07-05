@@ -11,7 +11,8 @@ const SOCKET_URL = import.meta.env.VITE_CHAT_GATEWAY_URL || "http://localhost:40
 const CHAT_WORKER_URL = import.meta.env.VITE_CHAT_WORKER_URL || "http://localhost:4002/api";
 
 interface BackendChat {
-  id: string;
+  id?: string;
+  _id?: string;
   senderId: string;
   receiverId: string;
   message: string;
@@ -46,6 +47,7 @@ export default function ChatPage() {
   const [showSidebar, setShowSidebar] = useState(!chatId);
   const [sidebarWidth, setSidebarWidth] = useState(384);
   const [socket, setSocket] = useState<Socket | null>(null);
+  const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
   const [externalActiveUser, setExternalActiveUser] = useState<ChatUser | null>(
     null,
   );
@@ -80,8 +82,21 @@ export default function ChatPage() {
     setSocket(newSocket);
 
     newSocket.on("connect", () => {
-      console.log("Connected to Chat Server");
+
       newSocket.emit("join_user", user.id);
+      
+      newSocket.emit("get_online_users", (users: string[]) => {
+        setOnlineUsers(new Set(users));
+      });
+    });
+
+    newSocket.on("user_status", ({ userId, status }: { userId: string, status: string }) => {
+      setOnlineUsers((prev) => {
+        const next = new Set(prev);
+        if (status === "online") next.add(userId);
+        else next.delete(userId);
+        return next;
+      });
     });
 
     newSocket.on("receive_message", (data: BackendChat) => {
@@ -105,7 +120,7 @@ export default function ChatPage() {
 
   const addMessageToState = (data: BackendChat, contactId: string) => {
     const newMsg: Message = {
-      id: data.id,
+      id: data._id || data.id || `temp-add-${Date.now()}`,
       senderId: data.senderId,
       content: data.message,
       timestamp: new Date(data.createdAt),
@@ -115,7 +130,7 @@ export default function ChatPage() {
     setMessages((prev) => ({
       ...prev,
       [contactId]: [
-        ...(prev[contactId] || []).filter((m) => m.id !== data.id),
+        ...(prev[contactId] || []).filter((m) => m.id !== data.id && !(String(m.id).startsWith("temp-") && m.content === data.message)),
         newMsg,
       ].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime()),
     }));
@@ -171,7 +186,7 @@ export default function ChatPage() {
           if (!msgsData[contactId]) msgsData[contactId] = [];
 
           msgsData[contactId].push({
-            id: c.id,
+            id: c._id || c.id || `temp-init-${Date.now()}-${Math.random()}`,
             senderId: c.senderId,
             content: c.message,
             timestamp: new Date(c.createdAt),
@@ -193,7 +208,7 @@ export default function ChatPage() {
       }
     };
     fetchChats();
-  }, [user, token, navigate]);
+  }, [user, token, navigate, chatId]);
 
   // Transform backend contacts into ChatSidebar prop
   const activeChatsList = useMemo(() => {
@@ -220,7 +235,7 @@ export default function ChatPage() {
       .map((c) => {
         const isSender = c.senderId === user.id;
         const contactId = isSender ? c.receiverId : c.senderId;
-        const contactUser = isSender ? c.receiver : c.sender;
+        const contactUser = (isSender ? c.receiver : c.sender) || friends.find((f: any) => f.id === contactId) || { name: "Unknown User", username: "Unknown" };
 
         const chatUser: ChatUser = {
           id: contactId,
@@ -229,7 +244,7 @@ export default function ChatPage() {
             contactUser.profile_image ||
             contactUser.image ||
             `https://ui-avatars.com/api/?name=${contactUser.name || "User"}&background=random&color=fff`,
-          status: "online", // Fallback since we lack presence tracking at scale
+          status: onlineUsers.has(contactId) ? "online" : "offline",
         };
 
         return {
@@ -257,7 +272,7 @@ export default function ChatPage() {
                 friend.profile_image ||
                 friend.image ||
                 `https://ui-avatars.com/api/?name=${friend.name || friend.username || "User"}&background=random&color=fff`,
-              status: "online",
+              status: onlineUsers.has(friend.id) ? "online" : "offline",
             },
             lastMessage: "Say hello!",
             timestamp: new Date(0), // Push to bottom of list
@@ -279,7 +294,7 @@ export default function ChatPage() {
           : 0;
       return timeB - timeA;
     });
-  }, [backendChats, friends, user]);
+  }, [backendChats, friends, user, onlineUsers]);
 
   useEffect(() => {
     if (chatId) {
@@ -290,7 +305,7 @@ export default function ChatPage() {
       setShowSidebar(true);
       setExternalActiveUser(null);
     }
-  }, [chatId]);
+  }, [chatId, user, onlineUsers, token]);
 
   useEffect(() => {
     if (activeChat && !activeChatsList.find((c) => c.id === activeChat)) {
@@ -309,7 +324,7 @@ export default function ChatPage() {
                 u.profile_image ||
                 u.image ||
                 `https://ui-avatars.com/api/?name=${u.name || u.username || "User"}&background=random&color=fff`,
-              status: "online",
+              status: onlineUsers.has(u.id) ? "online" : "offline",
             });
           }
         })
@@ -317,7 +332,7 @@ export default function ChatPage() {
           console.error("Could not fetch active user details", err),
         );
     }
-  }, [activeChat, activeChatsList]);
+  }, [activeChat, activeChatsList, onlineUsers, token]);
 
   const handleChatSelect = (newChatId: string) => {
     navigate(`/chat/${newChatId}`);
@@ -331,6 +346,22 @@ export default function ChatPage() {
       receiverId: activeChat,
       message: content,
     };
+
+    // Optimistic update
+    const tempId = `temp-${Date.now()}-${Math.random()}`;
+    const optimisticMsg: Message = {
+      id: tempId,
+      senderId: user.id,
+      content: content,
+      timestamp: new Date(),
+      status: "delivered",
+      type: "text",
+    };
+    
+    setMessages((prev) => ({
+      ...prev,
+      [activeChat]: [...(prev[activeChat] || []), optimisticMsg],
+    }));
 
     // Emit via socket handling full lifecycle
     socket.emit("send_message", payload);
@@ -419,12 +450,17 @@ export default function ChatPage() {
     }
   };
 
-  if (!user) return null; // Handle unauthenticated edge visually smoothly
+  const activeUser = useMemo(() => {
+    const userObj = activeChatsList.find((chat) => chat.id === activeChat)?.user || externalActiveUser;
+    if (userObj) {
+      return { ...userObj, status: onlineUsers.has(userObj.id) ? "online" : "offline" } as ChatUser;
+    }
+    return null;
+  }, [activeChatsList, externalActiveUser, activeChat, onlineUsers]);
 
-  const activeUser =
-    activeChatsList.find((chat) => chat.id === activeChat)?.user ||
-    externalActiveUser;
   const currentMessages = activeChat ? messages[activeChat] || [] : [];
+
+  if (!user) return null; // Handle unauthenticated edge visually smoothly
 
   return (
     <div

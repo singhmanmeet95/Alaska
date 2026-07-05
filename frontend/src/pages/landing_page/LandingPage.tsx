@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { useAuthStore } from "../../store/useAuthStore";
 import {
   ArrowRight, Shield, Users, MapPin, Globe, Lock, Activity,
-  MessageSquare, Moon, Sun, Menu, X, Plus, Minus, Sparkles, Zap, Star
+  MessageSquare, Menu, X, Plus, Minus, Sparkles, Zap, Star
 } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 
@@ -18,9 +18,7 @@ export default function LandingPage() {
   const heroY = useTransform(scrollY, [0, 1000], [0, 250]);
   const opacityHero = useTransform(scrollY, [0, 500], [1, 0]);
 
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    return document.documentElement.classList.contains("dark");
-  });
+
 
   useEffect(() => {
     setHasMounted(true);
@@ -28,18 +26,9 @@ export default function LandingPage() {
     const handleScroll = () => setScrollYState(window.scrollY);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [checkAuth]);
 
-  const toggleDarkMode = () => {
-    const root = document.documentElement;
-    if (isDarkMode) {
-      root.classList.remove("dark");
-      setIsDarkMode(false);
-    } else {
-      root.classList.add("dark");
-      setIsDarkMode(true);
-    }
-  };
+
 
   const handleLogout = () => {
     logout();
@@ -123,15 +112,6 @@ export default function LandingPage() {
           </div>
 
           <div className="hidden md:flex items-center gap-4 font-button text-sm">
-            <motion.button 
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={toggleDarkMode} 
-              className="w-10 h-10 rounded-full hover:bg-card transition-colors flex items-center justify-center border border-border/50 backdrop-blur-sm shadow-sm"
-            >
-              {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
-            </motion.button>
-            
             {isAuthenticated ? (
               <>
                 <button onClick={handleLogout} className="text-foreground/70 hover:text-red-500 transition-colors font-medium">Log Out</button>
@@ -154,9 +134,6 @@ export default function LandingPage() {
           </div>
 
           <div className="md:hidden flex items-center gap-3">
-            <button onClick={toggleDarkMode} className="w-10 h-10 rounded-full hover:bg-card flex items-center justify-center border border-border/50 shadow-sm">
-              {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
             <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 text-foreground">
               {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -197,7 +174,7 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-[160px] md:pt-[220px] pb-[120px] px-6 z-10 max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16 min-h-screen">
+      <section className="relative pt-[120px] pb-[80px] px-6 z-10 max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16 min-h-screen">
         <motion.div 
           style={{ y: heroY, opacity: opacityHero }}
           initial="hidden"
@@ -451,19 +428,19 @@ export default function LandingPage() {
             number="01"
             title="Set Your Route"
             description="Enter your start and end points via our interactive map or station list."
-            color="bg-blue-500/10 text-blue-500 border-blue-500/20"
+            color="bg-primary/10 text-primary border-primary/20"
           />
           <StepCard
             number="02"
             title="Get Matched"
             description="Our AI finds the most compatible travel partners based on timing and profile."
-            color="bg-purple-500/10 text-purple-500 border-purple-500/20"
+            color="bg-primary/10 text-primary border-primary/20"
           />
           <StepCard
             number="03"
             title="Travel Together"
             description="Coordinate via secure chat and meet at the station for a better journey."
-            color="bg-green-500/10 text-green-500 border-green-500/20"
+            color="bg-primary/10 text-primary border-primary/20"
           />
         </motion.div>
       </section>
@@ -493,6 +470,9 @@ export default function LandingPage() {
             <FeatureCard icon={<Lock />} title="Private & Secure" description="Your data is encrypted end-to-end. We prioritize your privacy." />
             <FeatureCard icon={<Globe />} title="City Wide" description="Wherever the metro goes, Alaska goes. Covering all major lines." />
           </motion.div>
+          <div className="mt-16 text-center text-foreground/60 text-lg">
+            <p>Don't just commute. Connect, network, and grow with thousands of professionals every day.</p>
+          </div>
         </motion.div>
       </section>
 
@@ -561,13 +541,13 @@ export default function LandingPage() {
             <p className="font-subhead text-background/80 max-w-2xl mb-12 text-xl md:text-2xl leading-relaxed">
               Join thousands of others who matched today. Safe, fast, and completely free.
             </p>
-            <Link to="/auth">
+            <Link to={isAuthenticated ? "/map" : "/auth"}>
               <motion.div 
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="px-12 py-5 bg-background text-foreground font-button text-xl font-bold rounded-full hover:shadow-2xl hover:shadow-background/30 transition-all flex items-center gap-3"
               >
-                Create Free Account
+                {isAuthenticated ? "Let's Ride" : "Create Free Account"}
                 <ArrowRight size={24} />
               </motion.div>
             </Link>

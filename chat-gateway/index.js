@@ -30,7 +30,8 @@ subscriber.on('error', (err) => console.error('Redis subscriber Error:', err));
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
-  "https://alaska-69fq.vercel.app",
+  "http://localhost:8080",
+  "http://127.0.0.1:8080",
 ];
 
 let io;
@@ -41,16 +42,34 @@ async function bootstrap() {
   await subscriber.connect();
 
   io = new Server(httpServer, {
-    cors: { origin: allowedOrigins, methods: ["GET", "POST"] },
+    cors: { origin: "*", methods: ["GET", "POST"] },
     adapter: createAdapter(pubClient, subClient)
   });
 
   io.on('connection', (socket) => {
     console.log('User connected to Gateway:', socket.id);
 
-    socket.on('join_user', (userId) => {
-      socket.join(String(userId));
+    socket.on('join_user', async (userId) => {
+      const uid = String(userId);
+      socket.join(uid);
+      socket.userId = uid;
       console.log(`User ${userId} joined their room`);
+      
+      try {
+        await pubClient.sAdd('online_users', uid);
+        io.emit('user_status', { userId: uid, status: 'online' });
+      } catch (err) {
+        console.error("Error setting online status:", err);
+      }
+    });
+
+    socket.on('get_online_users', async (callback) => {
+      try {
+        const users = await pubClient.sMembers('online_users');
+        if (typeof callback === 'function') callback(users);
+      } catch (err) {
+        if (typeof callback === 'function') callback([]);
+      }
     });
 
     socket.on('send_message', async (data) => {
@@ -83,8 +102,19 @@ async function bootstrap() {
       }
     });
 
-    socket.on('disconnect', () => {
+    socket.on('disconnect', async () => {
       console.log('User disconnected from Gateway:', socket.id);
+      if (socket.userId) {
+        try {
+          const sockets = await io.in(socket.userId).fetchSockets();
+          if (sockets.length === 0) {
+            await pubClient.sRem('online_users', socket.userId);
+            io.emit('user_status', { userId: socket.userId, status: 'offline' });
+          }
+        } catch (err) {
+          console.error("Error setting offline status:", err);
+        }
+      }
     });
   });
 

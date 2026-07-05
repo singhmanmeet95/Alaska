@@ -150,62 +150,7 @@ export const createReview = async (req, res) => {
   }
 };
 
-// Update a review
-export const updateReview = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { rating, comment } = req.body;
-    const userId = req.user.id; // From auth middleware
 
-    const existingReview = await prisma.review.findUnique({
-      where: { id },
-    });
-
-    if (!existingReview) {
-      return res
-        .status(404)
-        .json({ success: false, error: "Review not found" });
-    }
-
-    // Ensure only the reviewer can update
-    if (existingReview.reviewerId !== userId) {
-      return res.status(403).json({
-        success: false,
-        error: "Not authorized to update this review",
-      });
-    }
-
-    const updatedReview = await prisma.review.update({
-      where: { id },
-      data: {
-        rating: rating ? Number(rating) : undefined,
-        comment,
-      },
-    });
-
-    // Update aggregated rating for reviewee
-    if (rating) {
-      const revieweeId = existingReview.revieweeId;
-      const aggregations = await prisma.review.aggregate({
-        where: { revieweeId },
-        _avg: { rating: true },
-        _count: { rating: true },
-      });
-
-      await prisma.user.update({
-        where: { id: revieweeId },
-        data: {
-          ratings: Math.round(aggregations._avg.rating || 0),
-          ratingCount: aggregations._count.rating,
-        },
-      });
-    }
-
-    res.json({ success: true, data: updatedReview });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
-};
 
 // Delete a review
 export const deleteReview = async (req, res) => {

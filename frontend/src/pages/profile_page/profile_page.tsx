@@ -34,6 +34,7 @@ export default function ProfilePage() {
   const [refetchTrigger, setRefetchTrigger] = useState(0);
   const [pendingRequests, setPendingRequests] = useState<any[]>([]);
   const [showRequestsModal, setShowRequestsModal] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
 
   const { userId } = useParams<{ userId: string }>();
   const isOwnProfile = !userId || userId === user?.id;
@@ -233,55 +234,109 @@ export default function ProfilePage() {
            <StatsCard stats={stats} />
         </div>
 
-        {/* Main Content Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Custom Tabs Navigation */}
+        <div className="flex overflow-x-auto hide-scrollbar gap-2 p-1.5 bg-card/40 backdrop-blur-md rounded-2xl border border-border/50 animate-fade-in-up delay-200 sticky top-4 z-20 shadow-sm">
+          {["overview", "connections", "gallery", "reviews"].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`flex-1 min-w-[120px] py-3 px-4 rounded-xl font-headline text-sm capitalize transition-all duration-300 ${
+                activeTab === tab
+                  ? "bg-primary text-primary-foreground shadow-md scale-[1.02]"
+                  : "text-foreground/70 hover:bg-foreground/5 hover:text-foreground"
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
+        {/* Tab Content Area */}
+        <div className="animate-fade-in-up delay-300 min-h-[400px]">
           
-          {/* Left Column - User Info, Friends & Trips */}
-          <div className="lg:col-span-7 space-y-8 animate-fade-in-up delay-200">
-            <UserInfoCard about={fullUser?.about ?? user?.about ?? null} />
-            <FriendsListCard friends={fullUser?.friends || []} />
-            <RecentTripsCard trips={fullUser?.trips || []} />
-          </div>
-
-          {/* Right Column - Gallery */}
-          <div className="lg:col-span-5 space-y-8 animate-fade-in-up delay-300">
-            {((fullUser?.images && fullUser.images.length > 0) ||
-              isOwnProfile) && (
-              <div className="glass-panel rounded-[var(--radius-3xl)] p-2">
-                 <UserGallery
-                   images={fullUser?.images || []}
-                   isOwnProfile={isOwnProfile}
-                   onUpdateImages={handleUpdateGallery}
-                   onUploadImage={handleUploadGalleryImage}
-                 />
-              </div>
-            )}
-            
-            {/* Reviews Section Sidebar style */}
-            <div className="space-y-8">
-               {fullUser?.receivedReviews && fullUser.receivedReviews.length > 0 && (
-                 <div className="glass-panel rounded-[var(--radius-3xl)] p-6">
-                    <ReviewsSection
-                      reviews={fullUser.receivedReviews}
-                      title="Reviews Received"
-                      isAnonymous={true}
-                    />
-                 </div>
-               )}
-
-               {fullUser?.writtenReviews && fullUser.writtenReviews.length > 0 && (
-                 <div className="glass-panel rounded-[var(--radius-3xl)] p-6">
-                    <ReviewsSection
-                      reviews={fullUser.writtenReviews}
-                      title="Reviews Given"
-                      onEditClick={
-                        isOwnProfile ? (review) => setEditingReview(review) : undefined
-                      }
-                    />
-                 </div>
-               )}
+          {/* OVERVIEW TAB */}
+          {activeTab === "overview" && (
+            <div className="space-y-8 animate-fade-in">
+              <UserInfoCard about={fullUser?.about ?? user?.about ?? null} />
+              <RecentTripsCard trips={fullUser?.trips || []} />
             </div>
-          </div>
+          )}
+
+          {/* CONNECTIONS TAB */}
+          {activeTab === "connections" && (
+            <div className="animate-fade-in">
+              <FriendsListCard friends={fullUser?.friends || []} />
+            </div>
+          )}
+
+          {/* GALLERY TAB */}
+          {activeTab === "gallery" && (
+            <div className="animate-fade-in">
+              {((fullUser?.images && fullUser.images.length > 0) || isOwnProfile) ? (
+                <div className="glass-panel rounded-[var(--radius-3xl)] p-2">
+                   <UserGallery
+                     images={fullUser?.images || []}
+                     isOwnProfile={isOwnProfile}
+                     onUpdateImages={handleUpdateGallery}
+                     onUploadImage={handleUploadGalleryImage}
+                   />
+                </div>
+              ) : (
+                <div className="text-center py-20 text-foreground/50 font-body">
+                  No photos uploaded yet.
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* REVIEWS TAB */}
+          {activeTab === "reviews" && (
+            <div className="space-y-8 animate-fade-in">
+               {!isOwnProfile && (
+                 <div className="flex justify-end">
+                   <button
+                     onClick={() => setEditingReview({ revieweeId: targetUserId })}
+                     className="px-6 py-2.5 bg-primary hover:opacity-90 text-primary-foreground font-button text-sm rounded-[var(--radius-pill)] shadow-[0_0_15px_rgba(var(--primary-rgb),0.3)] hover:shadow-[0_0_20px_rgba(var(--primary-rgb),0.5)] transition-all hover:-translate-y-0.5"
+                   >
+                     Write a Review
+                   </button>
+                 </div>
+               )}
+
+               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                 <div className="space-y-8">
+                   {fullUser?.receivedReviews && fullUser.receivedReviews.length > 0 ? (
+                     <div className="glass-panel rounded-[var(--radius-3xl)] p-6 h-full">
+                        <ReviewsSection
+                          reviews={fullUser.receivedReviews}
+                          title="Reviews Received"
+                          isAnonymous={true}
+                        />
+                     </div>
+                   ) : (
+                     <div className="glass-panel rounded-[var(--radius-3xl)] p-12 text-center text-foreground/50">
+                        No reviews received yet.
+                     </div>
+                   )}
+                 </div>
+
+                 <div className="space-y-8">
+                   {fullUser?.writtenReviews && fullUser.writtenReviews.length > 0 ? (
+                     <div className="glass-panel rounded-[var(--radius-3xl)] p-6 h-full">
+                        <ReviewsSection
+                          reviews={fullUser.writtenReviews}
+                          title="Reviews Given"
+                        />
+                     </div>
+                   ) : (
+                     <div className="glass-panel rounded-[var(--radius-3xl)] p-12 text-center text-foreground/50">
+                        No reviews written yet.
+                     </div>
+                   )}
+                 </div>
+               </div>
+            </div>
+          )}
         </div>
 
         {/* Edit Review Modal */}
