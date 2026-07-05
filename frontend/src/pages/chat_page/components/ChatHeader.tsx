@@ -31,14 +31,14 @@ export default function ChatHeader({
 
   if (!user) {
     return (
-      <div className="h-16 bg-background border-b border-border flex items-center px-4">
+      <div className="h-16 bg-background/80 backdrop-blur-md border-b border-border flex items-center px-4 z-10 relative">
         <h1 className="font-headline text-foreground">Select a chat</h1>
       </div>
     );
   }
 
   return (
-    <div className="h-16 bg-background border-b border-border flex items-center px-4 justify-between font-sans">
+    <div className="h-16 bg-background/80 backdrop-blur-md border-b border-border flex items-center px-4 justify-between font-sans z-10 relative">
       <div className="flex items-center flex-1">
         {showBack && (
           <button

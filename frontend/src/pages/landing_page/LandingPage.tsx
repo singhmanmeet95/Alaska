@@ -64,7 +64,7 @@ export default function LandingPage() {
       </div>
 
       {/* Navigation */}
-      <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${scrollYState > 20 || isMobileMenuOpen ? "bg-background/70 backdrop-blur-xl border-b border-border/50 py-3 shadow-sm" : "bg-transparent py-5"}`}>
+      <nav className={`fixed top-0 w-full z-50 transition-all duration-500 bg-background/70 backdrop-blur-xl border-b ${scrollYState > 20 || isMobileMenuOpen ? "border-border/50 py-3 shadow-sm" : "border-border/10 py-5"}`}>
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3 group">
             <motion.div 
@@ -77,7 +77,7 @@ export default function LandingPage() {
             <span className="text-2xl font-bold tracking-tighter group-hover:tracking-tight transition-all duration-300">Alaska</span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-8 font-button text-sm font-medium">
+          <div className="hidden md:flex items-center gap-18 font-button text-sm font-medium">
             {isAuthenticated ? (
               <>
                 <Link to="/map" className="hover:text-primary transition-colors relative group">
@@ -530,22 +530,22 @@ export default function LandingPage() {
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
           variants={fadeInUp}
-          className="max-w-7xl mx-auto bg-foreground text-background rounded-[40px] p-[60px] md:p-[100px] text-center flex flex-col items-center relative overflow-hidden shadow-2xl"
+          className="max-w-7xl mx-auto bg-foreground dark:bg-card text-background dark:text-foreground rounded-[40px] p-[60px] md:p-[100px] text-center flex flex-col items-center relative overflow-hidden shadow-2xl dark:shadow-primary/5 border border-transparent dark:border-border"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-foreground via-foreground to-primary/20" />
-          <div className="absolute top-0 right-0 w-80 h-80 bg-primary rounded-full blur-[120px] opacity-20" />
-          <div className="absolute bottom-0 left-0 w-80 h-80 bg-block-lime rounded-full blur-[120px] opacity-10" />
+          <div className="absolute inset-0 bg-gradient-to-br from-foreground via-foreground to-primary/20 dark:from-card dark:via-card dark:to-primary/10" />
+          <div className="absolute top-0 right-0 w-80 h-80 bg-primary rounded-full blur-[120px] opacity-20 dark:opacity-30" />
+          <div className="absolute bottom-0 left-0 w-80 h-80 bg-block-lime rounded-full blur-[120px] opacity-10 dark:opacity-20" />
           
           <div className="relative z-10 flex flex-col items-center w-full">
             <h2 className="font-display-xl mb-8 text-5xl md:text-7xl">Ready to ride?</h2>
-            <p className="font-subhead text-background/80 max-w-2xl mb-12 text-xl md:text-2xl leading-relaxed">
+            <p className="font-subhead text-background/80 dark:text-foreground/80 max-w-2xl mb-12 text-xl md:text-2xl leading-relaxed">
               Join thousands of others who matched today. Safe, fast, and completely free.
             </p>
             <Link to={isAuthenticated ? "/map" : "/auth"}>
               <motion.div 
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-12 py-5 bg-background text-foreground font-button text-xl font-bold rounded-full hover:shadow-2xl hover:shadow-background/30 transition-all flex items-center gap-3"
+                className="px-12 py-5 bg-background dark:bg-primary text-foreground dark:text-primary-foreground font-button text-xl font-bold rounded-full hover:shadow-2xl hover:shadow-background/30 dark:hover:shadow-primary/30 transition-all flex items-center gap-3"
               >
                 {isAuthenticated ? "Let's Ride" : "Create Free Account"}
                 <ArrowRight size={24} />

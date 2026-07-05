@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+
+    - name: Install dependencies (Frontend)
+      run: cd frontend && npm install
+
+    - name: Build (Frontend)
+      run: cd frontend && npm run build
+
+    - name: Install dependencies (Backend)
+      run: cd backend && npm install
+
+    - name: Install dependencies (Chat Gateway)
+      run: cd chat-gateway && npm install
+
+    - name: Install dependencies (Chat Worker)
+      run: cd chat-worker && npm install
+
+  docker-compose-test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Build Docker Compose
+      run: docker compose build

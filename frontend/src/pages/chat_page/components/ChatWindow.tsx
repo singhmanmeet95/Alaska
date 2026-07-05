@@ -25,20 +25,24 @@ export default function ChatWindow({
   onRemoveFriend,
 }: ChatWindowProps) {
   return (
-    <div className="flex flex-col h-full bg-background">
-      <ChatHeader
-        user={user}
-        onBackClick={onBackClick}
-        showBack={showBack}
-        onClearChat={onClearChat}
-        onRemoveFriend={onRemoveFriend}
-      />
+    <div className="relative flex flex-col h-full bg-background overflow-hidden">
+      <div className="absolute top-0 left-0 right-0 z-20">
+        <ChatHeader
+          user={user}
+          onBackClick={onBackClick}
+          showBack={showBack}
+          onClearChat={onClearChat}
+          onRemoveFriend={onRemoveFriend}
+        />
+      </div>
       <MessageList
         messages={messages}
         currentUserId={currentUserId}
         otherUserAvatar={user?.avatar}
       />
-      <MessageInput onSendMessage={onSendMessage} disabled={!user} />
+      <div className="z-20 bg-background relative border-t border-border">
+        <MessageInput onSendMessage={onSendMessage} disabled={!user} />
+      </div>
     </div>
   );
 }

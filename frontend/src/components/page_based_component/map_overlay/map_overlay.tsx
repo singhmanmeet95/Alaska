@@ -25,6 +25,11 @@ export default function MapOverlay({ customPath }: MapOverlayProps) {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [hasSearched, setHasSearched] = useState(false);
+  const [tripTime, setTripTime] = useState<string>(() => {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    return now.toISOString().slice(0, 16);
+  });
 
   // Handle resizing logic
   useEffect(() => {
@@ -119,7 +124,7 @@ export default function MapOverlay({ customPath }: MapOverlayProps) {
           `${API_URL}/trips`,
           {
             userId: user.id,
-            startTime: new Date().toISOString(),
+            startTime: new Date(tripTime).toISOString(),
             stationList: encodedIds,
             length: encodedIds.length - 1,
             startStation: encodedIds[0],
@@ -192,6 +197,19 @@ export default function MapOverlay({ customPath }: MapOverlayProps) {
               {endStation || "None"}
             </div>
           </div>
+        </div>
+
+        {/* Time Selector */}
+        <div className="flex flex-col gap-1 mt-1">
+          <span className="font-eyebrow text-[10px] text-foreground/50 uppercase tracking-wider">
+            Departure Time
+          </span>
+          <input
+            type="datetime-local"
+            value={tripTime}
+            onChange={(e) => setTripTime(e.target.value)}
+            className="w-full bg-card border border-border p-3 rounded-[var(--radius-pill)] text-sm text-foreground focus:outline-none focus:border-primary transition-colors cursor-pointer appearance-none"
+          />
         </div>
 
         {/* Action Button */}
