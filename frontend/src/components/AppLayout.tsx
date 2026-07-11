@@ -33,7 +33,7 @@ export function AppLayout({ children }: { children?: React.ReactNode }) {
   const hideDock = location.pathname.startsWith("/auth");
 
   return (
-    <div className="relative h-[100dvh] w-full bg-background font-sans text-foreground flex flex-col overflow-hidden">
+    <div className="relative h-[100dvh] w-full bg-slate-50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100 flex flex-col overflow-hidden transition-colors duration-500">
       {/* Main Content Area */}
       <main className={`flex-1 w-full overflow-y-auto overflow-x-hidden relative ${!isFullScreenPage ? "pb-[80px]" : ""}`}>
         {children || <Outlet />}
@@ -48,7 +48,7 @@ export function AppLayout({ children }: { children?: React.ReactNode }) {
             className="pointer-events-auto cursor-grab active:cursor-grabbing"
             style={{ touchAction: 'none' }}
           >
-            <Dock direction="middle" className="bg-background/80 backdrop-blur-md border border-border shadow-lg">
+            <Dock direction="middle" className="bg-white/70 dark:bg-slate-900/70 backdrop-blur-2xl border border-slate-200/50 dark:border-slate-700/50 shadow-[0_20px_60px_rgba(0,0,0,0.1)]">
               {navItems.map((item) => {
                 const isActive = location.pathname === item.href || (item.href !== "/" && location.pathname.startsWith(item.href));
                 return (

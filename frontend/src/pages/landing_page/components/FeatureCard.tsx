@@ -6,9 +6,9 @@ export function FeatureCard({ icon, title, description }: { icon: ReactNode, tit
     <motion.div 
       variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} 
       whileHover={{ y: -5, scale: 1.02 }}
-      className="group p-8 flex flex-row gap-10 md:p-4 rounded-3xl bg-background border border-border/50 hover:border-primary/30 transition-all shadow-sm hover:shadow-xl hover:shadow-primary/5 relative overflow-hidden"
+      className="group p-8 flex flex-row gap-10 md:p-4 rounded-3xl bg-white/50 backdrop-blur-md border border-white/40 hover:border-primary/30 transition-all shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgba(99,102,241,0.1)] relative overflow-hidden"
     >
-      <div className="my-4 w-20 h-20 rounded-full bg-card border border-border/50 flex items-center justify-center text-foreground group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all duration-300">
+      <div className="my-4 w-20 h-20 rounded-full bg-white/70 backdrop-blur-xl border border-white/40 flex items-center justify-center text-foreground group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all duration-300">
         {icon}
       </div>
       <div>

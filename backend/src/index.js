@@ -15,7 +15,9 @@ import { initCronJobs } from "./jobs/tripCron.js";
 dotenv.config();
 
 // Initialize scheduled background jobs
-initCronJobs();
+if (process.env.NODE_ENV !== "test") {
+  initCronJobs();
+}
 
 const app = express();
 const prisma = new PrismaClient();
@@ -74,7 +76,7 @@ const startServer = async () => {
   }
 };
 
-if (!IS_PRODUCTION) {
+if (!IS_PRODUCTION && process.env.NODE_ENV !== "test") {
   startServer();
 }
 

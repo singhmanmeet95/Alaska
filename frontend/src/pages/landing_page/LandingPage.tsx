@@ -59,7 +59,6 @@ export default function LandingPage() {
 
   return (
     <div className={`min-h-screen bg-background text-foreground font-sans transition-all duration-700 overflow-hidden relative ${hasMounted ? "opacity-100" : "opacity-0"}`}>
-      
       {/* Dynamic Background */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-block-lilac/10 dark:bg-block-lilac/5 blur-[120px] animate-pulse" style={{ animationDuration: '8s' }} />
@@ -190,7 +189,7 @@ export default function LandingPage() {
       
           
           <motion.h1 variants={fadeInUp} className="font-display-xl leading-[1.1] text-5xl md:text-6xl lg:text-[84px] tracking-tighter">
-            Turn your <span className="text-transparent bg-clip-text bg-gradient-to-r from-block-lilac to-primary">commute</span> into connections.
+            Turn your <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">commute</span> into connections.
           </motion.h1>
 
           <motion.p variants={fadeInUp} className="font-subhead text-foreground/70 max-w-xl text-lg md:text-2xl font-light leading-relaxed">
@@ -202,7 +201,7 @@ export default function LandingPage() {
               <motion.div 
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
-                className="px-8 py-4 bg-primary text-primary-foreground rounded-full hover:shadow-xl hover:shadow-primary/30 transition-all flex items-center justify-center gap-3 text-lg font-semibold w-full"
+                className="px-8 py-4 bg-indigo-600 text-white rounded-full hover:shadow-[0_8px_30px_rgba(99,102,241,0.4)] hover:-translate-y-1 transition-all flex items-center justify-center gap-3 text-lg font-semibold w-full"
               >
                 Find Your Match
                 <motion.div
@@ -217,7 +216,7 @@ export default function LandingPage() {
               <motion.div
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
-                className="px-8 py-4 bg-background/50 backdrop-blur-md text-foreground border border-border/80 rounded-full hover:bg-card transition-all w-full text-center flex items-center justify-center gap-2 text-lg font-medium shadow-sm"
+                className="px-8 py-4 bg-white/50 backdrop-blur-xl text-slate-700 border border-slate-200/50 hover:bg-white/80 hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] rounded-full hover:bg-card transition-all w-full text-center flex items-center justify-center gap-2 text-lg font-medium shadow-sm"
               >
                 See How It Works
               </motion.div>
@@ -340,14 +339,14 @@ export default function LandingPage() {
             className="relative"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-block-lime to-block-lilac blur-3xl opacity-20 dark:opacity-10 rounded-full" />
-            <div className="bg-card/80 backdrop-blur-2xl border border-border/50 p-8 md:p-12 rounded-[40px] shadow-2xl relative z-10">
+            <div className="glass-panel p-8 md:p-12 rounded-[40px] shadow-[0_20px_60px_rgba(0,0,0,0.08)] relative z-10">
               <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-8">
                 <Zap className="text-primary w-8 h-8" />
               </div>
               <h3 className="font-display-lg text-4xl mb-6">The Alaska Solution</h3>
               <p className="font-body text-foreground/70 mb-12 text-lg leading-relaxed">We turn your predictable route into a matching algorithm. Sit next to potential friends, co-founders, or mentors.</p>
               
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-6 md:p-8 bg-background rounded-3xl border border-border/50 shadow-inner relative overflow-hidden">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-6 md:p-8 bg-slate-50/80 rounded-3xl border border-slate-200/50 shadow-inner relative overflow-hidden">
                 <motion.div animate={{ scale: [1, 1.05, 1] }} transition={{ repeat: Infinity, duration: 2 }} className="w-20 h-20 bg-primary text-primary-foreground rounded-2xl flex flex-col items-center justify-center font-bold shadow-lg z-10">
                   <span className="text-xl">You</span>
                 </motion.div>
@@ -431,7 +430,7 @@ export default function LandingPage() {
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
           variants={fadeInUp}
-          className="max-w-7xl mx-auto bg-card border border-border/50 rounded-[40px] p-[40px] md:p-[80px] shadow-2xl relative overflow-hidden"
+          className="max-w-7xl mx-auto bg-white/60 backdrop-blur-3xl border border-white/50 rounded-[40px] p-[40px] md:p-[80px] shadow-[0_8px_40px_rgba(0,0,0,0.04)] relative overflow-hidden"
         >
           {/* Decorative background element */}
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-block-lime/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3 pointer-events-none" />
@@ -489,7 +488,7 @@ export default function LandingPage() {
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
           variants={fadeInUp}
-          className="max-w-7xl mx-auto bg-foreground dark:bg-card text-background dark:text-foreground rounded-[40px] p-[60px] md:p-[100px] text-center flex flex-col items-center relative overflow-hidden shadow-2xl dark:shadow-primary/5 border border-transparent dark:border-border"
+          className="max-w-7xl mx-auto bg-slate-900 text-white rounded-[40px] p-[60px] md:p-[100px] text-center flex flex-col items-center relative overflow-hidden shadow-[0_30px_80px_rgba(15,23,42,0.3)] border border-slate-800"
         >
           <div className="absolute inset-0 bg-gradient-to-br from-foreground via-foreground to-primary/20 dark:from-card dark:via-card dark:to-primary/10" />
           <div className="absolute top-0 right-0 w-80 h-80 bg-primary rounded-full blur-[120px] opacity-20 dark:opacity-30" />

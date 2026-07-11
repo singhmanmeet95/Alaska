@@ -1,5 +1,5 @@
 import express from "express";
-import pathRoutes from "../controllers/pathController.js";
+import pathRoutes from "./pathRoutes.js";
 
 const router = express.Router();
 
