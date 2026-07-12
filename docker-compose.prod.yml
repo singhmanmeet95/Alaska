@@ -15,9 +15,7 @@ services:
       - pgdata_prod:/var/lib/postgresql/data
 
   api:
-    build: 
-      context: ./backend
-      dockerfile: Dockerfile
+    image: ${DOCKER_REGISTRY}/alaska-api:latest
     container_name: alaska_backend_prod
     restart: always
     ports:
@@ -46,9 +44,7 @@ services:
       - mongodata_prod:/data/db
 
   chat-gateway:
-    build: 
-      context: ./chat-gateway
-      dockerfile: Dockerfile
+    image: ${DOCKER_REGISTRY}/alaska-chat-gateway:latest
     container_name: alaska_chat_gateway_prod
     restart: always
     ports:
@@ -64,9 +60,7 @@ services:
       - chat-worker
 
   chat-worker:
-    build: 
-      context: ./chat-worker
-      dockerfile: Dockerfile
+    image: ${DOCKER_REGISTRY}/alaska-chat-worker:latest
     container_name: alaska_chat_worker_prod
     restart: always
     ports:
@@ -82,13 +76,7 @@ services:
       - mongodb
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-      args:
-        VITE_API_URL: http://localhost:3000/api
-        VITE_CHAT_WORKER_URL: http://localhost:4002/api
-        VITE_CHAT_GATEWAY_URL: http://localhost:4001
+    image: ${DOCKER_REGISTRY}/alaska-frontend:latest
     container_name: alaska_frontend_prod
     restart: always
     ports:
