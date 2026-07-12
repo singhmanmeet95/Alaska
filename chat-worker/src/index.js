@@ -1,4 +1,3 @@
-import { serve } from '@hono/node-server';
 import app from './app.js';
 import { connectDB } from './config/db.js';
 import { connectRedis } from './config/redis.js';
@@ -13,10 +12,8 @@ async function startServer() {
     // Start polling in the background
     pollQueue();
 
-    console.log(`Chat Worker (Hono) is running on port ${PORT}`);
-    serve({
-      fetch: app.fetch,
-      port: PORT
+    app.listen(PORT, () => {
+      console.log(`Chat Worker (Express) is running on port ${PORT}`);
     });
   } catch (error) {
     console.error("Failed to start server:", error);

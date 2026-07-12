@@ -49,11 +49,12 @@ export function useChatLogic(chatId: string | undefined, navigate: any) {
   useEffect(() => {
     if (!user) return;
 
-    const newSocket = io(SOCKET_URL);
+    const newSocket = io(SOCKET_URL, {
+      auth: { token }
+    });
     setSocket(newSocket);
 
     newSocket.on("connect", () => {
-      newSocket.emit("join_user", user.id);
       newSocket.emit("get_online_users", (users: string[]) => {
         setOnlineUsers(new Set(users));
       });
@@ -73,7 +74,7 @@ export function useChatLogic(chatId: string | undefined, navigate: any) {
         id: data._id || data.id || `temp-add-${Date.now()}`,
         senderId: data.senderId,
         content: data.message,
-        timestamp: data.clientTimestamp ? new Date(data.clientTimestamp) : new Date(data.createdAt),
+        timestamp: new Date(data.createdAt || data.clientTimestamp),
         status: "delivered",
         type: "text",
       };
@@ -153,7 +154,7 @@ export function useChatLogic(chatId: string | undefined, navigate: any) {
             id: c._id || c.id || `temp-init-${Date.now()}-${Math.random()}`,
             senderId: c.senderId,
             content: c.message,
-            timestamp: c.clientTimestamp ? new Date(c.clientTimestamp) : new Date(c.createdAt),
+            timestamp: new Date(c.createdAt || c.clientTimestamp),
             status: "read",
             type: "text",
           });
@@ -212,7 +213,7 @@ export function useChatLogic(chatId: string | undefined, navigate: any) {
           id: contactId,
           user: chatUser,
           lastMessage: c.message,
-          timestamp: c.clientTimestamp ? new Date(c.clientTimestamp) : new Date(c.createdAt),
+          timestamp: new Date(c.createdAt || c.clientTimestamp),
           unreadCount: 0, 
         };
       })

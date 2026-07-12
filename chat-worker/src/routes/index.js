@@ -1,15 +1,15 @@
-import { Hono } from 'hono';
+import { Router } from 'express';
 import { createMessage } from '../controllers/messagesController.js';
 import { getChatsBetween } from '../controllers/chatsController.js';
 import { internalAuthMiddleware } from '../middlewares/auth.js';
 
-const api = new Hono();
+const router = Router();
 
 // GET /chats/between/:senderId/:receiverId
-api.get('/chats/between/:senderId/:receiverId', getChatsBetween);
+router.get('/chats/between/:senderId/:receiverId', getChatsBetween);
 
 // POST /messages
-api.use('/messages/*', internalAuthMiddleware);
-api.post('/messages', createMessage);
+router.use('/messages', internalAuthMiddleware);
+router.post('/messages', createMessage);
 
-export default api;
+export default router;

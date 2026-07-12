@@ -1,18 +1,17 @@
 {
   "name": "chat-worker",
   "version": "1.0.0",
-  "description": "Serverless chat workers with Hono",
+  "description": "chat workers",
   "type": "module",
   "scripts": {
     "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
     "test": "vitest run"
   },
   "dependencies": {
-    "@hono/node-server": "^1.11.2",
-    "bullmq": "^5.80.2",
+    "cors": "^2.8.6",
     "dotenv": "^16.4.5",
-    "hono": "^4.4.7",
-    "ioredis": "^5.11.1",
+    "express": "^5.2.1",
     "mongoose": "^8.4.1",
     "redis": "^4.6.14"
   },

@@ -1,9 +1,9 @@
 import { INTERNAL_API_KEY } from '../config/env.js';
 
-export async function internalAuthMiddleware(c, next) {
-  const secret = c.req.header('x-internal-secret');
+export function internalAuthMiddleware(req, res, next) {
+  const secret = req.header('x-internal-secret');
   if (secret !== INTERNAL_API_KEY) {
-    return c.json({ success: false, error: 'Unauthorized: Invalid Service Secret' }, 401);
+    return res.status(401).json({ success: false, error: 'Unauthorized: Invalid Service Secret' });
   }
-  await next();
+  next();
 }

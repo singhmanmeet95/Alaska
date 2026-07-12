@@ -1,19 +1,5 @@
 import { pubClient } from '../redis.js';
-import { chatQueue } from '../queue.js';
 
-export const handleJoinUser = (io, socket) => async (userId) => {
-  const uid = String(userId);
-  socket.join(uid);
-  socket.userId = uid;
-  console.log(`User ${userId} joined their room`);
-  
-  try {
-    await pubClient.sAdd('online_users', uid);
-    io.emit('user_status', { userId: uid, status: 'online' });
-  } catch (err) {
-    console.error("Error setting online status:", err);
-  }
-};
 
 export const handleGetOnlineUsers = (pubClient) => async (callback) => {
   try {
@@ -24,33 +10,35 @@ export const handleGetOnlineUsers = (pubClient) => async (callback) => {
   }
 };
 
-export const handleSendMessage = (socket) => async (data) => {
+export const handleSendMessage = (io, socket) => async (data) => {
   try {
     const { senderId, receiverId, message, clientTimestamp } = data;
     if (!senderId || !receiverId || !message) return;
 
     const createdAt = new Date().toISOString();
 
-    // 1. Queue it for eventual persistence in DB
-    await chatQueue.add('chat_message', {
+    // 1. Append it to Redis Stream for fast ingestion
+    const streamPayload = {
       senderId,
       receiverId,
       message,
       clientTimestamp,
       timestamp: createdAt
-    });
-    console.log("Message queued for worker persistence:", message);
+    };
+    await pubClient.xAdd('chat_stream', '*', { payload: JSON.stringify(streamPayload) });
+    console.log("Message ingested to Redis Stream:", message);
 
-    // 2. Publish INSTANTLY to Redis Pub/Sub for real-time delivery
-    const pubPayload = JSON.stringify({
+    // 2. Emit INSTANTLY for real-time delivery via socket.io (Redis adapter handles broadcasting)
+    const payload = {
       id: `temp-pub-${clientTimestamp}`,
       senderId,
       receiverId,
       message,
       clientTimestamp,
       createdAt
-    });
-    await pubClient.publish('chat_messages', pubPayload);
+    };
+    io.to(String(receiverId)).emit("receive_message", payload);
+    io.to(String(senderId)).emit("message_sent", payload);
 
     // 3. Local ACK for frontend
     socket.emit("message_sent_ack", { 

@@ -1,32 +1,79 @@
-import { Worker } from 'bullmq';
-import IORedis from 'ioredis';
-import { pubClient } from '../config/redis.js';
+import { queueClient } from '../config/redis.js';
 import { Chat } from '../../models/Chat.js';
-import { REDIS_URL } from '../config/env.js';
+import { commandOptions } from 'redis';
 
-// BullMQ requires IORedis connection
-const connection = new IORedis(REDIS_URL, { maxRetriesPerRequest: null });
+export async function pollQueue() {
+  const streamKey = 'chat_stream';
+  const groupName = 'chat_workers';
+  const consumerName = `worker_${process.pid}`;
 
-export function pollQueue() {
-  console.log("Started BullMQ worker for chat_ingestion_queue...");
-  
-  const worker = new Worker('chat_ingestion_queue', async (job) => {
-    const data = job.data;
-    
-    const newChat = new Chat({
-      senderId: data.senderId,
-      receiverId: data.receiverId,
-      message: data.message,
-      clientTimestamp: data.clientTimestamp
-    });
+  console.log("Started Redis Stream consumer for chat_stream...");
 
-    // If this fails, BullMQ will automatically retry based on job options
-    await newChat.save();
+  // Try to create the consumer group, ignore if it already exists
+  try {
+    await queueClient.xGroupCreate(streamKey, groupName, '0', { MKSTREAM: true });
+  } catch (err) {
+    if (!err.message.includes('BUSYGROUP')) {
+      console.error("Failed to create consumer group:", err);
+    }
+  }
 
-    console.log("Successfully processed and saved message to DB from BullMQ");
-  }, { connection, concurrency: 5 });
+  while (true) {
+    try {
+      // 1. Read Pending Entries (PEL) first to recover stuck messages
+      let response = await queueClient.xReadGroup(
+        commandOptions({ isolated: true }),
+        groupName,
+        consumerName,
+        [
+          { key: streamKey, id: '0' }
+        ],
+        {
+          COUNT: 10
+        }
+      );
 
-  worker.on('failed', (job, err) => {
-    console.error(`Job ${job.id} failed with error:`, err);
-  });
+      // 2. If no pending messages, block and wait for new messages
+      if (!response || response.length === 0 || response[0].messages.length === 0) {
+        response = await queueClient.xReadGroup(
+          commandOptions({ isolated: true }),
+          groupName,
+          consumerName,
+          [
+            { key: streamKey, id: '>' }
+          ],
+          {
+            COUNT: 10,
+            BLOCK: 2000
+          }
+        );
+      }
+
+      if (response && response.length > 0) {
+        for (const stream of response) {
+          for (const message of stream.messages) {
+            const data = JSON.parse(message.message.payload);
+
+            const newChat = new Chat({
+              senderId: data.senderId,
+              receiverId: data.receiverId,
+              message: data.message,
+              clientTimestamp: data.clientTimestamp,
+              createdAt: data.timestamp
+            });
+
+            await newChat.save();
+            console.log("Successfully processed and saved message to DB from Redis Stream");
+
+            // Acknowledge the message so it's removed from pending
+            await queueClient.xAck(streamKey, groupName, message.id);
+          }
+        }
+      }
+    } catch (err) {
+      console.error("Error processing stream:", err);
+      // Basic backoff on error
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+    }
+  }
 }

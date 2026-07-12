@@ -1,3 +1,12 @@
+# Development stage
+FROM node:22-alpine AS dev
+WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm ci
+COPY . .
+EXPOSE 8080
+CMD ["npm", "run", "dev"]
+
 # Build stage
 FROM node:22-alpine AS builder
 

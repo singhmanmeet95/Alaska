@@ -1,15 +1,16 @@
-import { Hono } from 'hono';
-import { cors } from 'hono/cors';
+import express from 'express';
+import cors from 'cors';
 import apiRoutes from './routes/index.js';
 
-const app = new Hono();
+const app = express();
 
-app.use('*', cors());
+app.use(cors());
+app.use(express.json());
 
 // Health check
-app.get('/health', (c) => c.json({ status: 'Worker OK' }));
+app.get('/health', (req, res) => res.json({ status: 'Worker OK' }));
 
 // API routes
-app.route('/api', apiRoutes);
+app.use('/api', apiRoutes);
 
 export default app;

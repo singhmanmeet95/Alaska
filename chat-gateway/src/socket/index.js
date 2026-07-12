@@ -1,8 +1,8 @@
 import { Server } from 'socket.io';
 import { createAdapter } from '@socket.io/redis-adapter';
-import { pubClient, subClient, subscriber } from '../redis.js';
+import jwt from 'jsonwebtoken';
+import { pubClient, subClient } from '../redis.js';
 import {
-  handleJoinUser,
   handleGetOnlineUsers,
   handleSendMessage,
   handleDisconnect
@@ -14,26 +14,33 @@ export const setupSocket = (httpServer) => {
     adapter: createAdapter(pubClient, subClient)
   });
 
-  io.on('connection', (socket) => {
-    console.log('User connected to Gateway:', socket.id);
-
-    socket.on('join_user', handleJoinUser(io, socket));
-    socket.on('get_online_users', handleGetOnlineUsers(pubClient));
-    socket.on('send_message', handleSendMessage(socket));
-    socket.on('disconnect', handleDisconnect(io, socket));
+  io.use((socket, next) => {
+    const token = socket.handshake.auth?.token;
+    if (!token) return next(new Error('Authentication error: No token provided'));
+    
+    jwt.verify(token, process.env.JWT_SECRET || 'dev_secret_key_123', (err, decoded) => {
+      if (err) return next(new Error('Authentication error: Invalid token'));
+      socket.userId = String(decoded.userId || decoded.id);
+      next();
+    });
   });
 
-  // Subscribe to Redis Pub/Sub for outgoing messages
-  subscriber.subscribe('chat_messages', (message, channel) => {
+  io.on('connection', async (socket) => {
+    console.log(`User ${socket.userId} connected to Gateway on socket ${socket.id}`);
+    
+    // Auto join room based on authenticated userId
+    socket.join(socket.userId);
+    console.log(`User ${socket.userId} joined their room`);
+    
     try {
-      console.log("Redis published message:", message);
-      const data = JSON.parse(message);
-      // Emit locally to prevent redis-adapter from broadcasting the message to other nodes again
-      io.local.to(String(data.receiverId)).emit("receive_message", data);
-      io.local.to(String(data.senderId)).emit("message_sent", data);
+      await pubClient.sAdd('online_users', socket.userId);
+      io.emit('user_status', { userId: socket.userId, status: 'online' });
     } catch (err) {
-      console.error("Error parsing message from redis:", err);
+      console.error("Error setting online status:", err);
     }
+    socket.on('get_online_users', handleGetOnlineUsers(pubClient));
+    socket.on('send_message', handleSendMessage(io, socket));
+    socket.on('disconnect', handleDisconnect(io, socket));
   });
 
   return io;
