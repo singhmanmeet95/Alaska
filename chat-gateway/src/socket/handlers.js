@@ -1,4 +1,5 @@
 import { pubClient } from '../redis.js';
+import { chatQueue } from '../queue.js';
 
 export const handleJoinUser = (io, socket) => async (userId) => {
   const uid = String(userId);
@@ -25,23 +26,38 @@ export const handleGetOnlineUsers = (pubClient) => async (callback) => {
 
 export const handleSendMessage = (socket) => async (data) => {
   try {
-    const { senderId, receiverId, message } = data;
+    const { senderId, receiverId, message, clientTimestamp } = data;
     if (!senderId || !receiverId || !message) return;
 
-    const payload = JSON.stringify({
+    const createdAt = new Date().toISOString();
+
+    // 1. Queue it for eventual persistence in DB
+    await chatQueue.add('chat_message', {
       senderId,
       receiverId,
       message,
-      timestamp: new Date().toISOString()
+      clientTimestamp,
+      timestamp: createdAt
     });
-    
-    await pubClient.lPush('chat_ingestion_queue', payload);
-    console.log("Message queued for worker processing:", payload);
+    console.log("Message queued for worker persistence:", message);
 
+    // 2. Publish INSTANTLY to Redis Pub/Sub for real-time delivery
+    const pubPayload = JSON.stringify({
+      id: `temp-pub-${clientTimestamp}`,
+      senderId,
+      receiverId,
+      message,
+      clientTimestamp,
+      createdAt
+    });
+    await pubClient.publish('chat_messages', pubPayload);
+
+    // 3. Local ACK for frontend
     socket.emit("message_sent_ack", { 
       senderId, 
       receiverId, 
-      message, 
+      message,
+      clientTimestamp,
       status: "queued" 
     });
   } catch (err) {

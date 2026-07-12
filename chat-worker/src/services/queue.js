@@ -1,40 +1,32 @@
-import { queueClient, pubClient } from '../config/redis.js';
+import { Worker } from 'bullmq';
+import IORedis from 'ioredis';
+import { pubClient } from '../config/redis.js';
 import { Chat } from '../../models/Chat.js';
+import { REDIS_URL } from '../config/env.js';
 
-export async function pollQueue() {
-  console.log("Started polling chat_ingestion_queue...");
-  while (true) {
-    try {
-      // brPop blocks until an item is available in the queue (timeout 0 = infinite)
-      const result = await queueClient.brPop('chat_ingestion_queue', 0);
-      if (result) {
-        const { element } = result;
-        const data = JSON.parse(element);
-        
-        const newChat = new Chat({
-          senderId: data.senderId,
-          receiverId: data.receiverId,
-          message: data.message
-        });
+// BullMQ requires IORedis connection
+const connection = new IORedis(REDIS_URL, { maxRetriesPerRequest: null });
 
-        await newChat.save();
+export function pollQueue() {
+  console.log("Started BullMQ worker for chat_ingestion_queue...");
+  
+  const worker = new Worker('chat_ingestion_queue', async (job) => {
+    const data = job.data;
+    
+    const newChat = new Chat({
+      senderId: data.senderId,
+      receiverId: data.receiverId,
+      message: data.message,
+      clientTimestamp: data.clientTimestamp
+    });
 
-        // Publish back to Redis so Gateway can emit it via WebSocket (Double Tick)
-        const payload = JSON.stringify({
-          id: newChat._id,
-          senderId: newChat.senderId,
-          receiverId: newChat.receiverId,
-          message: newChat.message,
-          createdAt: newChat.createdAt
-        });
+    // If this fails, BullMQ will automatically retry based on job options
+    await newChat.save();
 
-        await pubClient.publish('chat_messages', payload);
-        console.log("Successfully processed and published message:", payload);
-      }
-    } catch (err) {
-      console.error("Error processing queue message:", err);
-      // Brief pause before retrying on error to prevent tight looping
-      await new Promise(res => setTimeout(res, 1000));
-    }
-  }
+    console.log("Successfully processed and saved message to DB from BullMQ");
+  }, { connection, concurrency: 5 });
+
+  worker.on('failed', (job, err) => {
+    console.error(`Job ${job.id} failed with error:`, err);
+  });
 }

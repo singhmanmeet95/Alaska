@@ -4,6 +4,7 @@ const chatSchema = new mongoose.Schema({
   senderId: { type: String, required: true, index: true },
   receiverId: { type: String, required: true, index: true },
   message: { type: String, required: true },
+  clientTimestamp: { type: Number, index: true },
   createdAt: { type: Date, default: Date.now }
 });
 

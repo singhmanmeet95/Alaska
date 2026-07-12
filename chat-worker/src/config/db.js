@@ -4,8 +4,8 @@ import { MONGO_URI } from './env.js';
 export async function connectDB() {
   try {
     await mongoose.connect(MONGO_URI, {
-      maxPoolSize: 50, // maximum number of connections in the pool
-      minPoolSize: 10, // minimum number of connections in the pool
+      maxPoolSize: 10, // maximum number of connections in the pool
+      minPoolSize: 5, // minimum number of connections in the pool
       serverSelectionTimeoutMS: 5000, // how long to wait for a connection
       socketTimeoutMS: 45000, // how long to wait for socket response
     });

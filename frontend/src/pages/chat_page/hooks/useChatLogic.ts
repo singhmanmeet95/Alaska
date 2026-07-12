@@ -14,6 +14,7 @@ export interface BackendChat {
   senderId: string;
   receiverId: string;
   message: string;
+  clientTimestamp?: number;
   createdAt: string;
   sender: {
     id: string;
@@ -72,7 +73,7 @@ export function useChatLogic(chatId: string | undefined, navigate: any) {
         id: data._id || data.id || `temp-add-${Date.now()}`,
         senderId: data.senderId,
         content: data.message,
-        timestamp: new Date(data.createdAt),
+        timestamp: data.clientTimestamp ? new Date(data.clientTimestamp) : new Date(data.createdAt),
         status: "delivered",
         type: "text",
       };
@@ -152,7 +153,7 @@ export function useChatLogic(chatId: string | undefined, navigate: any) {
             id: c._id || c.id || `temp-init-${Date.now()}-${Math.random()}`,
             senderId: c.senderId,
             content: c.message,
-            timestamp: new Date(c.createdAt),
+            timestamp: c.clientTimestamp ? new Date(c.clientTimestamp) : new Date(c.createdAt),
             status: "read",
             type: "text",
           });
@@ -211,7 +212,7 @@ export function useChatLogic(chatId: string | undefined, navigate: any) {
           id: contactId,
           user: chatUser,
           lastMessage: c.message,
-          timestamp: new Date(c.createdAt),
+          timestamp: c.clientTimestamp ? new Date(c.clientTimestamp) : new Date(c.createdAt),
           unreadCount: 0, 
         };
       })
@@ -303,10 +304,13 @@ export function useChatLogic(chatId: string | undefined, navigate: any) {
   const handleSendMessage = (content: string) => {
     if (!activeChat || !user || !socket) return;
 
+    const clientTimestamp = Date.now();
+
     const payload = {
       senderId: user.id,
       receiverId: activeChat,
       message: content,
+      clientTimestamp,
     };
 
     const tempId = `temp-${Date.now()}-${Math.random()}`;
@@ -314,14 +318,14 @@ export function useChatLogic(chatId: string | undefined, navigate: any) {
       id: tempId,
       senderId: user.id,
       content: content,
-      timestamp: new Date(),
+      timestamp: new Date(clientTimestamp),
       status: "delivered",
       type: "text",
     };
     
     setMessages((prev) => ({
       ...prev,
-      [activeChat]: [...(prev[activeChat] || []), optimisticMsg],
+      [activeChat]: [...(prev[activeChat] || []), optimisticMsg].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime()),
     }));
 
     socket.emit("send_message", payload);
