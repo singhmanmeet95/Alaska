@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "../config/db.js";
 import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({
@@ -7,7 +7,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const prisma = new PrismaClient();
+
 
 export const getAllUsers = async () => {
   return await prisma.user.findMany({

@@ -1,7 +1,7 @@
 import cron from 'node-cron';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../config/db.js';
 
-const prisma = new PrismaClient();
+
 
 export const initCronJobs = () => {
   // Run every day at 3:00 AM ('0 3 * * *')

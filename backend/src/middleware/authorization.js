@@ -23,8 +23,7 @@ export const checkUserOwnership = (req, res, next) => {
 export const checkTripOwnership = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { PrismaClient } = await import("@prisma/client");
-    const prisma = new PrismaClient();
+    const { default: prisma } = await import("../config/db.js");
 
     const trip = await prisma.trip.findUnique({
       where: { id },
@@ -59,8 +58,7 @@ export const checkTripOwnership = async (req, res, next) => {
 export const checkChatOwnership = async (req, res, next) => {
   try {
     const { id, senderId, receiverId } = req.params;
-    const { PrismaClient } = await import("@prisma/client");
-    const prisma = new PrismaClient();
+    const { default: prisma } = await import("../config/db.js");
 
     if (id) {
       // Check ownership for specific chat by ID

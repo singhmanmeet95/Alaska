@@ -43,7 +43,7 @@ export async function pollQueue() {
             { key: streamKey, id: '>' }
           ],
           {
-            COUNT: 10,
+            COUNT: 5,
             BLOCK: 2000
           }
         );

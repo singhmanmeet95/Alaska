@@ -1,5 +1,5 @@
 import express from "express";
-import { PrismaClient } from "@prisma/client";
+import prisma from "./config/db.js";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -20,7 +20,7 @@ if (process.env.NODE_ENV !== "test") {
 }
 
 const app = express();
-const prisma = new PrismaClient();
+
 
 const PORT = process.env.PORT || 3000;
 const IS_PRODUCTION = process.env.NODE_ENV === "production";

@@ -1,5 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import prisma from "../config/db.js";
 
 const TIME_WINDOW_MINUTES = 120;
 const AVG_STATION_TIME_MINUTES = 3;
