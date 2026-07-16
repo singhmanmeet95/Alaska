@@ -66,6 +66,9 @@ export function useProfileData(targetUserId: string | undefined, isOwnProfile: b
       };
 
       fetchFullUser();
+    } else {
+      setLoadingProfile(false);
+      setStats((prev) => ({ ...prev, memberSince: "Not Logged In" }));
     }
 
     if (isOwnProfile && token) {

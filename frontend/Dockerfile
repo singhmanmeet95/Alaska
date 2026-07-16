@@ -4,7 +4,7 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm ci
 COPY . .
-EXPOSE 8080
+EXPOSE 8000
 CMD ["npm", "run", "dev"]
 
 # Build stage

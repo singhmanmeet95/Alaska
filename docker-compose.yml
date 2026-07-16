@@ -87,7 +87,7 @@ services:
     container_name: alaska_frontend
     restart: always
     ports:
-      - "8080:8080"
+      - "8000:8000"
     environment:
       - VITE_API_URL=http://localhost:3000/api
       - VITE_CHAT_WORKER_URL=http://localhost:4002/api
