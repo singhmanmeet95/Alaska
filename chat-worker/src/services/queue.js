@@ -29,7 +29,7 @@ export async function pollQueue() {
           { key: streamKey, id: '0' }
         ],
         {
-          COUNT: 10
+          COUNT: 1000
         }
       );
 
@@ -43,32 +43,43 @@ export async function pollQueue() {
             { key: streamKey, id: '>' }
           ],
           {
-            COUNT: 5,
+            COUNT: 500,
             BLOCK: 2000
           }
         );
       }
 
       if (response && response.length > 0) {
+        const messagesToInsert = [];
+        const ackIds = [];
+
         for (const stream of response) {
           for (const message of stream.messages) {
             const data = JSON.parse(message.message.payload);
-
-            const newChat = await prisma.chatMessage.create({
-              data: {
-                senderId: data.senderId,
-                receiverId: data.receiverId,
-                message: data.message,
-                clientTimestamp: data.clientTimestamp,
-                createdAt: data.timestamp ? new Date(data.timestamp) : undefined
-              }
+            
+            messagesToInsert.push({
+              senderId: data.senderId,
+              receiverId: data.receiverId,
+              message: data.message,
+              clientTimestamp: data.clientTimestamp,
+              createdAt: data.timestamp ? new Date(data.timestamp) : undefined
             });
-
-            console.log("Successfully processed and saved message to DB from Redis Stream");
-
-            // Acknowledge the message so it's removed from pending
-            await queueClient.xAck(streamKey, groupName, message.id);
+            
+            ackIds.push(message.id);
           }
+        }
+
+        if (messagesToInsert.length > 0) {
+          // 1. Batch Insert to Database (solves sequential write bottleneck)
+          await prisma.chatMessage.createMany({
+            data: messagesToInsert,
+            skipDuplicates: true // Optional: avoid failing the batch if duplicate clientTimestamp exists
+          });
+
+          console.log(`Successfully processed and saved ${messagesToInsert.length} messages to DB in a batch.`);
+
+          // 2. Batch Acknowledge to Redis
+          await queueClient.xAck(streamKey, groupName, ackIds);
         }
       }
     } catch (err) {

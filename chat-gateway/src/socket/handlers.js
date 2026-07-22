@@ -61,7 +61,8 @@ export const handleDisconnect = (io, socket) => async () => {
       const sockets = await io.in(socket.userId).fetchSockets();
       if (sockets.length === 0) {
         await pubClient.sRem('online_users', socket.userId);
-        io.emit('user_status', { userId: socket.userId, status: 'offline' });
+        // REMOVED GLOBAL BROADCAST: io.emit('user_status', { userId: socket.userId, status: 'offline' });
+        // Prevents server crash under heavy disconnect/reconnect load.
       }
     } catch (err) {
       console.error("Error setting offline status:", err);

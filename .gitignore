@@ -4,6 +4,10 @@ node_modules/*
 .env
 dist
 dist/*
-docs
-docs/*
-*.excalidraw
+mri
+mri/*
+chat-backend.excalidraw
+.vscode/*
+.vscode
+.agents/*
+.agents

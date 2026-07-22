@@ -34,7 +34,8 @@ export const setupSocket = (httpServer) => {
     
     try {
       await pubClient.sAdd('online_users', socket.userId);
-      io.emit('user_status', { userId: socket.userId, status: 'online' });
+      // REMOVED GLOBAL BROADCAST: io.emit('user_status', { userId: socket.userId, status: 'online' });
+      // Global emits are O(N) and crash the server at scale. Clients should pull online status or subscribe to specific presence channels.
     } catch (err) {
       console.error("Error setting online status:", err);
     }

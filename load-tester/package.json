@@ -1,0 +1,18 @@
+{
+  "name": "load-tester",
+  "version": "1.0.0",
+  "description": "Load Testing module for Alaska Chat App",
+  "main": "processor.js",
+  "scripts": {
+    "test:5": "artillery run -q test-5.yml -o report.json && node summarize.js",
+    "test:50": "artillery run -q test-50.yml -o report.json && node summarize.js",
+    "test:500": "artillery run -q test-500.yml -o report.json && node summarize.js",
+    "test:5000": "artillery run -q test-5000.yml -o report.json && node summarize.js",
+    "test:20000": "artillery run -q test-20000.yml -o report.json && node summarize.js",
+    "test:50000": "artillery run -q test-50000.yml -o report.json && node summarize.js"
+  },
+  "dependencies": {
+    "artillery": "^2.0.21",
+    "artillery-engine-socketio-v3": "^1.2.0"
+  }
+}

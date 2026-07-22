@@ -1,0 +1,27 @@
+config:
+  target: "http://localhost:4001"
+  processor: "./processor.js"
+  phases:
+    - duration: 60
+      arrivalRate: 200
+      rampTo: 500
+      name: "Load ~20,000 users over 60 sec"
+  engines:
+    socketio-v3: {}
+
+scenarios:
+  - name: "User connects, sends a message"
+    engine: "socketio-v3"
+    flow:
+      - function: "generateAuth"
+      - connect:
+          auth:
+            token: "{{ token }}"
+      - emit:
+          channel: "send_message"
+          data:
+            senderId: "{{ senderId }}"
+            receiverId: "{{ receiverId }}"
+            message: "Extreme Load 20k test!"
+            clientTimestamp: 1718881234
+      - think: 30
