@@ -1,5 +1,5 @@
 import { queueClient } from '../config/redis.js';
-import { Chat } from '../../models/Chat.js';
+import { prisma } from '../config/db.js';
 import { commandOptions } from 'redis';
 
 export async function pollQueue() {
@@ -54,15 +54,16 @@ export async function pollQueue() {
           for (const message of stream.messages) {
             const data = JSON.parse(message.message.payload);
 
-            const newChat = new Chat({
-              senderId: data.senderId,
-              receiverId: data.receiverId,
-              message: data.message,
-              clientTimestamp: data.clientTimestamp,
-              createdAt: data.timestamp
+            const newChat = await prisma.chatMessage.create({
+              data: {
+                senderId: data.senderId,
+                receiverId: data.receiverId,
+                message: data.message,
+                clientTimestamp: data.clientTimestamp,
+                createdAt: data.timestamp ? new Date(data.timestamp) : undefined
+              }
             });
 
-            await newChat.save();
             console.log("Successfully processed and saved message to DB from Redis Stream");
 
             // Acknowledge the message so it's removed from pending

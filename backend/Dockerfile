@@ -16,7 +16,7 @@ RUN npm install
 COPY . .
 
 # Generate Prisma client
-RUN npx prisma generate
+RUN npx prisma@6.9.0 generate
 
 # set permissions for entrypoint script
 RUN chmod +x /app/entrypoint.sh

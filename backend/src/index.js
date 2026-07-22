@@ -1,6 +1,5 @@
 import express from "express";
 import prisma from "./config/db.js";
-import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import cors from "cors";
 
@@ -38,7 +37,6 @@ app.use(cors({
   credentials: true,
 }));
 
-app.use(bodyParser.json());
 app.use(express.json());
 
 // ─── Routes ─────────────────────────────────────────────────────────────────

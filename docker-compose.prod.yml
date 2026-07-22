@@ -34,14 +34,21 @@ services:
     ports:
       - "6380:6379"
 
-  mongodb:
-    image: mongo:7
-    container_name: alaska_mongo_prod
+  pgbouncer:
+    image: edoburu/pgbouncer:latest
+    container_name: alaska_pgbouncer_prod
     restart: always
+    environment:
+      - DATABASE_URL=postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-prod_secure_password}@db:5432/alaska_prod
+      - MAX_CLIENT_CONN=1000
+      - DEFAULT_POOL_SIZE=50
+      - POOL_MODE=transaction
+      - LISTEN_PORT=6432
+      - AUTH_TYPE=scram-sha-256
     ports:
-      - "27017:27017"
-    volumes:
-      - mongodata_prod:/data/db
+      - "6432:6432"
+    depends_on:
+      - db
 
   chat-gateway:
     image: ${DOCKER_REGISTRY}/alaska-chat-gateway:latest
@@ -55,6 +62,7 @@ services:
       - REDIS_URL=redis://redis:6379
       - NODE_ENV=production
       - INTERNAL_API_KEY=${INTERNAL_API_KEY:-prod_secure_secret_123}
+      - JWT_SECRET=${JWT_SECRET:-supersecret_jwt_key_for_local_dev}
     depends_on:
       - redis
       - chat-worker
@@ -68,12 +76,13 @@ services:
     environment:
       - PORT=4002
       - REDIS_URL=redis://redis:6379
-      - MONGO_URI=mongodb://mongodb:27017/alaska-chat
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-prod_secure_password}@pgbouncer:6432/alaska_prod?pgbouncer=true
       - NODE_ENV=production
       - INTERNAL_API_KEY=${INTERNAL_API_KEY:-prod_secure_secret_123}
+      - JWT_SECRET=${JWT_SECRET:-supersecret_jwt_key_for_local_dev}
     depends_on:
       - redis
-      - mongodb
+      - pgbouncer
 
   frontend:
     image: ${DOCKER_REGISTRY}/alaska-frontend:latest
@@ -89,4 +98,3 @@ services:
 
 volumes:
   pgdata_prod:
-  mongodata_prod:
