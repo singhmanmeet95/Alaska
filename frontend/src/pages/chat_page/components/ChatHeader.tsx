@@ -31,19 +31,19 @@ export default function ChatHeader({
 
   if (!user) {
     return (
-      <div className="h-16 bg-zinc-950 border-b border-zinc-800 flex items-center px-4">
-        <h1 className="text-zinc-100 text-lg font-medium">Select a chat</h1>
+      <div className="h-16 bg-background/80 backdrop-blur-md border-b border-border flex items-center px-4 z-10 relative">
+        <h1 className="font-headline text-foreground">Select a chat</h1>
       </div>
     );
   }
 
   return (
-    <div className="h-16 bg-zinc-950 border-b border-zinc-800 flex items-center px-4 justify-between">
+    <div className="h-16 bg-background/80 backdrop-blur-md border-b border-border flex items-center px-4 justify-between font-sans z-10 relative">
       <div className="flex items-center flex-1">
         {showBack && (
           <button
             onClick={onBackClick}
-            className="mr-3 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 rounded-full p-2 transition-colors md:hidden"
+            className="mr-3 text-foreground/50 hover:text-foreground hover:bg-card rounded-full p-2 transition-colors md:hidden"
           >
             <svg
               className="w-5 h-5"
@@ -63,11 +63,11 @@ export default function ChatHeader({
         <img
           src={user.avatar}
           alt={user.name}
-          className="w-9 h-9 rounded-full bg-zinc-800 object-cover"
+          className="w-9 h-9 rounded-[var(--radius-pill)] bg-card object-cover border border-border"
         />
         <div className="ml-3">
-          <h2 className="text-zinc-100 font-medium text-sm">{user.name}</h2>
-          <p className="text-zinc-500 text-xs">
+          <h2 className="font-headline text-foreground text-sm">{user.name}</h2>
+          <p className="font-body-sm text-foreground/50 text-[10px]">
             {user.status === "online"
               ? "Online"
               : user.lastSeen
@@ -77,10 +77,10 @@ export default function ChatHeader({
         </div>
       </div>
 
-      <div className="flex items-center space-x-1 relative">
+      <div className="flex items-center space-x-1 relative" ref={menuRef}>
         <button
           onClick={() => setShowMenu(!showMenu)}
-          className="text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 rounded-full p-2 transition-colors relative"
+          className="text-foreground/50 hover:text-foreground hover:bg-card rounded-full p-2 transition-colors relative"
         >
           <svg
             className="w-5 h-5"
@@ -98,13 +98,13 @@ export default function ChatHeader({
         </button>
 
         {showMenu && (
-          <div className="absolute top-12 right-0 w-48 bg-zinc-900 rounded-xl border border-zinc-800 shadow-xl overflow-hidden z-50 animate-fade-in-up origin-top-right">
+          <div className="absolute top-12 right-0 w-48 bg-card rounded-xl border border-border shadow-xl overflow-hidden z-50 animate-fade-in-up origin-top-right">
             <button
               onClick={() => {
                 setShowMenu(false);
                 if (onClearChat) onClearChat();
               }}
-              className="w-full text-left px-4 py-3 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors"
+              className="w-full text-left px-4 py-3 font-button text-foreground hover:bg-background transition-colors"
             >
               Clear Chat
             </button>
@@ -113,7 +113,7 @@ export default function ChatHeader({
                 setShowMenu(false);
                 if (onRemoveFriend) onRemoveFriend();
               }}
-              className="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors border-t border-zinc-800"
+              className="w-full text-left px-4 py-3 font-button text-red-500 hover:bg-red-50 transition-colors border-t border-border"
             >
               Remove Friend
             </button>

@@ -29,7 +29,7 @@ export function useStations({
     // Wait for map and edgesGroup to be initialized
     if (!map || !edgesGroup || hasLoaded) return;
 
-    console.log("useStations: Starting to fetch data");
+
 
     // Abort flag to prevent rendering if component unmounts
     let aborted = false;
@@ -38,11 +38,11 @@ export function useStations({
       .then((graph) => {
         // Don't render if component unmounted or map removed
         if (aborted) {
-          console.log("useStations: Aborted - component unmounted");
+
           return;
         }
 
-        console.log("useStations: Data fetched, checking map readiness");
+
 
         // Wait for next frame to ensure map DOM is ready
         requestAnimationFrame(() => {
@@ -51,7 +51,7 @@ export function useStations({
           // Check if map container is still valid (not removed)
           const container = (map as any)._container;
           if (!container || !container.parentNode) {
-            console.log("useStations: Map container removed, aborting render");
+
             aborted = true;
             return;
           }
@@ -65,7 +65,7 @@ export function useStations({
 
           // Render station markers
           try {
-            console.log("useStations: Rendering markers...");
+
             const markersList: L.CircleMarker[] = [];
 
             Object.entries(graph).forEach(([name, info]) => {
@@ -92,10 +92,7 @@ export function useStations({
             // Append all new markers
             markers.current!.push(...markersList);
 
-            console.log(
-              "useStations: Markers rendered, count:",
-              markers.current!.length,
-            );
+
 
             // Render connection edges
             const added = new Set<string>();
@@ -141,7 +138,7 @@ export function useStations({
 
     // Cleanup: set abort flag
     return () => {
-      console.log("useStations: Cleanup - setting abort flag");
+
       aborted = true;
     };
   }, [map, edgesGroup, hasLoaded, markers, stationsRef, onStationClick]);

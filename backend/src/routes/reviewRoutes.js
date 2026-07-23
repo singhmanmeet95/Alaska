@@ -5,7 +5,6 @@ import {
   getReceivedReviews,
   getWrittenReviews,
   createReview,
-  updateReview,
   deleteReview,
 } from "../controllers/reviewController.js";
 import { authenticateToken, optionalAuth } from "../middleware/auth.js";
@@ -27,8 +26,7 @@ router.get("/written/:userId", optionalAuth, getWrittenReviews);
 // POST /api/reviews - Create a review (protected)
 router.post("/", authenticateToken, createReview);
 
-// PUT /api/reviews/:id - Update a review (protected)
-router.put("/:id", authenticateToken, updateReview);
+
 
 // DELETE /api/reviews/:id - Delete a review (protected)
 router.delete("/:id", authenticateToken, deleteReview);

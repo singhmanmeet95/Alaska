@@ -26,7 +26,7 @@ export default function ErrorMessage({
 
   return (
     <div
-      className={`font-medium absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-red-950/90 text-red-200 border border-red-900 text-center text-xs py-3 px-10 rounded-full transition-opacity duration-1000 shadow-xl backdrop-blur-sm z-50 ${
+      className={`absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-red-50 text-red-800 border border-red-200 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400 text-center font-button text-[12px] font-sans py-3 px-10 rounded-[var(--radius-pill)] transition-opacity duration-1000 shadow-xl backdrop-blur-sm z-50 ${
         fade ? "opacity-0" : "opacity-100"
       }`}
     >

@@ -32,19 +32,20 @@ export default function SignupForm({
   onLoginClick,
 }: SignupFormProps) {
   return (
-    <div className="w-1/2 text-xs xl:text-sm font-medium h-full flex flex-col items-center justify-center py-4 text-zinc-300">
-      <h2 className="font-bold mb-6 text-2xl md:text-3xl tracking-tight text-white">
-        SIGN UP
-      </h2>
+    <div className="w-1/2 flex flex-col items-center justify-center py-4 bg-background text-foreground">
+      <h2 className="font-headline mb-6">SIGN UP</h2>
 
-      <div className="w-full max-w-xs space-y-3">
+      <form 
+        onSubmit={(e) => { e.preventDefault(); onSubmit(); }}
+        className="w-full max-w-lg space-y-3 font-body-sm"
+      >
         <input
           type="text"
           name="name"
           placeholder="Full Name"
           value={name}
           onChange={onNameChange}
-          className="w-full h-11 px-4 bg-zinc-900 border border-zinc-800 rounded-xl focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 text-zinc-100 placeholder-zinc-500 transition-all shadow-sm"
+          className="w-full h-11 px-4 bg-background border border-border rounded-[8px] focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-foreground placeholder-foreground/50 transition-all shadow-sm"
         />
 
         <div className="flex w-full flex-row items-center gap-2 justify-between">
@@ -54,7 +55,7 @@ export default function SignupForm({
             placeholder="Email"
             value={email}
             onChange={onEmailChange}
-            className="w-1/2 h-11 px-4 bg-zinc-900 border border-zinc-800 rounded-xl focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 text-zinc-100 placeholder-zinc-500 transition-all shadow-sm"
+            className="w-1/2 h-11 px-4 bg-background border border-border rounded-[8px] focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-foreground placeholder-foreground/50 transition-all shadow-sm"
           />
           <input
             type="password"
@@ -62,17 +63,17 @@ export default function SignupForm({
             placeholder="Password"
             value={password}
             onChange={onPasswordChange}
-            className="w-1/2 h-11 px-4 bg-zinc-900 border border-zinc-800 rounded-xl focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 text-zinc-100 placeholder-zinc-500 transition-all shadow-sm"
+            className="w-1/2 h-11 px-4 bg-background border border-border rounded-[8px] focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-foreground placeholder-foreground/50 transition-all shadow-sm"
           />
         </div>
 
         <div className="flex w-full flex-row h-24 items-center gap-2 justify-between">
           <textarea
             name="bio"
-            placeholder="Tell us about yourself (bio)..."
+            placeholder="Tell us about yourself..."
             value={bio}
             onChange={onBioChange}
-            className="w-1/2 h-full p-3 bg-zinc-900 border border-zinc-800 rounded-xl focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 text-zinc-100 placeholder-zinc-500 transition-all resize-none text-xs shadow-sm"
+            className="w-1/2 h-full p-3 bg-background border border-border rounded-[8px] focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-foreground placeholder-foreground/50 transition-all resize-none shadow-sm"
           />
           <div className="w-1/2 h-full">
             <ImageUploader
@@ -85,28 +86,27 @@ export default function SignupForm({
 
         {/* SIGN UP Button */}
         <button
-          onClick={onSubmit}
           type="submit"
           disabled={isSubmitting}
-          className="w-full h-11 mt-4 bg-orange-500 text-white font-bold rounded-xl hover:bg-orange-600 transition-all shadow-lg hover:shadow-orange-500/20 active:scale-[0.98] flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed tracking-wide"
+          className="w-full h-12 mt-4 bg-primary text-primary-foreground font-button rounded-[var(--radius-pill)] hover:opacity-90 transition-opacity flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSubmitting ? (
-            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin"></div>
           ) : (
             "CREATE ACCOUNT"
           )}
         </button>
 
-        <p className="text-center text-xs mt-4 text-zinc-500">
+        <p className="text-center font-body-sm mt-4 text-foreground/70">
           Already have an account?{" "}
           <span
-            className="text-orange-400 hover:text-orange-300 font-semibold cursor-pointer transition-colors"
+            className="text-primary font-bold cursor-pointer hover:underline transition-colors"
             onClick={onLoginClick}
           >
             Sign in
           </span>
         </p>
-      </div>
+      </form>
     </div>
   );
 }

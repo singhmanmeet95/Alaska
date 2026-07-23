@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "skills": {
+    "color-palette": {
+      "source": "jezweb/claude-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/design-assets/skills/color-palette/SKILL.md",
+      "computedHash": "3582196d9fa3c0dd3e41b645986f373f2ac0c0c3b7e84b6f84922686d54fe181"
+    },
+    "flutter-build-responsive-layout": {
+      "source": "flutter/skills",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-build-responsive-layout/SKILL.md",
+      "computedHash": "f762ea2ee83d4f1f35d9093b41d2520dd024ab80c9539d4860b9ae7f2a4dc6a0"
+    },
+    "fullstack-developer": {
+      "source": "shubhamsaboo/awesome-llm-apps",
+      "sourceType": "github",
+      "skillPath": "awesome_agent_skills/fullstack-developer/SKILL.md",
+      "computedHash": "d824d75875b289753740c12ba33c005a40f0d996f12d3424cabf1ef9ad4cd1a3"
+    },
+    "landing-page-design": {
+      "source": "halt-catch-fire/skills",
+      "sourceType": "github",
+      "skillPath": "guides/design/landing-page-design/SKILL.md",
+      "computedHash": "19ed3be1e7ee1620ecc3b5801ddcb936add37750f7cadb437afdd7394472f34b"
+    },
+    "performance": {
+      "source": "addyosmani/web-quality-skills",
+      "sourceType": "github",
+      "skillPath": "skills/performance/SKILL.md",
+      "computedHash": "38e9a28b0a5ce04a9e3bd6e9cfb2e52e4012f0e93d763eb863b15218a7abccd6"
+    },
+    "responsive-design": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/ui-design/skills/responsive-design/SKILL.md",
+      "computedHash": "794cc7f1b2f79d398135d19ef3fe32c406dde926b9bdf86ee3fe7b939a0be906"
+    },
+    "superhuman-ui-skills": {
+      "source": "ihlamury/design-skills",
+      "sourceType": "github",
+      "skillPath": "skills/superhuman/SKILL.md",
+      "computedHash": "71143cfc099663a38d1c62f26838a1f61d89bad3a1eebcc3ac3a2bfb05ec6e33"
+    },
+    "web-design-guidelines": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/web-design-guidelines/SKILL.md",
+      "computedHash": "f3bc47f890f42a44db1007ab390709ec368e4b8c089baee6b0007182236ac474"
+    }
+  }
+}

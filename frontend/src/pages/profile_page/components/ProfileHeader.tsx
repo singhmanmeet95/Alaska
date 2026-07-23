@@ -30,118 +30,111 @@ export default function ProfileHeader({
   const navigate = useNavigate();
 
   return (
-    <div className="relative">
-      {/* Background Banner (Minimalist Dark) */}
-      <div className="h-48 bg-zinc-900 border-b border-zinc-800 relative overflow-hidden">
-        <div className="absolute inset-0 bg-black/20"></div>
-        {/* Subtle grid pattern or gradient could go here if needed, but keeping it clean */}
-      </div>
+    <div className="relative font-sans rounded-[var(--radius-4xl)] overflow-hidden glass-panel group/header shadow-2xl transition-all duration-500 hover:shadow-primary/5">
+      {/* Animated Background */}
+      <div className="absolute inset-0 superhuman-gradient opacity-15 animate-gradient-x pointer-events-none" />
+      
+      {/* Floating abstract blobs */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-primary/20 rounded-full blur-[100px] animate-float pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/20 rounded-full blur-[80px] animate-float-delayed pointer-events-none" />
 
-      {/* Profile Content */}
-      <div className="relative px-6 pb-6">
-        {/* Avatar */}
-        <div className="flex justify-between items-end -mt-16 mb-6">
-          <div className="relative group">
-            <div className="w-32 h-32 rounded-full border-4 border-zinc-950 bg-zinc-800 overflow-hidden shadow-xl">
-              {image ? (
-                <img
-                  src={image}
-                  alt={name}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-zinc-400 text-4xl font-bold bg-zinc-900">
-                  {name.charAt(0)}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Right Side container */}
-          <div className="flex flex-col items-end gap-3 -mb-10">
-            {/* Action Buttons */}
-            <div className="flex gap-3">
-              <button
-                onClick={onChat || (() => navigate("/chat"))}
-                className="flex items-center gap-2 px-5 py-2.5 bg-zinc-100 text-zinc-950 rounded hover:bg-white transition-colors font-medium text-sm"
-              >
-                <MessageCircle className="w-4 h-4" />
-                <span>Chat</span>
-              </button>
-
-              <button
-                onClick={() => navigate("/map")}
-                className="flex items-center gap-2 px-5 py-2.5 bg-zinc-800 text-zinc-100 rounded border border-zinc-700 hover:bg-zinc-700 transition-colors font-medium text-sm"
-              >
-                <Map className="w-4 h-4" />
-                <span>Map</span>
-              </button>
-
-              {isOwnProfile && (
-                <>
-                  <button
-                    onClick={onEdit}
-                    className="p-2.5 bg-zinc-900 text-zinc-400 rounded border border-zinc-800 hover:text-zinc-200 transition-colors"
-                    title="Edit Profile"
-                  >
-                    <Settings className="w-5 h-5" />
-                  </button>
-
-                  <button
-                    onClick={() => navigate("/auth")}
-                    className="p-2.5 bg-red-950/30 text-red-400 rounded border border-red-900/50 hover:bg-red-950/50 transition-colors"
-                  >
-                    <LogOut className="w-5 h-5" />
-                  </button>
-                </>
-              )}
-            </div>
-
-            {/* Social Handles Inline */}
-            <div className="flex items-center gap-3">
-              {socials && Object.keys(socials).length > 0 && (
-                <SocialHandles socials={socials} variant="inline" />
-              )}
-
-              {isOwnProfile && (
-                <button
-                  onClick={onOpenRequests}
-                  className="relative flex items-center justify-center p-2.5 bg-zinc-900 border border-zinc-800 text-zinc-400 rounded-full hover:bg-orange-500/10 hover:text-orange-400 hover:border-orange-500/30 transition-all shadow-sm"
-                  title="Connection Requests"
-                >
-                  <Bell className="w-5 h-5" />
-                  {pendingRequestsCount > 0 && (
-                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-orange-500 text-[10px] font-bold text-white shadow ring-2 ring-zinc-900">
-                      {pendingRequestsCount}
-                    </span>
-                  )}
-                </button>
-              )}
-            </div>
+      {/* Main Content wrapper */}
+      <div className="relative p-10 flex flex-col md:flex-row items-center md:items-start gap-10 z-10">
+        
+        {/* Avatar with glow and float */}
+        <div className="relative group shrink-0">
+          <div className="absolute inset-0 bg-primary/30 blur-2xl rounded-[var(--radius-pill)] scale-90 group-hover:scale-110 transition-transform duration-700 animate-pulse-glow" />
+          <div className="relative w-44 h-44 rounded-[var(--radius-pill)] border-[6px] border-background/40 backdrop-blur-md overflow-hidden shadow-2xl transition-transform duration-500 group-hover:-translate-y-2 group-hover:shadow-primary/30">
+            {image ? (
+              <img
+                src={image}
+                alt={name}
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-primary text-6xl font-headline bg-gradient-to-br from-background to-primary/10">
+                {name.charAt(0)}
+              </div>
+            )}
           </div>
         </div>
 
-        {/* User Info */}
-        <div className="mt-2 space-y-1">
-          <div className="flex items-center gap-2">
-            <h1 className="text-3xl font-bold text-zinc-100 tracking-tight">
-              {name}
-            </h1>
-            <span className="text-blue-500" title="Verified">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </span>
+        {/* Info & Actions */}
+        <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left space-y-5 w-full pt-2">
+          <div className="w-full flex flex-col md:flex-row md:items-center justify-between gap-6">
+             <div className="space-y-1">
+               <div className="flex items-center gap-3 justify-center md:justify-start">
+                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-display-lg text-foreground tracking-tight drop-shadow-sm">
+                   {name}
+                 </h1>
+                 <span className="text-primary animate-pulse-glow bg-primary/10 p-1.5 rounded-full" title="Verified">
+                   <svg className="w-6 h-6 md:w-8 md:h-8" fill="currentColor" viewBox="0 0 20 20">
+                     <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                   </svg>
+                 </span>
+               </div>
+               <p className="text-foreground/50 font-body-lg text-lg md:text-xl tracking-wide">@{username}</p>
+             </div>
+             
+             {/* Action Buttons */}
+             <div className="flex flex-wrap items-center justify-center md:justify-end gap-3 z-10 shrink-0">
+                <button
+                  onClick={onChat || (() => navigate("/chat"))}
+                  className="flex items-center gap-2 px-6 py-3.5 bg-primary text-primary-foreground rounded-[var(--radius-pill)] hover:scale-105 hover:shadow-lg hover:shadow-primary/30 transition-all duration-300 font-button"
+                >
+                  <MessageCircle className="w-5 h-5" /> <span>Message</span>
+                </button>
+                <button
+                  onClick={() => navigate("/map")}
+                  className="flex items-center gap-2 px-6 py-3.5 glass-panel border-foreground/10 text-foreground rounded-[var(--radius-pill)] hover:bg-foreground/5 hover:scale-105 transition-all duration-300 font-button"
+                >
+                  <Map className="w-5 h-5" /> <span>Map</span>
+                </button>
+                {isOwnProfile && (
+                  <>
+                    <button
+                      onClick={onEdit}
+                      className="p-3.5 glass-panel border-foreground/10 text-foreground/80 rounded-[var(--radius-pill)] hover:bg-primary/10 hover:border-primary/30 hover:text-primary transition-all duration-300 hover:rotate-90 group"
+                      title="Edit Profile"
+                    >
+                      <Settings className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                    </button>
+                    <button
+                      onClick={() => navigate("/auth")}
+                      className="p-3.5 glass-panel border-red-500/20 text-red-500 rounded-[var(--radius-pill)] hover:bg-red-500 hover:text-white transition-all duration-300 hover:rotate-12 group"
+                      title="Log Out"
+                    >
+                      <LogOut className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                    </button>
+                    <button
+                      onClick={onOpenRequests}
+                      className="relative p-3.5 glass-panel border-foreground/10 text-foreground/80 rounded-[var(--radius-pill)] hover:bg-primary/10 hover:border-primary/30 hover:text-primary transition-all duration-300 group"
+                      title="Requests"
+                    >
+                      <Bell className="w-5 h-5 group-hover:scale-110 transition-transform group-hover:animate-bounce" />
+                      {pendingRequestsCount > 0 && (
+                        <span className="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-[var(--radius-pill)] bg-red-500 text-xs font-bold text-white shadow-lg animate-pulse-glow">
+                          {pendingRequestsCount}
+                        </span>
+                      )}
+                    </button>
+                  </>
+                )}
+             </div>
           </div>
-          <p className="text-zinc-500 font-medium">@{username}</p>
+
           {bio && (
-            <p className="text-zinc-400 text-base leading-relaxed max-w-2xl pt-2">
-              {bio}
-            </p>
+            <div className="w-full max-w-3xl glass-panel bg-background/30 p-5 rounded-2xl border-l-4 border-l-primary shadow-sm hover:shadow-md transition-shadow">
+              <p className="text-foreground/80 font-body text-base md:text-lg leading-relaxed text-left">
+                {bio}
+              </p>
+            </div>
+          )}
+
+          {socials && Object.keys(socials).length > 0 && (
+            <div className="pt-4 flex justify-center md:justify-start w-full">
+              <SocialHandles socials={socials} variant="inline" />
+            </div>
           )}
         </div>
       </div>

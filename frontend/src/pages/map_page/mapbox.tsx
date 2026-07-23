@@ -28,7 +28,7 @@ export default function MapMetro() {
 
   // Handle path submission
   const handleSubmit = () => {
-    console.log("Submitting path to backend:", customPath);
+
     // Placeholder for API call
     alert(
       `Route confirmed! ${customPath.length} stations selected.\nCheck console for data array.`,
@@ -36,15 +36,17 @@ export default function MapMetro() {
   };
 
   return (
-    <div className="relative">
-      <div className="z-100">
-        <MapOverlay customPath={customPath} onSubmit={handleSubmit} />
-      </div>
+    <div className="relative h-full w-full">
       <div
         ref={containerRef}
-        style={{ height: "100vh", width: "100%" }}
-        className="z-80 bg-zinc-50"
+        style={{ height: "100%", width: "100%" }}
+        className="bg-background absolute inset-0 z-0"
       ></div>
+      <div className="absolute inset-y-0 left-0 z-[2000] pointer-events-none">
+        <div className="pointer-events-auto h-full">
+          <MapOverlay customPath={customPath} onSubmit={handleSubmit} />
+        </div>
+      </div>
     </div>
   );
 }

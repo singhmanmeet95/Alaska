@@ -59,12 +59,12 @@ export default function MessageList({
   );
 
   return (
-    <div className="flex-1 overflow-y-auto bg-zinc-950 px-4 py-6 custom-scrollbar">
+    <div className="flex-1 overflow-y-auto bg-background px-4 pb-6 pt-20 custom-scrollbar font-sans">
       {Object.entries(groupedMessages).map(([dateKey, messagesGroup]) => (
         <div key={dateKey}>
           {/* Date Divider */}
           <div className="flex justify-center mb-6">
-            <span className="bg-zinc-900 px-4 py-1.5 rounded-full text-xs font-medium text-zinc-500 border border-zinc-800 shadow-none">
+            <span className="bg-card px-4 py-1.5 rounded-[var(--radius-pill)] font-eyebrow text-foreground/50 border border-border">
               {formatDateDivider(new Date(dateKey))}
             </span>
           </div>

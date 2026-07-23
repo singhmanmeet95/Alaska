@@ -1,0 +1,128 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: alaska_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: alaska
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d alaska"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+
+  api:
+    build: ./backend
+    container_name: alaska_backend
+    restart: always
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./backend/.env
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@pgbouncer:6432/alaska?pgbouncer=true
+    depends_on:
+      db:
+        condition: service_healthy
+      pgbouncer:
+        condition: service_started
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/prisma:/app/prisma
+
+  redis:
+    image: redis:7-alpine
+    container_name: alaska_redis
+    restart: always
+    ports:
+      - "6380:6379"
+
+  pgbouncer:
+    image: edoburu/pgbouncer:latest
+    container_name: alaska_pgbouncer
+    environment:
+      - DATABASE_URL=postgres://postgres:password@db:5432/alaska
+      - MAX_CLIENT_CONN=1000
+      - DEFAULT_POOL_SIZE=20
+      - POOL_MODE=transaction
+      - LISTEN_PORT=6432
+      - AUTH_TYPE=scram-sha-256
+    ports:
+      - "6432:6432"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  chat-gateway:
+    build: ./chat-gateway
+    container_name: alaska_chat_gateway
+    restart: always
+    ports:
+      - "4001:4001"
+    environment:
+      - PORT=4001
+      - WORKER_URL=http://chat-worker:4002
+      - REDIS_URL=redis://redis:6379
+      - INTERNAL_API_KEY=dev_secret_key_123
+      - JWT_SECRET=supersecret_jwt_key_for_local_dev
+    depends_on:
+      - redis
+      - chat-worker
+    command: npm run dev
+    volumes:
+      - ./chat-gateway:/app
+      - /app/node_modules
+
+  chat-worker:
+    build: ./chat-worker
+    container_name: alaska_chat_worker
+    restart: always
+    ports:
+      - "4002:4002"
+    environment:
+      - PORT=4002
+      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=postgresql://postgres:password@pgbouncer:6432/alaska?pgbouncer=true
+      - INTERNAL_API_KEY=dev_secret_key_123
+      - JWT_SECRET=supersecret_jwt_key_for_local_dev
+    depends_on:
+      redis:
+        condition: service_started
+      pgbouncer:
+        condition: service_started
+      db:
+        condition: service_healthy
+    command: npm run dev
+    volumes:
+      - ./chat-worker:/app
+      - /app/node_modules
+
+  frontend:
+    build:
+      context: ./frontend
+      target: dev
+    container_name: alaska_frontend
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - VITE_API_URL=http://localhost:3000/api
+      - VITE_CHAT_WORKER_URL=http://localhost:4002/api
+      - VITE_CHAT_GATEWAY_URL=http://localhost:4001
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - api
+      - chat-gateway
+      - chat-worker
+
+volumes:
+  pgdata:

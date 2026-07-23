@@ -17,7 +17,7 @@ export function usePathBuilding(): PathBuildingResult {
 
       // If empty, start a new path
       if (prev.length === 0) {
-        console.log("Starting new path with:", name);
+
         return [name];
       }
 

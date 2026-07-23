@@ -1,513 +1,567 @@
-import { useEffect, useState } from "react";
-import type { ReactNode } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../../store/useAuthStore";
 import {
-  ArrowRight,
-  Shield,
-  Users,
-  MapPin,
-  Globe,
-  Lock,
-  Activity,
-  MessageSquare,
+  ArrowRight, Shield, Users, MapPin, Globe, Lock, Activity,
+  Menu, X, Zap, Star
 } from "lucide-react";
-
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import {
+  ProblemCard,
+  FeatureCard,
+  StatItem,
+  StepCard,
+  TestimonialCard
+} from "./components";
 export default function LandingPage() {
-  const [scrollY, setScrollY] = useState(0);
+  const [scrollYState, setScrollYState] = useState(0);
   const [hasMounted, setHasMounted] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { isAuthenticated, checkAuth, logout } = useAuthStore();
+  
+  const { scrollY } = useScroll();
+  const heroY = useTransform(scrollY, [0, 1000], [0, 250]);
+  const opacityHero = useTransform(scrollY, [0, 500], [1, 0]);
+
+
 
   useEffect(() => {
     setHasMounted(true);
-    checkAuth(); // Update store with current token if any
-
-    const handleScroll = () => setScrollY(window.scrollY);
+    checkAuth();
+    const handleScroll = () => setScrollYState(window.scrollY);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [checkAuth]);
+
+
 
   const handleLogout = () => {
     logout();
     window.location.reload();
   };
 
+  const easeOutExpo: [number, number, number, number] = [0.16, 1, 0.3, 1];
+
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 40 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: easeOutExpo } }
+  };
+
+  const staggerContainer = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15
+      }
+    }
+  };
+
   return (
-    <div
-      className={`min-h-screen bg-black text-zinc-300 font-sans selection:bg-orange-600 selection:text-white overflow-hidden relative ${hasMounted ? "opacity-100" : "opacity-0"} transition-opacity duration-1000`}
-    >
-      {/* Background Gradient Blurs - Orange & Black Theme */}
-      <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-orange-600/10 rounded-full blur-[120px] animate-pulse-slow"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-zinc-800/20 rounded-full blur-[120px] animate-pulse-slow delay-700"></div>
-        <div className="absolute top-[40%] left-[30%] w-[30%] h-[30%] bg-orange-900/5 rounded-full blur-[100px] animate-pulse-slow delay-500"></div>
+    <div className={`min-h-screen bg-background text-foreground font-sans transition-all duration-700 overflow-hidden relative ${hasMounted ? "opacity-100" : "opacity-0"}`}>
+      {/* Dynamic Background */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-block-lilac/10 dark:bg-block-lilac/5 blur-[120px] animate-pulse" style={{ animationDuration: '8s' }} />
+        <div className="absolute top-[40%] right-[-10%] w-[40vw] h-[40vw] rounded-full bg-block-lime/10 dark:bg-block-lime/5 blur-[100px] animate-pulse" style={{ animationDuration: '10s', animationDelay: '2s' }} />
+        <div className="absolute bottom-[-10%] left-[20%] w-[30vw] h-[30vw] rounded-full bg-blue-500/5 dark:bg-blue-500/5 blur-[80px] animate-pulse" style={{ animationDuration: '12s', animationDelay: '4s' }} />
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9InJnYmEoMTI4LDEyOCwxMjgsMC4xKSIvPjwvc3ZnPg==')] opacity-50 dark:opacity-20" />
       </div>
 
       {/* Navigation */}
-      <nav
-        className={`fixed top-0 w-full z-50 transition-all duration-500 ${
-          scrollY > 20
-            ? "bg-black/80 backdrop-blur-md border-b border-zinc-800"
-            : "bg-transparent py-4"
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-orange-600 rounded-lg flex items-center justify-center shadow-lg shadow-orange-600/20">
-              <span className="text-white font-bold text-xl">A</span>
-            </div>
-            <span className="text-xl font-bold text-white tracking-tight">
-              Alaska
-            </span>
-          </div>
+      <nav className={`fixed top-0 w-full z-50 transition-all duration-500 bg-background/70 backdrop-blur-xl border-b ${scrollYState > 20 || isMobileMenuOpen ? "border-border/50 py-3 shadow-sm" : "border-border/10 py-5"}`}>
+        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-3 group">
+            <motion.div
+              whileHover={{ rotate: 15 }}
+              transition={{ type: "spring", stiffness: 200, damping: 10 }}
+              className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 overflow-hidden"
+            >
+              <img src="/alaska-logo.jpg" alt="Alaska Logo" className="w-full h-full object-contain" />
+            </motion.div>
+            <span className="text-2xl font-bold tracking-tighter group-hover:tracking-tight transition-all duration-300">Alaska</span>
+          </Link>
 
-          <div className="flex items-center gap-8 hidden md:flex">
+          <div className="hidden md:flex items-center gap-18 font-button text-sm font-medium">
             {isAuthenticated ? (
               <>
-                <Link
-                  to="/map"
-                  className="text-sm font-medium text-zinc-400 hover:text-orange-500 transition-colors"
-                >
+                <Link to="/map" className="hover:text-primary transition-colors relative group">
                   Map
+                  <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full" />
                 </Link>
-                <Link
-                  to="/chat"
-                  className="text-sm font-medium text-zinc-400 hover:text-orange-500 transition-colors"
-                >
+                <Link to="/chat" className="hover:text-primary transition-colors relative group">
                   Chat
+                  <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full" />
                 </Link>
-                <Link
-                  to="/profile"
-                  className="text-sm font-medium text-zinc-400 hover:text-orange-500 transition-colors"
-                >
+                <Link to="/profile" className="hover:text-primary transition-colors relative group">
                   Profile
+                  <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full" />
                 </Link>
               </>
             ) : (
               <>
-                <a
-                  href="#how-it-works"
-                  className="text-sm font-medium text-zinc-400 hover:text-orange-500 transition-colors"
-                >
+                <a href="#how-it-works" className="hover:text-primary transition-colors relative group">
                   How it Works
+                  <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full" />
                 </a>
-                <a
-                  href="#features"
-                  className="text-sm font-medium text-zinc-400 hover:text-orange-500 transition-colors"
-                >
+                <a href="#features" className="hover:text-primary transition-colors relative group">
                   Features
+                  <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full" />
                 </a>
-                <a
-                  href="#testimonials"
-                  className="text-sm font-medium text-zinc-400 hover:text-orange-500 transition-colors"
-                >
+                <a href="#testimonials" className="hover:text-primary transition-colors relative group">
                   Testimonials
+                  <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full" />
                 </a>
               </>
             )}
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-4 font-button text-sm">
             {isAuthenticated ? (
               <>
-                <button
-                  onClick={handleLogout}
-                  className="text-sm font-medium hover:text-orange-500 transition-colors hidden sm:block"
-                >
-                  Log Out
-                </button>
-                <Link
-                  to="/profile"
-                  className="px-5 py-2.5 bg-orange-600 text-white text-sm font-semibold rounded-lg hover:bg-orange-700 transition-all duration-300 shadow-[0_0_20px_rgba(234,88,12,0.3)] hover:shadow-[0_0_30px_rgba(234,88,12,0.5)] transform hover:-translate-y-0.5"
-                >
-                  My Profile
+                <button onClick={handleLogout} className="text-foreground/70 hover:text-red-500 transition-colors font-medium">Log Out</button>
+                <Link to="/profile">
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="px-6 py-2.5 bg-primary text-primary-foreground rounded-full hover:shadow-lg hover:shadow-primary/20 transition-all font-semibold">
+                    My Profile
+                  </motion.div>
                 </Link>
               </>
             ) : (
               <>
-                <Link
-                  to="/auth"
-                  className="text-sm font-medium hover:text-orange-500 transition-colors hidden sm:block"
-                >
-                  Log In
-                </Link>
-                <Link
-                  to="/auth"
-                  className="px-5 py-2.5 bg-orange-600 text-white text-sm font-semibold rounded-lg hover:bg-orange-700 transition-all duration-300 shadow-[0_0_20px_rgba(234,88,12,0.3)] hover:shadow-[0_0_30px_rgba(234,88,12,0.5)] transform hover:-translate-y-0.5"
-                >
-                  Get Started
+                <Link to="/auth" className="text-foreground/70 hover:text-primary transition-colors font-medium">Log In</Link>
+                <Link to="/auth">
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="px-6 py-2.5 bg-primary text-primary-foreground rounded-full hover:shadow-lg hover:shadow-primary/20 transition-all font-semibold flex items-center gap-2">
+                    Get Started <ArrowRight size={16} />
+                  </motion.div>
                 </Link>
               </>
             )}
+          </div>
+
+          <div className="md:hidden flex items-center gap-3">
+            <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 text-foreground">
+              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
           </div>
         </div>
+
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div 
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="md:hidden bg-background/95 backdrop-blur-xl border-b border-border/50 overflow-hidden absolute w-full top-full left-0 shadow-2xl"
+            >
+              <div className="flex flex-col px-6 py-8 gap-6 font-button text-lg">
+                {isAuthenticated ? (
+                  <>
+                    <Link onClick={() => setIsMobileMenuOpen(false)} to="/map" className="hover:text-primary">Map</Link>
+                    <Link onClick={() => setIsMobileMenuOpen(false)} to="/chat" className="hover:text-primary">Chat</Link>
+                    <Link onClick={() => setIsMobileMenuOpen(false)} to="/profile" className="hover:text-primary">Profile</Link>
+                    <button onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }} className="text-left text-red-500">Log Out</button>
+                  </>
+                ) : (
+                  <>
+                    <a onClick={() => setIsMobileMenuOpen(false)} href="#how-it-works" className="hover:text-primary">How it Works</a>
+                    <a onClick={() => setIsMobileMenuOpen(false)} href="#features" className="hover:text-primary">Features</a>
+                    <a onClick={() => setIsMobileMenuOpen(false)} href="#testimonials" className="hover:text-primary">Testimonials</a>
+                    <a onClick={() => setIsMobileMenuOpen(false)} href="#safety" className="hover:text-primary">Safety</a>
+                    <div className="h-px w-full bg-border/50 my-2" />
+                    <Link onClick={() => setIsMobileMenuOpen(false)} to="/auth" className="text-center px-6 py-4 border border-border/50 rounded-2xl hover:bg-card transition-colors">Log In</Link>
+                    <Link onClick={() => setIsMobileMenuOpen(false)} to="/auth" className="text-center px-6 py-4 bg-primary text-primary-foreground rounded-2xl shadow-lg transition-transform active:scale-95">Get Started</Link>
+                  </>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-48 pb-24 px-6 z-10 max-w-7xl mx-auto">
-        <div className="flex flex-col items-center text-center max-w-5xl mx-auto space-y-8 animate-fade-in-up">
-          <h1 className="text-6xl md:text-8xl font-bold tracking-tighter text-white leading-[1.1] animate-fade-in-up delay-100">
-            Commute <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-orange-600 to-orange-800">
-              Smarter.
-            </span>
-          </h1>
+      <section className="relative pt-[120px] pb-[80px] px-6 z-10 max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16 min-h-screen">
+        <motion.div 
+          style={{ y: heroY, opacity: opacityHero }}
+          initial="hidden"
+          animate="visible"
+          variants={staggerContainer}
+          className="flex-1 flex flex-col space-y-8"
+        >
+      
+          
+          <motion.h1 variants={fadeInUp} className="font-display-xl leading-[1.1] text-5xl md:text-6xl lg:text-[84px] tracking-tighter">
+            Turn your <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">commute</span> into connections.
+          </motion.h1>
 
-          <p className="text-xl md:text-2xl text-zinc-400 max-w-2xl mx-auto leading-relaxed animate-fade-in-up delay-200">
-            Stop travelling alone. Alaska connects you with professionals and
-            students on your route. Safe, verified, and efficient.
-          </p>
+          <motion.p variants={fadeInUp} className="font-subhead text-foreground/70 max-w-xl text-lg md:text-2xl font-light leading-relaxed">
+            Alaska instantly matches you with verified professionals and students on your exact route. Stop travelling alone.
+          </motion.p>
 
-          <div className="flex flex-col sm:flex-row items-center gap-4 pt-8 animate-fade-in-up delay-300">
-            <Link
-              to={isAuthenticated ? "/map" : "/auth"}
-              className="px-8 py-4 bg-orange-600 text-white font-bold rounded-xl text-lg hover:bg-orange-700 transition-all duration-300 shadow-[0_4px_20px_rgba(234,88,12,0.4)] flex items-center gap-2 group hover:scale-105"
-            >
-              Start Matching
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row items-start gap-5 pt-6 w-full">
+            <Link to={isAuthenticated ? "/map" : "/auth"} className="w-full sm:w-auto">
+              <motion.div 
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                className="px-8 py-4 bg-indigo-600 text-white rounded-full hover:shadow-[0_8px_30px_rgba(99,102,241,0.4)] hover:-translate-y-1 transition-all flex items-center justify-center gap-3 text-lg font-semibold w-full"
+              >
+                Find Your Match
+                <motion.div
+                  animate={{ x: [0, 5, 0] }}
+                  transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                >
+                  <ArrowRight size={20} />
+                </motion.div>
+              </motion.div>
             </Link>
-            <a
-              href="#how-it-works"
-              className="px-8 py-4 bg-zinc-900 text-zinc-300 font-semibold rounded-xl text-lg border border-zinc-800 hover:bg-zinc-800 hover:text-white hover:border-zinc-700 transition-all duration-300"
-            >
-              Learn More
+            <a href="#how-it-works" className="w-full sm:w-auto">
+              <motion.div
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                className="px-8 py-4 bg-white/50 backdrop-blur-xl text-slate-700 border border-slate-200/50 hover:bg-white/80 hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] rounded-full hover:bg-card transition-all w-full text-center flex items-center justify-center gap-2 text-lg font-medium shadow-sm"
+              >
+                See How It Works
+              </motion.div>
             </a>
-          </div>
+          </motion.div>
+          
+          <motion.div variants={fadeInUp} className="pt-10 flex flex-wrap items-center gap-5 text-foreground/70 font-body-sm">
+            <div className="flex -space-x-4">
+              {[1, 2, 3, 4].map((i) => (
+                <motion.div 
+                  key={i}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.5 + (i * 0.1) }}
+                  className={`w-12 h-12 rounded-full border-2 border-background flex items-center justify-center text-xs font-bold shadow-md relative`}
+                  style={{ zIndex: 10 - i, backgroundColor: `hsl(${i * 60 + 180}, 70%, 80%)`, color: `hsl(${i * 60 + 180}, 80%, 20%)` }}
+                >
+                  {['SJ', 'MR', 'DL', 'AK'][i-1]}
+                </motion.div>
+              ))}
+              <div className="w-12 h-12 rounded-full border-2 border-background bg-card flex items-center justify-center text-xs font-bold shadow-md z-0">
+                +2k
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <div className="flex gap-1 text-yellow-500 mb-1">
+                {[1, 2, 3, 4, 5].map((_, i) => <Star key={i} size={14} fill="currentColor" />)}
+              </div>
+              <p className="font-medium text-sm">Trusted by 15,000+ daily</p>
+            </div>
+          </motion.div>
+        </motion.div>
+        
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.8, rotateY: -15 }}
+          animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+          transition={{ duration: 1, ease: easeOutExpo, delay: 0.2 }}
+          className="flex-1 w-full relative perspective-[1000px]"
+        >
+          
 
-          {/* Stats Preview */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-20 w-full max-w-4xl border-t border-zinc-900 mt-12 animate-fade-in delay-500">
-            <StatItem value="15k+" label="Daily Commuters" delay="delay-100" />
-            <StatItem value="98%" label="Satisfaction" delay="delay-200" />
-            <StatItem value="120+" label="Metro Stations" delay="delay-300" />
-            <StatItem value="24/7" label="Safe Support" delay="delay-500" />
+
+          <div className="relative rounded-[2rem] overflow-hidden shadow-2xl border border-border/30 group">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.8, ease: easeOutExpo }}
+            >
+              <img 
+                src="/images/hero_commute.jpg" 
+                alt="Two professionals chatting and smiling on a metro train" 
+                className="w-full h-auto object-cover aspect-[4/3] md:aspect-square lg:aspect-[4/3]"
+                fetchPriority="high"
+                loading="eager"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            </motion.div>
           </div>
+        </motion.div>
+      </section>
+
+      {/* Stats Section with Scroll Animation */}
+      <section className="px-6 mb-[140px] relative z-10">
+        <motion.div 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={fadeInUp}
+          className="max-w-7xl mx-auto bg-gradient-to-br from-block-lilac to-[#d5c4f7] border border-white/20 text-black rounded-[40px] p-[40px] md:p-[64px] shadow-2xl relative overflow-hidden"
+        >
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9InJnYmEoMCwwLDAsMC4wNSkiLz48L3N2Zz4=')] opacity-50" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-12 md:gap-8 divide-x-0 md:divide-x divide-black/10 relative z-10">
+            <StatItem value="15k+" label="Daily Commuters" delay={0.1} />
+            <StatItem value="98%" label="Satisfaction" delay={0.2} />
+            <StatItem value="120+" label="Metro Stations" delay={0.3} />
+            <StatItem value="24/7" label="Safe Support" delay={0.4} />
+          </div>
+        </motion.div>
+      </section>
+      
+      {/* Problem / Solution Section */}
+      <section className="py-[120px] px-6 max-w-7xl mx-auto relative z-10">
+        <div className="text-center mb-20">
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="font-display-lg mb-6 leading-tight"
+          >
+            Commuting shouldn't be lonely.
+          </motion.h2>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="font-body-lg text-foreground/60 max-w-3xl mx-auto text-xl leading-relaxed"
+          >
+            The average urban professional spends over 200 hours a year commuting. That's time often wasted in isolation.
+          </motion.p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={staggerContainer}
+            className="space-y-8"
+          >
+            <ProblemCard title="Missed Opportunities" desc="Networking and connection opportunities pass by every single day on your route." />
+            <ProblemCard title="Safety Concerns" desc="Feeling unsafe traveling alone during late hours or through unfamiliar areas." />
+            <ProblemCard title="Wasted Potential" desc="Boredom and unproductive scrolling instead of meaningful conversations." />
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, x: 50, rotate: 2 }}
+            whileInView={{ opacity: 1, x: 0, rotate: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: easeOutExpo }}
+            className="relative"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-block-lime to-block-lilac blur-3xl opacity-20 dark:opacity-10 rounded-full" />
+            <div className="glass-panel p-8 md:p-12 rounded-[40px] shadow-[0_20px_60px_rgba(0,0,0,0.08)] relative z-10">
+              <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-8">
+                <Zap className="text-primary w-8 h-8" />
+              </div>
+              <h3 className="font-display-lg text-4xl mb-6">The Alaska Solution</h3>
+              <p className="font-body text-foreground/70 mb-12 text-lg leading-relaxed">We turn your predictable route into a matching algorithm. Sit next to potential friends, co-founders, or mentors.</p>
+              
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-6 md:p-8 bg-slate-50/80 rounded-3xl border border-slate-200/50 shadow-inner relative overflow-hidden">
+                <motion.div animate={{ scale: [1, 1.05, 1] }} transition={{ repeat: Infinity, duration: 2 }} className="w-20 h-20 bg-primary text-primary-foreground rounded-2xl flex flex-col items-center justify-center font-bold shadow-lg z-10">
+                  <span className="text-xl">You</span>
+                </motion.div>
+                
+                <div className="flex-1 w-full h-2 relative flex items-center justify-center z-0 my-4 sm:my-0">
+                  <div className="absolute inset-0 bg-border overflow-hidden rounded-full">
+                    <motion.div 
+                      className="h-full bg-primary" 
+                      initial={{ width: "0%" }}
+                      whileInView={{ width: "100%" }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 1.5, ease: "easeInOut" }}
+                    />
+                  </div>
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 1 }}
+                    className="absolute bg-background border border-primary text-primary px-4 py-1.5 rounded-full text-xs font-bold tracking-widest z-10 shadow-lg"
+                  >
+                    MATCH
+                  </motion.div>
+                </div>
+
+                <motion.div animate={{ scale: [1, 1.05, 1] }} transition={{ repeat: Infinity, duration: 2, delay: 1 }} className="w-20 h-20 bg-block-lime text-black rounded-2xl flex flex-col items-center justify-center font-bold shadow-lg z-10">
+                  <span className="text-xl">Them</span>
+                </motion.div>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
 
       {/* How It Works Section */}
-      <section
-        id="how-it-works"
-        className="py-24 px-6 bg-zinc-900/20 relative z-10 w-full"
-      >
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16 animate-fade-in-up">
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
-              How It Works
-            </h2>
-            <p className="text-zinc-400 text-lg max-w-xl mx-auto">
+      <section id="how-it-works" className="py-[120px] px-6 relative z-10 w-full max-w-7xl mx-auto border-t border-border/50">
+        <div className="text-center mb-10">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="font-display-lg text-foreground mb-6">How It Works</h2>
+            <p className="font-subhead text-foreground/60 max-w-2xl mx-auto">
               Three simple steps to revolutionize your daily travel experience.
             </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            <StepCard
-              number="01"
-              title="Set Your Route"
-              description="Enter your start and end points via our interactive map or station list."
-            />
-            <StepCard
-              number="02"
-              title="Get Matched"
-              description="Our AI finds the most compatible travel partners based on timing and profile."
-            />
-            <StepCard
-              number="03"
-              title="Travel Together"
-              description="Coordinate via secure chat and meet at the station for a better journey."
-            />
-          </div>
+          </motion.div>
         </div>
+
+        <motion.div 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={staggerContainer}
+          className="grid grid-cols-1 md:grid-cols-3 gap-8"
+        >
+          <StepCard
+            number="01"
+            title="Set Your Route"
+            description="Enter your start and end points via our interactive map or station list."
+            color="bg-primary/10 text-primary border-primary/20"
+          />
+          <StepCard
+            number="02"
+            title="Get Matched"
+            description="Our AI finds the most compatible travel partners based on timing and profile."
+            color="bg-primary/10 text-primary border-primary/20"
+          />
+          <StepCard
+            number="03"
+            title="Travel Together"
+            description="Coordinate via secure chat and meet at the station for a better journey."
+            color="bg-primary/10 text-primary border-primary/20"
+          />
+        </motion.div>
       </section>
 
-      {/* Features Grid */}
-      <section
-        id="features"
-        className="py-32 px-6 relative z-10 max-w-7xl mx-auto"
-      >
-        <div className="text-center mb-20 animate-fade-in-up">
-          <h2 className="text-3xl md:text-5xl font-bold text-center text-white mb-6">
-            Why Choose Alaska?
-          </h2>
-          <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
-            Built for safety, designed for connection.
-          </p>
-        </div>
+      {/* Features Block */}
+      <section id="features" className="px-6 mb-[140px] relative z-10">
+        <motion.div 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={fadeInUp}
+          className="max-w-7xl mx-auto bg-white/60 backdrop-blur-3xl border border-white/50 rounded-[40px] p-[40px] md:p-[80px] shadow-[0_8px_40px_rgba(0,0,0,0.04)] relative overflow-hidden"
+        >
+          {/* Decorative background element */}
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-block-lime/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3 pointer-events-none" />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <FeatureCard
-            icon={<Activity className="w-6 h-6 text-orange-500" />}
-            title="Instant Matching"
-            description="Our advanced algorithms find you the perfect travel companion in seconds based on route and interests."
-          />
-          <FeatureCard
-            icon={<Shield className="w-6 h-6 text-orange-500" />}
-            title="Verified Profiles"
-            description="Safety first. Every profile is verified to ensure a secure and trusted community environment."
-          />
-          <FeatureCard
-            icon={<MapPin className="w-6 h-6 text-orange-500" />}
-            title="Live Tracking"
-            description="Real-time location sharing ensures you never miss meeting your companion."
-          />
-          <FeatureCard
-            icon={<Users className="w-6 h-6 text-orange-500" />}
-            title="Community"
-            description="Join a growing network of commuters turning boring travel time into meaningful connections."
-          />
-          <FeatureCard
-            icon={<Lock className="w-6 h-6 text-orange-500" />}
-            title="Private & Secure"
-            description="Your data is encrypted end-to-end. We prioritize your privacy above all else."
-          />
-          <FeatureCard
-            icon={<Globe className="w-6 h-6 text-orange-500" />}
-            title="City Wide"
-            description="Wherever the metro goes, Alaska goes. Covering all major lines and stations."
-          />
-        </div>
+          <div className="mb-20 max-w-2xl relative z-10">
+            <h2 className="font-display-lg text-foreground mb-6">Why Choose Alaska?</h2>
+            <p className="font-subhead text-foreground/60 text-xl leading-relaxed">Built for safety, designed for connection.</p>
+          </div>
+
+          <motion.div variants={staggerContainer} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative z-10">
+            <FeatureCard icon={<Activity />} title="Instant Matching" description="Our algorithms find you the perfect travel companion in seconds." />
+            <FeatureCard icon={<Shield />} title="Verified Profiles" description="Every profile is authenticated using a verified university or corporate email." />
+            <FeatureCard icon={<MapPin />} title="Live Tracking" description="Real-time location sharing ensures you never miss a meeting." />
+            <FeatureCard icon={<Users />} title="Community" description="Join a network of commuters turning travel into meaningful connections." />
+            <FeatureCard icon={<Lock />} title="Private & Secure" description="Your data is encrypted end-to-end. We prioritize your privacy." />
+            <FeatureCard icon={<Globe />} title="City Wide" description="Wherever the metro goes, Alaska goes. Covering all major lines." />
+          </motion.div>
+          <div className="mt-16 text-center text-foreground/60 text-lg">
+            <p>Don't just commute. Connect, network, and grow with thousands of professionals every day.</p>
+          </div>
+        </motion.div>
       </section>
 
       {/* Testimonials Section */}
-      <section
-        id="testimonials"
-        className="py-24 px-6 bg-zinc-900/30 relative z-10"
-      >
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16 animate-fade-in-up">
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
-              What Users Say
-            </h2>
-            <p className="text-zinc-400 text-lg max-w-xl mx-auto">
-              Don't just take our word for it.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <TestimonialCard
-              quote="I used to hate my hour-long commute. Now I actually look forward to it. Met amazing people!"
-              author="Sarah J."
-              role="Software Engineer"
-            />
-            <TestimonialCard
-              quote="Safety was my biggest concern. The verification process on Alaska gave me total peace of mind."
-              author="Michael R."
-              role="Student"
-            />
-            <TestimonialCard
-              quote="Found a co-founder for my startup on a train ride. This app is a networking goldmine."
-              author="David L."
-              role="Entrepreneur"
-            />
-          </div>
+      <section id="testimonials" className="py-[120px] px-6 max-w-7xl mx-auto border-t border-border/50 relative z-10">
+        <div className="text-center mb-20">
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="font-display-lg text-foreground mb-4"
+          >
+            What Users Say
+          </motion.h2>
         </div>
+
+        <motion.div 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={staggerContainer}
+          className="grid grid-cols-1 md:grid-cols-3 gap-8"
+        >
+          <TestimonialCard quote="I used to hate my hour-long commute. Now I actually look forward to it. Met amazing people!" author="Sarah J." role="Software Engineer" color="bg-blue-500/20" />
+          <TestimonialCard quote="Safety was my biggest concern. The verification process on Alaska gave me total peace of mind." author="Michael R." role="Student" color="bg-green-500/20" />
+          <TestimonialCard quote="Found a co-founder for my startup on a train ride. This app is a networking goldmine." author="David L." role="Entrepreneur" color="bg-purple-500/20" />
+        </motion.div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-32 px-6 relative z-10">
-        <div className="max-w-5xl mx-auto bg-gradient-to-br from-zinc-900 to-black border border-zinc-800 hover:border-orange-900/50 rounded-3xl p-12 md:p-20 text-center relative overflow-hidden group transition-all duration-500 shadow-2xl shadow-black/50">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-orange-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
 
-          <div className="relative z-10">
-            <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">
-              Ready to ride?
-            </h2>
-            <p className="text-xl text-zinc-400 mb-10 max-w-2xl mx-auto">
-              Join thousands of others who matched today. Safe, fast, and
-              completely free.
+      {/* CTA Section */}
+      <section className="px-6 mb-[120px] relative z-10">
+        <motion.div 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={fadeInUp}
+          className="max-w-7xl mx-auto bg-slate-900 text-white rounded-[40px] p-[60px] md:p-[100px] text-center flex flex-col items-center relative overflow-hidden shadow-[0_30px_80px_rgba(15,23,42,0.3)] border border-slate-800"
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-foreground via-foreground to-primary/20 dark:from-card dark:via-card dark:to-primary/10" />
+          <div className="absolute top-0 right-0 w-80 h-80 bg-primary rounded-full blur-[120px] opacity-20 dark:opacity-30" />
+          <div className="absolute bottom-0 left-0 w-80 h-80 bg-block-lime rounded-full blur-[120px] opacity-10 dark:opacity-20" />
+          
+          <div className="relative z-10 flex flex-col items-center w-full">
+            <h2 className="font-display-xl mb-8 text-5xl md:text-7xl">Ready to ride?</h2>
+            <p className="font-subhead text-background/80 dark:text-foreground/80 max-w-2xl mb-12 text-xl md:text-2xl leading-relaxed">
+              Join thousands of others who matched today. Safe, fast, and completely free.
             </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link
-                to="/auth"
-                className="inline-block px-10 py-4 bg-white text-black font-bold rounded-xl text-lg hover:bg-orange-50 transition-colors duration-300"
+            <Link to={isAuthenticated ? "/map" : "/auth"}>
+              <motion.div 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-12 py-5 bg-background dark:bg-primary text-foreground dark:text-primary-foreground font-button text-xl font-bold rounded-full hover:shadow-2xl hover:shadow-background/30 dark:hover:shadow-primary/30 transition-all flex items-center gap-3"
               >
-                Get Started
-              </Link>
-            </div>
+                {isAuthenticated ? "Let's Ride" : "Create Free Account"}
+                <ArrowRight size={24} />
+              </motion.div>
+            </Link>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-zinc-900 bg-black py-16 px-6 relative z-10">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-          <div className="col-span-1 md:col-span-1">
-            <div className="flex items-center gap-2 mb-6">
-              <div className="w-6 h-6 bg-orange-600 rounded flex items-center justify-center">
-                <span className="text-white font-bold text-xs">A</span>
+      <footer className="border-t border-border/50 bg-background py-20 px-6 relative z-10">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
+          <div className="md:col-span-5">
+            <div className="flex items-center gap-3 mb-8 group">
+              <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center group-hover:rotate-180 transition-transform duration-500">
+                <span className="text-primary-foreground font-bold text-lg font-mono">A</span>
               </div>
-              <span className="text-lg font-bold text-white">Alaska</span>
+              <span className="text-2xl font-bold font-sans tracking-tight">Alaska</span>
             </div>
-            <p className="text-zinc-500 text-sm leading-relaxed">
-              Making urban travel social, safe, and productive. One match at a
-              time.
+            <p className="text-foreground/60 text-lg max-w-sm leading-relaxed">
+              Making urban travel social, safe, and productive. One match at a time.
             </p>
           </div>
 
-          <div>
-            <h4 className="text-white font-bold mb-4">Product</h4>
-            <ul className="space-y-2 text-sm text-zinc-500">
-              <li>
-                <a href="#" className="hover:text-orange-500 transition-colors">
-                  Features
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-orange-500 transition-colors">
-                  Safety
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-orange-500 transition-colors">
-                  Mobile App
-                </a>
-              </li>
+          <div className="md:col-span-2 md:col-start-7">
+            <h4 className="font-bold mb-6 font-eyebrow text-foreground">Product</h4>
+            <ul className="space-y-4 text-foreground/60 font-medium">
+              <li><a href="#" className="hover:text-primary transition-colors">Features</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">Safety</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">Mobile App</a></li>
             </ul>
           </div>
 
-          <div>
-            <h4 className="text-white font-bold mb-4">Company</h4>
-            <ul className="space-y-2 text-sm text-zinc-500">
-              <li>
-                <a href="#" className="hover:text-orange-500 transition-colors">
-                  About Us
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-orange-500 transition-colors">
-                  Careers
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-orange-500 transition-colors">
-                  Contact
-                </a>
-              </li>
+          <div className="md:col-span-2">
+            <h4 className="font-bold mb-6 font-eyebrow text-foreground">Company</h4>
+            <ul className="space-y-4 text-foreground/60 font-medium">
+              <li><a href="#" className="hover:text-primary transition-colors">About Us</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">Careers</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">Contact</a></li>
             </ul>
           </div>
 
-          <div>
-            <h4 className="text-white font-bold mb-4">Legal</h4>
-            <ul className="space-y-2 text-sm text-zinc-500">
-              <li>
-                <a href="#" className="hover:text-orange-500 transition-colors">
-                  Privacy Policy
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-orange-500 transition-colors">
-                  Terms of Service
-                </a>
-              </li>
+          <div className="md:col-span-2">
+            <h4 className="font-bold mb-6 font-eyebrow text-foreground">Legal</h4>
+            <ul className="space-y-4 text-foreground/60 font-medium">
+              <li><a href="#" className="hover:text-primary transition-colors">Privacy Policy</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">Terms of Service</a></li>
             </ul>
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto pt-8 border-t border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-zinc-600 text-xs">
-            © {new Date().getFullYear()} Alaska Inc. All rights reserved.
-          </p>
-          <div className="flex gap-4">{/* Social icons can go here */}</div>
+        <div className="max-w-7xl mx-auto pt-8 border-t border-border/50 flex flex-col md:flex-row justify-between items-center gap-4 font-mono text-xs text-foreground/40 uppercase tracking-widest">
+          <p>© {new Date().getFullYear()} Alaska Inc. All rights reserved.</p>
+          <div className="flex gap-4">
+            <span>Designed in the real world</span>
+          </div>
         </div>
       </footer>
-    </div>
-  );
-}
-
-// Components
-
-interface FeatureCardProps {
-  icon: ReactNode;
-  title: string;
-  description: string;
-}
-
-function FeatureCard({ icon, title, description }: FeatureCardProps) {
-  return (
-    <div className="group p-8 rounded-2xl bg-zinc-900/30 border border-zinc-800/50 hover:bg-zinc-900/60 hover:border-orange-500/30 transition-all duration-300 hover:-translate-y-1">
-      <div className="w-12 h-12 bg-zinc-800/50 rounded-xl flex items-center justify-center mb-6 group-hover:bg-orange-500/20 group-hover:text-orange-500 transition-all">
-        {icon}
-      </div>
-      <h3 className="text-xl font-bold text-white mb-3 group-hover:text-orange-500 transition-colors">
-        {title}
-      </h3>
-      <p className="text-zinc-400 leading-relaxed group-hover:text-zinc-300 transition-colors">
-        {description}
-      </p>
-    </div>
-  );
-}
-
-function StatItem({
-  value,
-  label,
-  delay,
-}: {
-  value: string;
-  label: string;
-  delay?: string;
-}) {
-  return (
-    <div className={`text-center ${delay} animate-fade-in`}>
-      <h3 className="text-3xl md:text-4xl font-bold text-white mb-1 hover:text-orange-500 transition-colors cursor-default">
-        {value}
-      </h3>
-      <p className="text-zinc-600 text-sm font-medium uppercase tracking-wide">
-        {label}
-      </p>
-    </div>
-  );
-}
-
-function StepCard({
-  number,
-  title,
-  description,
-}: {
-  number: string;
-  title: string;
-  description: string;
-}) {
-  return (
-    <div className="relative p-6 group">
-      <div className="text-6xl font-bold text-zinc-900 absolute -top-4 -left-4 z-0 group-hover:text-orange-900/20 transition-colors select-none">
-        {number}
-      </div>
-      <div className="relative z-10">
-        <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-orange-500 transition-colors">
-          {title}
-        </h3>
-        <p className="text-zinc-400 leading-relaxed">{description}</p>
-      </div>
-    </div>
-  );
-}
-
-function TestimonialCard({
-  quote,
-  author,
-  role,
-}: {
-  quote: string;
-  author: string;
-  role: string;
-}) {
-  return (
-    <div className="p-8 rounded-2xl bg-zinc-900/30 border border-zinc-800/30 relative">
-      <div className="absolute top-6 left-6 text-orange-600 opacity-20">
-        <MessageSquare size={40} />
-      </div>
-      <p className="text-zinc-300 mb-6 italic relative z-10 leading-relaxed">
-        "{quote}"
-      </p>
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center text-white font-bold text-sm">
-          {author.charAt(0)}
-        </div>
-        <div>
-          <h4 className="text-white font-bold text-sm">{author}</h4>
-          <p className="text-zinc-500 text-xs">{role}</p>
-        </div>
-      </div>
     </div>
   );
 }

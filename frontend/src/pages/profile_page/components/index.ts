@@ -21,3 +21,6 @@ export {
   EditReviewModal,
   FriendsListCard,
 };
+export * from "./ConnectionRequestsModal";
+export * from "./AvatarUpload";
+export * from "./ProfileFormFields";
