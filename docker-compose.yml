@@ -16,6 +16,21 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    command: >
+      postgres
+      -c max_connections=200
+      -c shared_buffers=512MB
+      -c effective_cache_size=1536MB
+      -c maintenance_work_mem=128MB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=16MB
+      -c default_statistics_target=100
+      -c random_page_cost=1.1
+      -c effective_io_concurrency=200
+      -c work_mem=4MB
+      -c min_wal_size=1GB
+      -c max_wal_size=4GB
+      -c synchronous_commit=off
 
 
   api:
@@ -49,8 +64,8 @@ services:
     container_name: alaska_pgbouncer
     environment:
       - DATABASE_URL=postgres://postgres:password@db:5432/alaska
-      - MAX_CLIENT_CONN=1000
-      - DEFAULT_POOL_SIZE=20
+      - MAX_CLIENT_CONN=2000
+      - DEFAULT_POOL_SIZE=500
       - POOL_MODE=transaction
       - LISTEN_PORT=6432
       - AUTH_TYPE=scram-sha-256
@@ -62,10 +77,9 @@ services:
 
   chat-gateway:
     build: ./chat-gateway
-    container_name: alaska_chat_gateway
+    deploy:
+      replicas: 5
     restart: always
-    ports:
-      - "4001:4001"
     environment:
       - PORT=4001
       - WORKER_URL=http://chat-worker:4002
@@ -75,6 +89,10 @@ services:
     depends_on:
       - redis
       - chat-worker
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
     command: npm run dev
     volumes:
       - ./chat-gateway:/app
@@ -82,14 +100,13 @@ services:
 
   chat-worker:
     build: ./chat-worker
-    container_name: alaska_chat_worker
+    deploy:
+      replicas: 5
     restart: always
-    ports:
-      - "4002:4002"
     environment:
       - PORT=4002
       - REDIS_URL=redis://redis:6379
-      - DATABASE_URL=postgresql://postgres:password@pgbouncer:6432/alaska?pgbouncer=true
+      - DATABASE_URL=postgresql://postgres:password@pgbouncer:6432/alaska?pgbouncer=true&connection_limit=50
       - INTERNAL_API_KEY=dev_secret_key_123
       - JWT_SECRET=supersecret_jwt_key_for_local_dev
     depends_on:
@@ -99,10 +116,31 @@ services:
         condition: service_started
       db:
         condition: service_healthy
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
     command: npm run dev
     volumes:
       - ./chat-worker:/app
       - /app/node_modules
+
+  lb:
+    image: nginx:alpine
+    container_name: alaska_lb
+    restart: always
+    ports:
+      - "4001:4001"
+      - "4002:4002"
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - chat-gateway
+      - chat-worker
 
   frontend:
     build:

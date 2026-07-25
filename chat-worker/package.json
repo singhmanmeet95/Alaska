@@ -4,8 +4,8 @@
   "description": "chat workers",
   "type": "module",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "node --watch src/index.js",
+    "start": "node --max-old-space-size=4096 src/index.js",
+    "dev": "node --max-old-space-size=4096 --watch src/index.js",
     "test": "vitest run"
   },
   "dependencies": {

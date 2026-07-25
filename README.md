@@ -8,7 +8,7 @@ The architecture of Alaska has been designed as a set of decoupled microservices
 
 ## Architecture Overview
 
-The system is separated into distinct, specialized services orchestrated via Docker Compose. This separation of concerns enables independent scaling and fault tolerance across the platform. The backend environment consists of seven interconnected containers communicating over an internal Docker network.
+The system is separated into distinct, specialized services orchestrated via Docker Compose. This separation of concerns enables independent scaling and fault tolerance across the platform. The backend environment consists of multiple microservices, including an Nginx load balancer that distributes traffic across horizontally scaled replicas (5 each) of the Chat Gateway and Chat Worker, all communicating over an internal Docker network.
 
 ![1784727188657](docs/README/high_level_diagram.png)
 
@@ -56,10 +56,15 @@ Real-time chat is one of the most resource-intensive features of any social netw
 
 ![1784729417647](docs/README/chat_backend_Architecture.png)
 
+### Nginx Load Balancer
+
+- **Role:** Distributes incoming traffic and WebSocket connections across the horizontally scaled chat services.
+- **Mechanism:** Nginx acts as a reverse proxy, routing traffic to the 5 `chat-gateway` replicas (using IP hashing for WebSocket session stability) and 5 `chat-worker` replicas.
+
 ### Chat Gateway
 
 - **Role:** Manages persistent WebSocket connections using `Socket.io`.
-- **Mechanism:** WebSockets hold open connections that can quickly exhaust standard server resources. By isolating connection management to a dedicated Gateway, we can scale it horizontally.
+- **Mechanism:** WebSockets hold open connections that can quickly exhaust standard server resources. By isolating connection management to a dedicated Gateway, we horizontally scale it (currently 5 replicas) behind the Nginx load balancer.
 - **Message Flow:** When a message arrives, the Gateway assigns a server-side timestamp for accurate UI ordering. It immediately offloads the message by pushing it into a Redis Stream. Once acknowledged, it publishes the message to a Redis Adapter, which delivers it to the receiving user in real time. This minimizes event loop blocking.
 
 ### Redis (Pub/Sub & Streams)
@@ -72,7 +77,7 @@ Redis serves a dual purpose critical for scaling:
 ### Chat Worker
 
 - **Role:** A constantly active background service that safely persists queued messages to the database.
-- **Mechanism:** The worker implements a pull-based mechanism using an infinite loop. It first queries the Redis Stream for any stuck/pending messages (PEL Recovery), then blocks to wait for new messages.
+- **Mechanism:** Horizontally scaled workers (5 replicas) implement a pull-based mechanism using an infinite loop. They first query the Redis Stream for any stuck/pending messages (PEL Recovery), then block to wait for new messages. Consumer groups ensure that no two replicas process the same message.
 - **Optimization:** Database writes are comparatively slow. If the database experiences latency, the Worker absorbs the shock by reading from the Redis queue at its own pace. Once a batch of messages is received, it performs a bulk insert (`prisma.chatMessage.createMany`) into PostgreSQL, significantly reducing database load, followed by a batch acknowledgment to Redis.
 
 ---
@@ -110,12 +115,16 @@ Our benchmarks indicate that the architecture can successfully manage up to 20,0
 You can replicate these tests locally by executing the following command:
 
 ```bash
-cd load-tester && ulimit -n 65535 && npm run test:20000
+npm run test 1000 1000
 ```
 
-**Output:**
+**Output:![test](docs/README/test.png)**
+we can verify the messages getting saved in the prisma studio by doing
+```bash
+npm run studio
+```
 
-![Load Test Results](docs/README/test-20k.png)
+**Output:![studio](docs/README/studio.png)**
 
 ---
 

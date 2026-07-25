@@ -11,3 +11,4 @@ chat-backend.excalidraw
 .vscode
 .agents/*
 .agents
+test.log
