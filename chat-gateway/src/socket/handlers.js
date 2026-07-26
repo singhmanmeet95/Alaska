@@ -1,5 +1,54 @@
-import { pubClient } from '../redis.js';
+import { pubClient, streamClient } from '../redis.js';
 
+
+let messageBatch = [];
+let batchTimer = null;
+const BATCH_SIZE_LIMIT = 5000;
+const BATCH_TIME_LIMIT_MS = 50;
+
+async function flushBatch(io) {
+  if (messageBatch.length === 0) return;
+  const currentBatch = messageBatch;
+  messageBatch = [];
+  if (batchTimer) {
+    clearTimeout(batchTimer);
+    batchTimer = null;
+  }
+
+  try {
+    const multi = streamClient.multi();
+    for (const item of currentBatch) {
+      multi.xAdd('chat_stream', '*', { payload: JSON.stringify(item.streamPayload) });
+    }
+    
+    // Execute all xAdd commands in a single round trip to Redis
+    await multi.exec();
+
+    // Only AFTER successful Redis write do we ACK and broadcast
+    let emitCount = 0;
+    for (const item of currentBatch) {
+      io.to(String(item.receiverId)).emit("receive_message", item.payload);
+      io.to(String(item.senderId)).emit("message_sent", item.payload);
+      item.socket.emit("message_sent_ack", { 
+        senderId: item.senderId, 
+        receiverId: item.receiverId, 
+        message: item.message,
+        clientTimestamp: item.clientTimestamp,
+        status: "queued" 
+      });
+      
+      emitCount++;
+      if (emitCount % 100 === 0) {
+        await new Promise(r => setImmediate(r));
+      }
+    }
+  } catch (err) {
+    console.error("Batch insert failed:", err);
+    for (const item of currentBatch) {
+      item.socket.emit("error", { message: "Failed to queue message" });
+    }
+  }
+}
 
 export const handleGetOnlineUsers = (pubClient) => async (callback) => {
   try {
@@ -10,14 +59,13 @@ export const handleGetOnlineUsers = (pubClient) => async (callback) => {
   }
 };
 
-export const handleSendMessage = (io, socket) => async (data) => {
+export const handleSendMessage = (io, socket) => (data) => {
   try {
     const { senderId, receiverId, message, clientTimestamp } = data;
     if (!senderId || !receiverId || !message) return;
 
     const createdAt = new Date().toISOString();
 
-    // 1. Append it to Redis Stream for fast ingestion
     const streamPayload = {
       senderId,
       receiverId,
@@ -25,10 +73,7 @@ export const handleSendMessage = (io, socket) => async (data) => {
       clientTimestamp,
       timestamp: createdAt
     };
-    await pubClient.xAdd('chat_stream', '*', { payload: JSON.stringify(streamPayload) });
-    console.log("Message ingested to Redis Stream:", message);
-
-    // 2. Emit INSTANTLY for real-time delivery via socket.io (Redis adapter handles broadcasting)
+    
     const payload = {
       id: `temp-pub-${clientTimestamp}`,
       senderId,
@@ -37,20 +82,25 @@ export const handleSendMessage = (io, socket) => async (data) => {
       clientTimestamp,
       createdAt
     };
-    io.to(String(receiverId)).emit("receive_message", payload);
-    io.to(String(senderId)).emit("message_sent", payload);
 
-    // 3. Local ACK for frontend
-    socket.emit("message_sent_ack", { 
-      senderId, 
-      receiverId, 
+    messageBatch.push({
+      socket,
+      streamPayload,
+      payload,
+      senderId,
+      receiverId,
       message,
-      clientTimestamp,
-      status: "queued" 
+      clientTimestamp
     });
+
+    if (messageBatch.length >= BATCH_SIZE_LIMIT) {
+      flushBatch(io);
+    } else if (!batchTimer) {
+      batchTimer = setTimeout(() => flushBatch(io), BATCH_TIME_LIMIT_MS);
+    }
   } catch (err) {
-    console.error("Error queuing message:", err.message);
-    socket.emit("error", { message: "Failed to queue message" });
+    console.error("Error queuing message to batch:", err.message);
+    socket.emit("error", { message: "Failed to queue message locally" });
   }
 };
 
@@ -58,12 +108,8 @@ export const handleDisconnect = (io, socket) => async () => {
   console.log('User disconnected from Gateway:', socket.id);
   if (socket.userId) {
     try {
-      const sockets = await io.in(socket.userId).fetchSockets();
-      if (sockets.length === 0) {
-        await pubClient.sRem('online_users', socket.userId);
-        // REMOVED GLOBAL BROADCAST: io.emit('user_status', { userId: socket.userId, status: 'offline' });
-        // Prevents server crash under heavy disconnect/reconnect load.
-      }
+      await pubClient.sRem('online_users', socket.userId);
+      io.emit('user_status', { userId: socket.userId, status: 'offline' });
     } catch (err) {
       console.error("Error setting offline status:", err);
     }

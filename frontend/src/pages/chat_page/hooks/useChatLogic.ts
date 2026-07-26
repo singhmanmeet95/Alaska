@@ -50,7 +50,8 @@ export function useChatLogic(chatId: string | undefined, navigate: any) {
     if (!user) return;
 
     const newSocket = io(SOCKET_URL, {
-      auth: { token }
+      auth: { token },
+      transports: ["websocket"]
     });
     setSocket(newSocket);
 

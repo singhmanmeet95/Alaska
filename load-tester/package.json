@@ -3,16 +3,23 @@
   "version": "1.0.0",
   "description": "Load Testing module for Alaska Chat App",
   "main": "processor.js",
+  "type": "module",
   "scripts": {
-    "test:5": "artillery run -q test-5.yml -o report.json && node summarize.js",
-    "test:50": "artillery run -q test-50.yml -o report.json && node summarize.js",
-    "test:500": "artillery run -q test-500.yml -o report.json && node summarize.js",
-    "test:5000": "artillery run -q test-5000.yml -o report.json && node summarize.js",
-    "test:20000": "artillery run -q test-20000.yml -o report.json && node summarize.js",
-    "test:50000": "artillery run -q test-50000.yml -o report.json && node summarize.js"
+    "reset-db": "node reset-db.js",
+    "test": "node interactive-test.js",
+    "studio": "npx prisma studio"
   },
   "dependencies": {
+    "@prisma/client": "^6.19.3",
     "artillery": "^2.0.21",
-    "artillery-engine-socketio-v3": "^1.2.0"
+    "artillery-engine-socketio-v3": "^1.2.0",
+    "dotenv": "^17.4.2",
+    "inquirer": "^14.0.2",
+    "jsonwebtoken": "^9.0.3",
+    "redis": "^6.1.0",
+    "socket.io-client": "^4.8.3"
+  },
+  "devDependencies": {
+    "prisma": "^6.19.3"
   }
 }
